@@ -11,7 +11,7 @@ function ReferralStatCard({ icon, label, value, unit, badge }) {
   const badgeStyle = badge ? (BADGE_STYLES[badge.type] ?? BADGE_STYLES.default) : ''
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-4 hover:border-purple-500/30 transition-all duration-200">
+    <div className="rounded-xl border border-[#1e1e3a] bg-[#51425333] p-4 hover:border-2 hover:border-purple-500/30 transition-all duration-200">
       {/* Top row: icon + badge */}
       <div className="flex items-start justify-between mb-3">
         <div className="w-9 h-9 rounded-lg bg-[#1a1a3e] flex items-center justify-center text-purple-400">

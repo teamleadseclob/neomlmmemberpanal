@@ -112,7 +112,7 @@ function RevenueChart() {
   }, []);
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 mb-6">
+    <div className="rounded-xl border border-[#1e1e3a] bg-[#]/60 p-5 mb-6">
       {/* Header row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">

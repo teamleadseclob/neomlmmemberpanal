@@ -5,7 +5,6 @@ const WALLET_DATA = [
     iconType: 'wallet',
     label: 'Main Wallet',
     amount: '$12,450.00',
-    badge: { text: 'LIVE', type: 'live' },
   },
   {
     iconType: 'reward',
@@ -17,7 +16,6 @@ const WALLET_DATA = [
     iconType: 'profit',
     label: 'Trading Profit',
     amount: '$842.10',
-    badge: { text: '+18% Monthly', type: 'positive' },
   },
   {
     iconType: 'multilevel',
@@ -35,7 +33,6 @@ const WALLET_DATA = [
     iconType: 'total',
     label: 'Total Income',
     amount: '$18,782.55',
-    badge: { text: '1% admin charge on transfers', type: 'info' },
     isHighlighted: true,
   },
 ];
@@ -49,7 +46,6 @@ function WalletCardsGrid() {
           iconType={card.iconType}
           label={card.label}
           amount={card.amount}
-          badge={card.badge}
           isHighlighted={card.isHighlighted}
         />
       ))}

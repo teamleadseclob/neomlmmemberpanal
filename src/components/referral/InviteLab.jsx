@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import QRCodeGenerator from './Qrcode';
 
 function InviteLab() {
   const [copied, setCopied] = useState(false);
@@ -11,7 +12,7 @@ function InviteLab() {
   };
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 md:p-6">
+    <div className="rounded-xl border border-[#1e1e3a] bg-[#51425333] p-5 md:p-6">
       {/* Header */}
       <div className="flex items-center gap-2.5 mb-5">
         <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
@@ -32,7 +33,7 @@ function InviteLab() {
           {/* Link row */}
           <div className="flex items-center gap-2 mb-5">
             <div className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg px-3.5 py-2.5">
-              <span className="text-sm text-gray-300 font-mono">{referralLink}</span>
+              <span className="text-[10px] text-gray-300 font-mono">{referralLink}</span>
             </div>
             <button
               type="button"
@@ -62,30 +63,10 @@ function InviteLab() {
 
         {/* Right: QR code */}
         <div className="flex flex-col items-center justify-center">
-          <div className="w-[140px] h-[160px] rounded-xl bg-white p-3 flex flex-col items-center justify-center shadow-lg shadow-purple-500/10">
-            {/* Simulated QR with phone icon */}
-            <div className="w-full h-full rounded-lg bg-gray-100 flex items-center justify-center relative overflow-hidden">
-              {/* QR grid pattern */}
-              <div className="absolute inset-2 grid grid-cols-7 grid-rows-7 gap-[2px] opacity-20">
-                {Array.from({ length: 49 }).map((_, i) => (
-                  <div
-                    key={`qr-${i}`}
-                    className="rounded-[1px]"
-                    style={{
-                      backgroundColor: [0,1,2,6,7,8,12,14,18,20,24,28,30,34,36,40,42,43,44,48].includes(i)
-                        ? '#1a1a2e'
-                        : 'transparent',
-                    }}
-                  />
-                ))}
-              </div>
-              {/* Phone icon overlay */}
-              <svg className="w-10 h-10 text-gray-700 z-10 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-              </svg>
-            </div>
+          <div className="w-[140px] h-[160px] rounded-xl  p-3 flex flex-col items-center justify-center ">
+              <QRCodeGenerator/>
           </div>
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-2.5 font-medium">Scan to Join</p>
+          {/* <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-2.5 font-medium">Scan to Join</p> */}
         </div>
       </div>
     </div>

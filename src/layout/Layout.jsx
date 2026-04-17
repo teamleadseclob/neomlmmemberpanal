@@ -88,18 +88,6 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
 function HeaderActions() {
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
-      {/* Dark mode */}
-      <button type="button" className="text-gray-500 hover:text-gray-200 text-base cursor-pointer bg-transparent border-none hidden sm:block" aria-label="Toggle dark mode">
-        🌙
-      </button>
-      {/* Globe */}
-      <button type="button" className="text-gray-500 hover:text-gray-200 text-base cursor-pointer bg-transparent border-none hidden sm:block" aria-label="Language">
-        🌐
-      </button>
-      {/* Notifications */}
-      <button type="button" className="text-gray-500 hover:text-gray-200 text-base cursor-pointer bg-transparent border-none hidden sm:block" aria-label="Notifications">
-        🔔
-      </button>
 
       <div className="flex items-center gap-2 pl-2 border-l border-[#1e1e3a]">
         <div className="text-right hidden sm:block">
@@ -181,7 +169,7 @@ export default function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Header */}
-        <header className="h-14 flex-shrink-0 border-b border-[#1e1e3a] flex items-center justify-between px-4 md:px-6 gap-3">
+        <header className="h-14 flex-shrink-0 border-b border-[#1e1e3a] flex items-center justify-end px-4 md:px-6 gap-3">
           {/* Hamburger (mobile) */}
           <button
             type="button"
@@ -195,14 +183,14 @@ export default function Layout() {
           </button>
 
           {/* Search */}
-          <div className="flex items-center gap-2 bg-[#1a1a2e] border border-[#1e1e3a] rounded-lg px-3 py-2 w-full max-w-xs">
+          {/* <div className="flex items-center gap-2 bg-[#1a1a2e] border border-[#1e1e3a] rounded-lg px-3 py-2 w-full max-w-xs">
             <span className="text-gray-500 text-sm flex-shrink-0">🔍</span>
             <input
               className="bg-transparent outline-none text-sm text-gray-200 placeholder-gray-500 w-full border-none"
               placeholder="Search observatory data..."
               aria-label="Search observatory data"
             />
-          </div>
+          </div> */}
 
           {/* Header actions */}
           <HeaderActions />

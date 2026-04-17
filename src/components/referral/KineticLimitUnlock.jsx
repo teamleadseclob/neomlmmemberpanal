@@ -5,7 +5,7 @@ function KineticLimitUnlock() {
   const progress = (current / target) * 100;
 
   return (
-    <div className="rounded-xl border border-purple-500/30 bg-gradient-to-br from-[#1a0a3e] to-[#0d0b2e] p-5 md:p-6 h-full flex flex-col">
+    <div className="rounded-xl border border-purple-500/30 bg-[#51425333] p-5 md:p-6 h-full flex flex-col">
       {/* Title */}
       <h3 className="text-base font-bold text-white mb-2">Kinetic Limit Unlock</h3>
       <p className="text-xs text-gray-400 leading-relaxed mb-5">
@@ -13,12 +13,12 @@ function KineticLimitUnlock() {
       </p>
 
       {/* Progress display */}
-      <div className="flex items-baseline gap-1 mb-1.5">
-        <span className="text-3xl font-bold bg-gradient-to-r from-[#D946EF] to-[#CB3CFF] bg-clip-text text-transparent">
+      <div className="flex items-baseline gap-1 mb-1.5 ">
+        <span className="text-3xl font-bold bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent">
           {current}
         </span>
-        <span className="text-3xl font-bold text-gray-500"> / </span>
-        <span className="text-3xl font-bold text-gray-500">{target}</span>
+        <span className="text-3xl font-bold text-gray-500  bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent"> / </span>
+        <span className="text-3xl font-bold text-gray-500  bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent ">{target}</span>
         <span className="text-xs text-gray-500 ml-auto">{remaining} more needed</span>
       </div>
 
