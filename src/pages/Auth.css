@@ -1,0 +1,150 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Auth Pages — Glassmorphism Card & Utilities
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Auth Card — Glassmorphism ──────────────────────────────────── */
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  z-index: 5;
+  animation: cardEntry 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Gradient border glow — thin purple line around card */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1.5px;
+  background: linear-gradient(
+    170deg,
+    rgba(168, 85, 247, 0.7) 0%,
+    rgba(127, 37, 251, 0.4) 25%,
+    rgba(88, 28, 135, 0.2) 50%,
+    rgba(127, 37, 251, 0.15) 75%,
+    rgba(168, 85, 247, 0.5) 100%
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* Card inner — dark glass panel */
+.auth-card-inner {
+  background: linear-gradient(
+    180deg,
+    rgba(18, 8, 40, 0.92) 0%,
+    rgba(10, 4, 28, 0.96) 100%
+  );
+  backdrop-filter: blur(60px) saturate(1.5);
+  -webkit-backdrop-filter: blur(60px) saturate(1.5);
+  border-radius: 24px;
+  padding: 44px 40px;
+}
+
+/* Subtle inner top highlight reflection */
+.auth-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(168, 85, 247, 0.3),
+    rgba(203, 60, 255, 0.15),
+    transparent
+  );
+  border-radius: 24px 24px 0 0;
+  pointer-events: none;
+}
+
+@keyframes cardEntry {
+  0%   { opacity: 0; transform: translateY(30px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Input ──────────────────────────────────────────────────────── */
+.auth-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: #e5e7eb;
+  padding: 13px 0;
+  min-width: 0;
+  cursor: text;
+}
+
+/* ── Fix browser autofill white background ──────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: #e5e7eb !important;
+  caret-color: #e5e7eb;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ── Submit button hover overlay ────────────────────────────────── */
+.auth-submit-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #9333ea, #d946ef);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.auth-submit-btn:hover::before { opacity: 1; }
+.auth-submit-btn > * { position: relative; z-index: 1; }
+
+/* ── Error shake animation ──────────────────────────────────────── */
+@keyframes shakeX {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-6px); }
+  75%       { transform: translateX(6px); }
+}
+.auth-error { animation: shakeX 0.4s ease; }
+
+/* ── Brand gradient text ────────────────────────────────────────── */
+.auth-brand-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1.2px;
+  background: linear-gradient(135deg, #7F25FB, #CB3CFF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ── Checkbox checked state ─────────────────────────────────────── */
+.auth-checkbox-custom::after {
+  content: '';
+  position: absolute;
+  display: none;
+  top: 2px; left: 5px;
+  width: 4px; height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+input[type='checkbox']:checked ~ .auth-checkbox-custom::after { display: block; }
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .auth-card-inner {
+    padding: 32px 22px;
+  }
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import dashboardSelected from '../assets/icons/dashboardselected.png';
@@ -27,7 +28,6 @@ import logoutIcon from '../assets/icons/logout.png';
 const NAV_ITEMS = [
   { icon: dashboardIcon, iconSelected: dashboardSelected, label: 'Dashboard',       path: '/' },
   { icon: referalIcon,   iconSelected: referalSelected,   label: 'Referral Hub',    path: '/referral-links' },
-  { icon: referalIcon,   iconSelected: referalSelected,   label: 'Register',        path: '/register' },
   { icon: communityIcon, iconSelected: communitySelected, label: 'Community',        path: '/community' },
   { icon: purchaseIcon,  iconSelected: purchaseSelected,  label: 'SWP Purchase',     path: '/swp-purchase' },
   { icon: capitalIcon,   iconSelected: capitalSelected,   label: 'Trading Capital',  path: '/trading-capital' },
@@ -104,9 +104,16 @@ function HeaderActions() {
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleNavigate = () => {
     setSidebarOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -159,6 +166,7 @@ export default function Layout() {
         <button
           type="button"
           className="flex items-center gap-2.5 px-3 py-2.5 mx-2 rounded-lg text-sm text-[#FFB4AB] hover:bg-[#1a1a2e] cursor-pointer whitespace-nowrap bg-transparent border-none"
+          onClick={handleLogout}
         >
           <img src={logoutIcon} alt="" className="w-4 h-4 object-contain flex-shrink-0" />
           <span className={`lg:block ${sidebarOpen ? 'block' : 'hidden'}`}>Logout</span>
