@@ -25,9 +25,9 @@ function WalletCard({ iconType, label, amount, isHighlighted = false }) {
 
   return (
     <div
-      className={`relative rounded-xl p-4 border transition-all duration-200
+      className={`group relative rounded-xl p-4 border transition-all duration-200
         ${isHighlighted
-          ? 'bg-gradient-to-br from-[#1a0a3e75] to-[#0d0b2ebe] border-purple-500/40 shadow-lg shadow-purple-500/10'
+          ? 'bg-linear-to-br from-[#1a0a3e75] to-[#0d0b2ebe] border-purple-500/40 shadow-lg shadow-purple-500/10'
           : 'bg-[#181f30ae] border-[#3c3c55] hover:border-purple-500/30'}`}
     >
 
@@ -41,10 +41,8 @@ function WalletCard({ iconType, label, amount, isHighlighted = false }) {
       </div>
 
       <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label}</p>
-      <p
-        className={`text-3xl font-bold mt-0.5
-          ${isHighlighted ? 'bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent' : 'text-white'}`}
-      >
+      <p className={`text-3xl font-bold mt-0.5 transition-all duration-200
+           'text-white group-hover:bg-linear-to-r group-hover:from-[#CB3CFF] group-hover:to-[#7F25FB] group-hover:bg-clip-text group-hover:text-transparent`}>
         {amount}
       </p>
     </div>

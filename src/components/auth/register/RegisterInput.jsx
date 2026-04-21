@@ -33,9 +33,22 @@ export default function RegisterInput({ id, name, label, type, placeholder, valu
           onChange={onChange}
           readOnly={readOnly}
           autoComplete={autoComplete}
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-[14px] lg:py-[16px] text-white text-sm lg:text-base placeholder-white/25 outline-none transition-all duration-200 focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)] caret-purple-400 cursor-default focus:cursor-text block"
-          style={{ paddingRight: isPassword ? '48px' : undefined }}
+          className={`w-full border rounded-xl px-4 py-[14px] lg:py-[16px] text-sm lg:text-base placeholder-white/25 outline-none transition-all duration-200 block
+            ${readOnly
+              ? 'bg-white/3 border-white/5 text-white/40 cursor-not-allowed select-none'
+              : 'bg-white/5 border-white/10 text-white focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)] caret-purple-400 cursor-default focus:cursor-text'}`}
+          style={{            WebkitBoxShadow: '0 0 0px 1000px rgba(255,255,255,0.0) inset',
+            WebkitTextFillColor: '#ffffff',
+            caretColor: '#a855f7',
+            transition: 'background-color 5000s ease-in-out 0s', paddingRight: isPassword ? '48px' : undefined }}
         />
+        {readOnly && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </span>
+        )}
         {isPassword && (
           <button
             type="button"

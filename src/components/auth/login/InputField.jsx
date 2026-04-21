@@ -29,8 +29,14 @@ export default function InputField({ label, type, placeholder, value, onChange }
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-[14px] text-white text-sm placeholder-white/25 outline-none transition-all duration-200 focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)] caret-purple-400 cursor-default focus:cursor-text"
-          style={{ paddingRight: isPassword ? '48px' : undefined }}
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white text-sm placeholder-white/25 outline-none transition-all duration-200 focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)] caret-purple-400 cursor-default focus:cursor-text"
+          style={{
+            paddingRight: isPassword ? '48px' : undefined,
+            WebkitBoxShadow: '0 0 0px 1000px rgba(255,255,255,0.0) inset',
+            WebkitTextFillColor: '#ffffff',
+            caretColor: '#a855f7',
+            transition: 'background-color 5000s ease-in-out 0s',
+          }}
         />
         {isPassword && (
           <button

@@ -1,8 +1,8 @@
 function CommunityStats() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 cursor-default">
       {/* Total Community */}
-      <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-4 hover:border-purple-500/30 transition-all duration-200">
+      <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Total Community</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">1,429</span>
@@ -11,7 +11,7 @@ function CommunityStats() {
       </div>
 
       {/* Active Clusters */}
-      <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-4 hover:border-purple-500/30 transition-all duration-200">
+      <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Active Clusters</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">84</span>
@@ -20,7 +20,7 @@ function CommunityStats() {
       </div>
 
       {/* Community Volume */}
-      <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-4 hover:border-purple-500/30 transition-all duration-200">
+      <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Community Volume</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">$124.5k</span>
@@ -29,7 +29,7 @@ function CommunityStats() {
       </div>
 
       {/* Recent Activity */}
-      <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-4 hover:border-purple-500/30 transition-all duration-200">
+      <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Recent Activity</p>
         <div className="flex items-center gap-0">
           {/* Stacked avatars */}

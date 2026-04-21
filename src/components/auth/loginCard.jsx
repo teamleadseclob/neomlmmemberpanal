@@ -11,7 +11,7 @@ export default function LoginCard() {
 
       {/* Card */}
       <div
-        className="relative w-full max-w-[480px] rounded-3xl border border-white/8 p-11"
+        className="relative w-full max-w-120 rounded-3xl border border-white/8 p-11"
         style={{
           background: 'rgba(255,255,255,0.04)',
           backdropFilter: 'blur(28px) saturate(180%)',

@@ -10,22 +10,23 @@ function KineticLimitUnlock() {
       <h3 className="text-base font-bold text-white mb-2">Kinetic Limit Unlock</h3>
       <p className="text-xs text-gray-400 leading-relaxed mb-5">
         Reach the milestone to unlock the 4X Kinetic Limit bonus for your staking rewards.
+
       </p>
 
       {/* Progress display */}
       <div className="flex items-baseline gap-1 mb-1.5 ">
-        <span className="text-3xl font-bold bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent">
+        <span className="text-3xl font-bold bg-linear-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent">
           {current}
         </span>
-        <span className="text-3xl font-bold text-gray-500  bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent"> / </span>
-        <span className="text-3xl font-bold text-gray-500  bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent ">{target}</span>
+        <span className="text-3xl font-bold text-gray-500  bg-linear-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent"> / </span>
+        <span className="text-3xl font-bold text-gray-500  bg-linear-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent ">{target}</span>
         <span className="text-xs text-gray-500 ml-auto">{remaining} more needed</span>
       </div>
 
       {/* Progress bar */}
       <div className="w-full h-1.5 bg-[#1a1a2e] rounded-full overflow-hidden mb-4">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[#7F25FB] to-[#D946EF] transition-all duration-700"
+          className="h-full rounded-full bg-linear-to-r from-[#7F25FB] to-[#D946EF] transition-all duration-700"
           style={{ width: `${progress}%` }}
         />
       </div>

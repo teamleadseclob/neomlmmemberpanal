@@ -142,7 +142,7 @@ function RevenueChart() {
 
         {/* Canvas container */}
         <div className="flex-1 flex flex-col">
-          <div className="relative flex-1 min-h-[200px]">
+          <div className="relative flex-1 min-h-50">
             <canvas ref={canvasRef} className="w-full h-full block" />
 
             {/* Tooltip overlay for $125.2k */}

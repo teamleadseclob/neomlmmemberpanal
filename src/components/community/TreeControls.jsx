@@ -12,7 +12,7 @@ function TreeControls({ activeTab, onTabChange }) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
       {/* Ecosystem Legend */}
-      <div className="flex items-center gap-4 px-4 py-2.5 rounded-lg border border-[#1e1e3a] bg-[#0d0b2e]/60">
+      <div className="flex items-center gap-4 px-4 py-2.5 rounded-lg border border-[#1e1e3a] ">
         <span className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
           Ecosystem Legend
         </span>
@@ -25,7 +25,7 @@ function TreeControls({ activeTab, onTabChange }) {
       </div>
 
       {/* Tab bar */}
-      <div className="flex items-center gap-1 p-1 rounded-lg border border-[#1e1e3a] bg-[#0d0b2e]/60">
+      <div className="flex items-center gap-1 p-1 rounded-lg border border-[#1e1e3a] ">
         {tabs.map((tab) => (
           <button
             key={tab}

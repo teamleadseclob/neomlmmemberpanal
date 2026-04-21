@@ -3,7 +3,8 @@ import QRCodeGenerator from './Qrcode';
 
 function InviteLab() {
   const [copied, setCopied] = useState(false);
-  const referralLink = 'neofi.io/register?ref=NEO_9921';
+  const user =localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const referralLink = `neofi.io/register?ref=${user?.userId || 'NEO_USER'}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink);
@@ -39,7 +40,7 @@ function InviteLab() {
               type="button"
               onClick={handleCopy}
               className="px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer
-                         bg-gradient-to-r from-[#D946EF] to-[#CB3CFF] text-white
+                         bg-linear-to-r from-[#D946EF] to-[#CB3CFF] text-white
                          hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200 border-none whitespace-nowrap"
             >
               {copied ? '✓ Copied' : 'Copy Link'}
@@ -54,7 +55,7 @@ function InviteLab() {
             </div>
             <div className="flex-1 rounded-lg border border-[#2a2a4a] bg-[#1a1a2e]/60 px-4 py-3">
               <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Fee Rebate</p>
-              <p className="text-lg font-bold bg-gradient-to-r from-[#D946EF] to-[#CB3CFF] bg-clip-text text-transparent">
+              <p className="text-lg font-bold bg-linear-to-r from-[#D946EF] to-[#CB3CFF] bg-clip-text text-transparent">
                 15% <span className="text-xs font-medium">Lifetime</span>
               </p>
             </div>
@@ -63,8 +64,8 @@ function InviteLab() {
 
         {/* Right: QR code */}
         <div className="flex flex-col items-center justify-center">
-          <div className="w-[140px] h-[160px] rounded-xl  p-3 flex flex-col items-center justify-center ">
-              <QRCodeGenerator/>
+          <div className="w-35 h-40 rounded-xl  p-3 flex flex-col items-center justify-center ">
+              <QRCodeGenerator referralLink={referralLink} />
           </div>
           {/* <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-2.5 font-medium">Scan to Join</p> */}
         </div>

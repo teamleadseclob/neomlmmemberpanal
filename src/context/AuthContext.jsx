@@ -1,27 +1,36 @@
-import { createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem('neofi_token'));
+  const [token, setToken] = useState(() => localStorage.getItem('token'))
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('user')
+    return stored ? JSON.parse(stored) : null
+  })
 
-  const login = (authToken) => {
-    localStorage.setItem('neofi_token', authToken);
-    setToken(authToken);
-  };
+  const login = (authToken, userData) => {
+    localStorage.setItem('token', authToken)
+    localStorage.setItem('user', JSON.stringify(userData))
+    setToken(authToken)
+    setUser(userData)
+  }
 
   const logout = () => {
-    localStorage.removeItem('neofi_token');
-    setToken(null);
-  };
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setToken(null)
+    setUser(null)
+  }
 
   const value = useMemo(() => ({
     token,
+    user,
     isAuthenticated: !!token,
     login,
     logout,
-  }), [token]);
+  }), [token, user])
 
   return (
     <AuthContext.Provider value={value}>
@@ -33,11 +42,5 @@ export function AuthProvider({ children }) {
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
-}
 
 export default AuthContext;

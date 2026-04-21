@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import dashboardSelected from '../assets/icons/dashboardselected.png';
@@ -72,7 +72,7 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
           />
           <span className={`lg:block ${sidebarOpen ? 'block' : 'hidden'}`}>
             {isActive ? (
-              <span className="bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-[#7F25FB] to-[#CB3CFF] bg-clip-text text-transparent">
                 {item.label}
               </span>
             ) : (
@@ -86,16 +86,17 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
 }
 
 function HeaderActions() {
+  const user =localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
 
       <div className="flex items-center gap-2 pl-2 border-l border-[#1e1e3a]">
         <div className="text-right hidden sm:block">
-          <p className="text-sm font-semibold leading-tight text-white">Alex Rivera</p>
-          <p className="text-[10px] text-purple-400 tracking-widest">GOLD MEMBER</p>
+          <p className="text-sm font-semibold leading-tight capitalize text-white">{user?.name||"Hello"}</p>
+          <p className="text-[10px] text-purple-400 tracking-widest">{user?.email}</p>
         </div>
-        <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-purple-700 flex items-center justify-center text-xs font-bold flex-shrink-0 text-white">
-          AR
+        <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg capitalize bg-purple-700 flex items-center justify-center text-md font-bold flex-shrink-0 text-white">
+          {user?.name ? user.name[0] : "H"}
         </div>
       </div>
     </div>
@@ -189,18 +190,6 @@ export default function Layout() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-
-          {/* Search */}
-          {/* <div className="flex items-center gap-2 bg-[#1a1a2e] border border-[#1e1e3a] rounded-lg px-3 py-2 w-full max-w-xs">
-            <span className="text-gray-500 text-sm flex-shrink-0">🔍</span>
-            <input
-              className="bg-transparent outline-none text-sm text-gray-200 placeholder-gray-500 w-full border-none"
-              placeholder="Search observatory data..."
-              aria-label="Search observatory data"
-            />
-          </div> */}
-
-          {/* Header actions */}
           <HeaderActions />
         </header>
 

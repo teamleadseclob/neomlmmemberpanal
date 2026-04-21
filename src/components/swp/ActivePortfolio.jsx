@@ -1,18 +1,29 @@
-function ActivePortfolio() {
-  const utilized = 45;
-  const remaining = 55;
-  const current = 450;
-  const limit = 1000;
+import PropTypes from 'prop-types'
+
+export default function ActivePortfolio({ data }) {
+  const swpCap        = data?.swpCap ?? 0
+  const swpRemaining  = data?.swpRemaining ?? 0
+  const totalInvested = data?.totalInvested ?? 0
+  const utilized      = swpCap > 0 ? Math.round((totalInvested / swpCap) * 100) : 0
+  const remaining     = 100 - utilized
+
+  if (!data) {
+    return (
+      <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 md:p-6 h-full flex items-center justify-center">
+        <span className="w-7 h-7 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 md:p-6 h-full flex flex-col">
+    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6 h-full flex flex-col">
       {/* Header row */}
       <div className="flex items-start justify-between mb-4">
         <div>
           <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1">
             Active Portfolio Shell
           </p>
-          <h2 className="text-xl font-bold text-white">$100 Package</h2>
+          <h2 className="text-xl font-bold text-white">${swpCap.toLocaleString()} Package</h2>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
           Live Status
@@ -23,8 +34,8 @@ function ActivePortfolio() {
       <div className="flex items-baseline justify-between mb-2 mt-auto">
         <p className="text-xs text-gray-400">Remaining Investment Limit</p>
         <p className="text-lg font-bold text-white">
-          ${current.toLocaleString()}{' '}
-          <span className="text-sm text-gray-500 font-normal">/ ${limit.toLocaleString()}</span>
+          ${swpRemaining.toLocaleString()}{' '}
+          <span className="text-sm text-gray-500 font-normal">/ ${swpCap.toLocaleString()}</span>
         </p>
       </div>
 
@@ -52,7 +63,20 @@ function ActivePortfolio() {
         </p>
       </div>
     </div>
-  );
+  )
 }
 
-export default ActivePortfolio;
+ActivePortfolio.propTypes = {
+  data: PropTypes.shape({
+    swpBalance: PropTypes.number,
+    swpCap: PropTypes.number,
+    swpRemaining: PropTypes.number,
+    totalInvested: PropTypes.number,
+    remainingInvestment: PropTypes.number,
+    needsRepurchase: PropTypes.bool,
+  }),
+}
+
+ActivePortfolio.defaultProps = {
+  data: null,
+}

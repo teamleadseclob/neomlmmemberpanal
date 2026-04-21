@@ -1,9 +1,20 @@
+import { useSearchParams, Navigate } from 'react-router-dom'
 import PlexusBackground from './bg'
 import RegisterForm from '../components/auth/register/RegisterForm'
+import logo from '../assets/logo.png'
 
 export default function Register() {
+  const [searchParams] = useSearchParams()
+  const ref = searchParams.get('ref')
+
+  // if (!ref?.trim()) {
+  //   return <Navigate to="/login" replace />
+  // }
   return (
     <PlexusBackground>
+      <div className="absolute top-6 left-8 z-10">
+        <img src={logo} alt="NeoFi" className="h-10 w-auto object-contain" />
+      </div>
       <div className="w-full min-h-screen flex items-center justify-center px-4 py-10">
 
         {/* Ambient blobs */}
@@ -30,7 +41,7 @@ export default function Register() {
           <h1 className="text-center text-white font-black text-4xl tracking-tight mb-2">Create Account</h1>
           <p className="text-center text-white/40 text-sm mb-8">Join NeoFi and start your financial journey.</p>
 
-          <RegisterForm />
+          <RegisterForm ref={ref} />
         </div>
 
         <style>{`

@@ -24,7 +24,7 @@ const STEPS = [
 
 function CapacityLogic() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 md:p-6 h-full flex flex-col cursor-default select-none">
+    <div className="rounded-xl border border-[#1e1e3a]  p-5 md:p-6 h-full flex flex-col cursor-default select-none">
       <h3 className="text-base font-bold text-white mb-5">⚙️ Capacity Logic</h3>
 
       <div className="flex flex-col gap-4 mb-6 flex-1">

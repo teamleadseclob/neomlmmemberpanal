@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../../../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../context/useAuth'
 import RegisterInput from './RegisterInput'
 
 const CheckIcon = () => (
@@ -9,15 +9,13 @@ const CheckIcon = () => (
   </svg>
 )
 
-export default function RegisterForm() {
-  const [searchParams] = useSearchParams()
-  const sponsorCode = searchParams.get('ref') || ''
+export default function RegisterForm(sponsorCode) {
   const { login } = useAuth()
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     fullName: '',
-    referralCode: sponsorCode,
+    referralCode: sponsorCode?.ref || '',
     password: '',
     confirmPassword: '',
   })
@@ -72,7 +70,7 @@ export default function RegisterForm() {
 
       <RegisterInput id="referralCode" name="referralCode" label="Referral Code"
         placeholder="Enter referral code" value={formData.referralCode}
-        onChange={handleChange} readOnly={!!sponsorCode} />
+        onChange={handleChange} readOnly />
 
       <RegisterInput id="password" name="password" label="Password" type="password"
         placeholder="Create password" value={formData.password}

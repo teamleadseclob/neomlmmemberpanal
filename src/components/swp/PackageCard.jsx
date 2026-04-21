@@ -1,4 +1,7 @@
+import { useState } from 'react'
 import PropTypes from 'prop-types'
+import toast from 'react-hot-toast'
+import { purchaseswp } from '../../config/apiService'
 
 const TIER_ICONS = {
   bolt: (
@@ -46,10 +49,26 @@ const TIER_ICONS = {
  * @param {string} [props.badge]      – e.g. "POPULAR CHOICE"
  */
 function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge }) {
+  const [hovered, setHovered] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handlePurchase = async () => {
+    if (btnType !== 'select') return
+    setLoading(true)
+    try {
+      await purchaseswp(price)
+      toast.success(`${title} purchased successfully!`)
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Purchase failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const buttonStyles = {
     repurchase: 'border border-purple-500/50 text-purple-400 bg-transparent hover:bg-purple-500/10',
-    upgrade: 'border-none bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] text-white hover:shadow-lg hover:shadow-purple-500/25',
-    select: 'border border-[#2a2a4a] bg-[#1a1a2e] text-gray-300 hover:border-purple-500/30 hover:text-white',
+    upgrade: 'border border-[#2a2a4a] bg-[#1a1a2e] text-gray-300 transition-all duration-200 hover:bg-gradient-to-r hover:from-[#7F25FB] hover:to-[#CB3CFF] hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-purple-500/25',
+    select: 'border border-[#2a2a4a] bg-[#1a1a2e] text-gray-300 transition-all duration-200 hover:bg-gradient-to-r hover:from-[#7F25FB] hover:to-[#CB3CFF] hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-purple-500/25',
   };
 
   const buttonLabels = {
@@ -59,7 +78,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
   };
 
   return (
-    <div className="relative rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 flex flex-col
+    <div className="relative rounded-xl border border-[#1e1e3a]  p-5 flex flex-col
                     hover:border-purple-500/30 transition-all duration-200">
       {/* Popular badge */}
       {badge && (
@@ -98,13 +117,18 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
         </div>
       </div>
 
-      {/* Action button */}
       <button
         type="button"
+        onClick={handlePurchase}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        disabled={loading}
         className={`w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide
-                    transition-all duration-200 cursor-pointer ${buttonStyles[btnType]}`}
+                    transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${buttonStyles[btnType]}`}
       >
-        {buttonLabels[btnType]}
+        {loading
+          ? <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          : btnType === 'select' && hovered ? 'Purchase' : buttonLabels[btnType]}
       </button>
     </div>
   );

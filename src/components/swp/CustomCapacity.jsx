@@ -1,6 +1,6 @@
 function CustomCapacity() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 md:p-6
+    <div className="rounded-xl border border-[#1e1e3a]  p-5 md:p-6
                     flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h3 className="text-base font-bold text-white mb-1.5">Need a Custom Capacity Scale?</h3>
