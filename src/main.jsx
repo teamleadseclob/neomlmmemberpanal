@@ -3,15 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import ToastProvider from './config/ToastProvider.jsx'
+import { initEnterKeyNavigation, initNoDrag } from './config/globalEvents.js'
 
-// Prevent all images from being draggable globally
-document.addEventListener('dragstart', (e) => {
-  if (e.target.tagName === 'IMG') e.preventDefault()
-}, true)
-
-document.addEventListener('mousedown', (e) => {
-  if (e.target.tagName === 'IMG') e.preventDefault()
-}, true)
+initEnterKeyNavigation()
+initNoDrag()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
