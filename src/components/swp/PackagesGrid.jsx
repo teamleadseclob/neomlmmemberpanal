@@ -1,41 +1,66 @@
 import PropTypes from 'prop-types'
 import PackageCard from './PackageCard'
 
-const PACKAGES = [
-  { tierLabel: 'Tier 01', title: '$100 Package',   price: 100,  maxLimit: 1000,  leverage: '10.0x', icon: 'bolt',     btnType: 'repurchase' },
-  { tierLabel: 'Tier 02', title: '$200 Package',   price: 200,  maxLimit: 2000,  leverage: '10.0x', icon: 'rocket',   btnType: 'select' },
-  { tierLabel: 'Tier 03', title: '$300 Package',   price: 300,  maxLimit: 3000,  leverage: '10.0x', icon: 'gear',     btnType: 'select' },
-  { tierLabel: 'Tier 04', title: '$500 Package',   price: 500,  maxLimit: 5000,  leverage: '10.0x', icon: 'diamond',  btnType: 'select', badge: 'Popular Choice' },
-  { tierLabel: 'Tier 05', title: '$700 Package',   price: 700,  maxLimit: 7000,  leverage: '10.0x', icon: 'infinity', btnType: 'select' },
-  { tierLabel: 'Elite Tier 06', title: '$1,000 Package', price: 1000, maxLimit: 10000, leverage: '10.0x', icon: 'star', btnType: 'select' },
+const TIER_META = [
+  { icon: 'bolt' },
+  { icon: 'rocket' },
+  { icon: 'gear' },
+  { icon: 'diamond', badge: 'Popular Choice' },
+  { icon: 'infinity' },
+  { icon: 'star' },
 ]
 
-function PackagesGrid({ swpBalance }) {
+function getBtnType(amount, lastPurchased) {
+  if (lastPurchased !== null && amount === lastPurchased) return 'repurchase'
+  return 'select'
+}
+
+function PackagesGrid({ packages, lastPurchased, swpCap }) {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-bold text-white">Available Investment Packages</h2>
+        <h2 className="text-lg font-bold text-white">Available Investment SWP Packages</h2>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#1e1e3a] bg-[#0d0b2e]/60">
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider">SWP Balance</span>
-          <span className="text-sm font-bold text-white">${swpBalance.toLocaleString()}</span>
+          <span className="text-[10px] text-gray-500 uppercase tracking-wider">SWP Cap</span>
+          <span className="text-sm font-bold text-white">${swpCap.toLocaleString()}</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {PACKAGES.map((pkg) => (
-          <PackageCard key={pkg.tierLabel} {...pkg} />
-        ))}
+        {packages.map((pkg, i) => {
+          const meta = TIER_META[i] ?? { icon: 'bolt' }
+          return (
+            <PackageCard
+              key={pkg.amount}
+              tierLabel={`Tier ${String(i + 1).padStart(2, '0')}`}
+              title={`$${pkg.amount.toLocaleString()} Package`}
+              price={pkg.amount}
+              maxLimit={pkg.investmentLimit}
+              leverage="10.0x"
+              icon={meta.icon}
+              badge={meta.badge}
+              btnType={getBtnType(pkg.amount, lastPurchased)}
+            />
+          )
+        })}
       </div>
     </div>
   )
 }
 
 PackagesGrid.propTypes = {
-  swpBalance: PropTypes.number,
+  packages: PropTypes.arrayOf(PropTypes.shape({
+    amount: PropTypes.number.isRequired,
+    investmentLimit: PropTypes.number.isRequired,
+  })),
+  lastPurchased: PropTypes.number,
+  swpCap: PropTypes.number,
 }
 
 PackagesGrid.defaultProps = {
-  swpBalance: 0,
+  packages: [],
+  lastPurchased: null,
+  swpCap: 0,
 }
 
 export default PackagesGrid

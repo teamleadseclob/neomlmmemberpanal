@@ -24,7 +24,16 @@
   scrollbar-color: #1e1e3a transparent;
 }
 
-/* Base styles */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: page-enter 0.25s ease-out both;
+}
+
+
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;

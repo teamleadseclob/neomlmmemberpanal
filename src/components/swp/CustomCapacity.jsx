@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function CustomCapacity() {
   return (
     <div className="rounded-xl border border-[#1e1e3a]  p-5 md:p-6
@@ -15,7 +17,9 @@ function CustomCapacity() {
                    border border-[#2a2a4a] bg-[#1a1a2e] text-gray-300
                    hover:border-purple-500/30 hover:text-white transition-all duration-200 cursor-pointer"
       >
-        Contact Support
+        <Link to="/support" className="block w-full h-full">
+          Contact Support
+        </Link>
       </button>
     </div>
   );

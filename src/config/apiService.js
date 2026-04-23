@@ -17,8 +17,8 @@ export const gettree = async (userId) => {
   return response.data
 }
 
-export const getswp = async () => {
-  const response = await axiosConfig.get(`/api/swp/status`)
+export const getswpplan = async () => {
+  const response = await axiosConfig.get(`/api/swp/packages`)
   return response.data
 }
 

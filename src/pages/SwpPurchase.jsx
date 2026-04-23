@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getswp } from '../config/apiService'
+import { getswpplan } from '../config/apiService'
 import {
   SwpHeader,
   ActivePortfolio,
@@ -14,7 +14,7 @@ function SwpPurchase() {
   useEffect(() => {
     const fetchSwp = async () => {
       try {
-        const res = await getswp()
+        const res = await getswpplan()
         setSwpData(res.data)
       } catch {
         setSwpData(null)
@@ -36,7 +36,11 @@ function SwpPurchase() {
         </div>
       </div>
 
-      <PackagesGrid swpBalance={swpData?.swpBalance ?? 0} />
+      <PackagesGrid
+        packages={swpData?.packages ?? []}
+        lastPurchased={swpData?.lastPurchased ?? null}
+        swpCap={swpData?.swpCap ?? 0}
+      />
 
       <CustomCapacity />
     </div>

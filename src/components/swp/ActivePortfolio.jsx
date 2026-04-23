@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 
 export default function ActivePortfolio({ data }) {
-  const swpCap        = data?.swpCap ?? 0
-  const swpRemaining  = data?.swpRemaining ?? 0
-  const totalInvested = data?.totalInvested ?? 0
+  const swpCap        = 1000
+  const totalInvested = data?.totalSwpPurchased ?? 0
+  const totalPurchased = data?.totalSwpPurchased ?? 0
   const utilized      = swpCap > 0 ? Math.round((totalInvested / swpCap) * 100) : 0
   const remaining     = 100 - utilized
 
@@ -23,18 +23,22 @@ export default function ActivePortfolio({ data }) {
           <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1">
             Active Portfolio Shell
           </p>
-          <h2 className="text-xl font-bold text-white">${swpCap.toLocaleString()} Package</h2>
+          <h2 className="text-xl font-bold text-white">${totalPurchased.toLocaleString()} Purchased</h2>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
-          Live Status
+        <span
+          className="text-[10px] font-bold uppercase border px-6 py-2 rounded-full border-[#CB3CFF]/30 bg-[#EEB1FF33]"
+        >
+          <span className="bg-linear-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent">
+            Live Status
+          </span>
         </span>
       </div>
 
       {/* Remaining limit */}
       <div className="flex items-baseline justify-between mb-2 mt-auto">
-        <p className="text-xs text-gray-400">Remaining Investment Limit</p>
+        <p className="text-xs text-gray-400">Total Purchased</p>
         <p className="text-lg font-bold text-white">
-          ${swpRemaining.toLocaleString()}{' '}
+          ${totalInvested.toLocaleString()}{' '}
           <span className="text-sm text-gray-500 font-normal">/ ${swpCap.toLocaleString()}</span>
         </p>
       </div>
@@ -42,7 +46,7 @@ export default function ActivePortfolio({ data }) {
       {/* Progress bar */}
       <div className="w-full h-2 bg-[#1a1a3e] rounded-full overflow-hidden mb-2">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] transition-all duration-700"
+          className="h-full rounded-full bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] transition-all duration-700"
           style={{ width: `${utilized}%` }}
         />
       </div>
@@ -68,12 +72,11 @@ export default function ActivePortfolio({ data }) {
 
 ActivePortfolio.propTypes = {
   data: PropTypes.shape({
-    swpBalance: PropTypes.number,
-    swpCap: PropTypes.number,
-    swpRemaining: PropTypes.number,
+    maxInvestmentLimit: PropTypes.number,
+    totalSwpPurchased: PropTypes.number,
     totalInvested: PropTypes.number,
-    remainingInvestment: PropTypes.number,
-    needsRepurchase: PropTypes.bool,
+    lastPurchased: PropTypes.number,
+    swpCap: PropTypes.number,
   }),
 }
 

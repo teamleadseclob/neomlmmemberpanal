@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import Footer from '../components/Footer';
 
@@ -198,7 +198,9 @@ export default function Layout() {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <Outlet />
+          <div key={useLocation().pathname} className="page-enter">
+            <Outlet />
+          </div>
         </main>
         <Footer />
       </div>

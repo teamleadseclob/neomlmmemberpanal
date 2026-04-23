@@ -12,13 +12,87 @@ const TIER_ICONS = {
   star: (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>),
 }
 
-const buttonLabels = {
+const STATIC_BTN_CLASS = {
+  repurchase: 'border border-purple-500/50 text-purple-400 bg-transparent hover:bg-purple-500/10 transition-all duration-200',
+}
+
+const BUTTON_LABELS = {
   repurchase: 'Repurchase',
-  upgrade: 'Upgrade Now',
+}
+
+const SPINNER = <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+
+function SelectTierButton({ loading, onClick }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <div className="flex justify-center">
+      <button
+        type="button"
+        onClick={onClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        disabled={loading}
+        style={{
+          background: hovered ? 'linear-gradient(to right, #7F25FB, #CB3CFF)' : 'transparent',
+          border: hovered ? '1px solid transparent' : '1px solid rgba(139,92,246,0.5)',
+          borderRadius: hovered ? '4px' : '8px',
+          width: hovered ? '100%' : '50%',
+          color: hovered ? '#fff' : 'rgb(192,132,252)',
+          boxShadow: hovered ? '0 8px 24px rgba(127,37,251,0.35)' : 'none',
+          transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+          padding: '10px 0',
+          fontSize: '12px',
+          fontWeight: 600,
+          letterSpacing: '0.05em',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          opacity: loading ? 0.6 : 1,
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        {loading ? SPINNER : <SelectTierLabel hovered={hovered} />}
+      </button>
+    </div>
+  )
+}
+
+function SelectTierLabel({ hovered }) {
+  return (
+    <span style={{ position: 'relative', display: 'inline-block', height: '16px', overflow: 'hidden', verticalAlign: 'middle' }}>
+      <span style={{
+        display: 'block',
+        transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s',
+        transform: hovered ? 'translateY(-100%)' : 'translateY(0)',
+        opacity: hovered ? 0 : 1,
+        whiteSpace: 'nowrap',
+      }}>Select Tier</span>
+      <span style={{
+        display: 'block',
+        position: 'absolute',
+        top: 0, left: 0, right: 0,
+        transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s',
+        transform: hovered ? 'translateY(0)' : 'translateY(100%)',
+        opacity: hovered ? 1 : 0,
+        whiteSpace: 'nowrap',
+      }}>Purchase</span>
+    </span>
+  )
+}
+
+function StaticButton({ btnType, loading, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={loading}
+      className={`w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${STATIC_BTN_CLASS[btnType]}`}
+    >
+      {loading ? SPINNER : BUTTON_LABELS[btnType]}
+    </button>
+  )
 }
 
 function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge }) {
-  const [hovered, setHovered] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handlePurchase = async () => {
@@ -33,13 +107,11 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
     }
   }
 
-  const isSelect = btnType === 'select'
-
   return (
     <div className="relative rounded-xl border border-[#1e1e3a] p-5 flex flex-col hover:border-purple-500/30 transition-all duration-200">
       {badge && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] text-white whitespace-nowrap">
+          <span className="text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-linear-to-r from-[#7F25FB] to-[#CB3CFF] text-white whitespace-nowrap">
             {badge}
           </span>
         </div>
@@ -69,76 +141,27 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
         </div>
       </div>
 
-      {/* Select tier morphing button */}
-      {isSelect ? (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={handlePurchase}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            disabled={loading}
-            style={{
-              background: hovered ? 'linear-gradient(to right, #7F25FB, #CB3CFF)' : 'transparent',
-              border: hovered ? '1px solid transparent' : '1px solid rgba(139,92,246,0.5)',
-              borderRadius: hovered ? '8px' : '9px',
-              width: hovered ? '100%' : '50%',
-              color: hovered ? '#fff' : 'rgb(192,132,252)',
-              boxShadow: hovered ? '0 8px 24px rgba(127,37,251,0.35)' : 'none',
-              transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
-              padding: '10px 0',
-              fontSize: '12px',
-              fontWeight: 600,
-              letterSpacing: '0.05em',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.6 : 1,
-              overflow: 'hidden',
-              position: 'relative',
-            }}
-          >
-            {loading ? (
-              <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <span style={{ position: 'relative', display: 'inline-block', height: '16px', overflow: 'hidden', verticalAlign: 'middle' }}>
-                <span style={{
-                  display: 'block',
-                  transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s',
-                  transform: hovered ? 'translateY(-100%)' : 'translateY(0)',
-                  opacity: hovered ? 0 : 1,
-                  whiteSpace: 'nowrap',
-                }}>Select Tier</span>
-                <span style={{
-                  display: 'block',
-                  position: 'absolute',
-                  top: 0, left: 0, right: 0,
-                  transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s',
-                  transform: hovered ? 'translateY(0)' : 'translateY(100%)',
-                  opacity: hovered ? 1 : 0,
-                  whiteSpace: 'nowrap',
-                }}>Purchase</span>
-              </span>
-            )}
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={handlePurchase}
-          disabled={loading}
-          className={`w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${
-            btnType === 'repurchase'
-              ? 'border border-purple-500/50 text-purple-400 bg-transparent hover:bg-purple-500/10 transition-all duration-200'
-              : 'border border-[#2a2a4a] bg-[#1a1a2e] text-gray-300 hover:text-white transition-all duration-200'
-          }`}
-        >
-          {loading
-            ? <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            : buttonLabels[btnType]
-          }
-        </button>
-      )}
+      {btnType === 'select'
+        ? <SelectTierButton loading={loading} onClick={handlePurchase} />
+        : <StaticButton btnType={btnType} loading={loading} onClick={handlePurchase} />
+      }
     </div>
   )
+}
+
+SelectTierButton.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+}
+
+SelectTierLabel.propTypes = {
+  hovered: PropTypes.bool.isRequired,
+}
+
+StaticButton.propTypes = {
+  btnType: PropTypes.oneOf(['repurchase']).isRequired,
+  loading: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
 }
 
 PackageCard.propTypes = {
@@ -148,7 +171,7 @@ PackageCard.propTypes = {
   maxLimit: PropTypes.number.isRequired,
   leverage: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
-  btnType: PropTypes.oneOf(['repurchase', 'upgrade', 'select']).isRequired,
+  btnType: PropTypes.oneOf(['repurchase', 'select']).isRequired,
   badge: PropTypes.string,
 }
 
