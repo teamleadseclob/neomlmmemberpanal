@@ -6,6 +6,12 @@ import Dashboard from './pages/Dashboard';
 import ReferralHub from './pages/ReferralHub';
 import Community from './pages/Community';
 import SwpPurchase from './pages/SwpPurchase';
+import TradingCapital from './pages/TradingCapital';
+import RewardHistory from './pages/RewardHistory';
+import TradingHistory from './pages/TradingHistory';
+import RankReport from './pages/RankReport';
+import Support from './pages/Support';
+import Services from './pages/Services';
 import PlaceholderPage from './pages/PlaceholderPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -33,12 +39,14 @@ function App() {
             <Route path="referral-links" element={<ReferralHub />} />
             <Route path="community" element={<Community />} />
             <Route path="swp-purchase" element={<SwpPurchase />} />
-            <Route path="trading-capital" element={<PlaceholderPage title="Trading Capital" />} />
-            <Route path="rank-report" element={<PlaceholderPage title="Rank Report" />} />
+            <Route path="trading-capital" element={<TradingCapital />} />
+            <Route path="trading-capital/reward-history" element={<RewardHistory />} />
+            <Route path="trading-capital/trading-history" element={<TradingHistory />} />
+            <Route path="rank-report" element={<RankReport />} />
             <Route path="payout" element={<PlaceholderPage title="Payout" />} />
-            <Route path="services" element={<PlaceholderPage title="Services" />} />
+            <Route path="services" element={<Services />} />
             <Route path="reports" element={<PlaceholderPage title="Reports" />} />
-            <Route path="support" element={<PlaceholderPage title="Support" />} />
+            <Route path="support" element={<Support />} />
           </Route>
 
           {/* ── 404 catch-all ───────────────────────────────────── */}

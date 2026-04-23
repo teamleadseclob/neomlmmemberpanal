@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
+import Footer from '../components/Footer';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import dashboardSelected from '../assets/icons/dashboardselected.png';
@@ -69,6 +70,7 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
             src={isActive ? item.iconSelected : item.icon}
             alt=""
             className="w-4 h-4 object-contain flex-shrink-0"
+            draggable="false"
           />
           <span className={`lg:block ${sidebarOpen ? 'block' : 'hidden'}`}>
             {isActive ? (
@@ -169,7 +171,7 @@ export default function Layout() {
           className="flex items-center gap-2.5 px-3 py-2.5 mx-2 rounded-lg text-sm text-[#FFB4AB] hover:bg-[#1a1a2e] cursor-pointer whitespace-nowrap bg-transparent border-none"
           onClick={handleLogout}
         >
-          <img src={logoutIcon} alt="" className="w-4 h-4 object-contain flex-shrink-0" />
+          <img src={logoutIcon} alt="" className="w-4 h-4 object-contain flex-shrink-0" draggable="false"/>
           <span className={`lg:block ${sidebarOpen ? 'block' : 'hidden'}`}>Logout</span>
         </button>
       </aside>
@@ -185,6 +187,7 @@ export default function Layout() {
             className="md:hidden text-gray-400 hover:text-white flex-shrink-0 bg-transparent border-none cursor-pointer"
             onClick={() => setSidebarOpen((prev) => !prev)}
             aria-label="Toggle sidebar"
+            
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -197,6 +200,7 @@ export default function Layout() {
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <Outlet />
         </main>
+        <Footer />
       </div>
     </div>
   );

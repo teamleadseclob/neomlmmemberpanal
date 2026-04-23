@@ -2,20 +2,26 @@
 
 /* Smooth scrollbar for dark theme */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #020717;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #1e1e3a;
-  border-radius: 3px;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #2e2e5e;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e1e3a transparent;
 }
 
 /* Base styles */
@@ -24,6 +30,16 @@ body {
   font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 
