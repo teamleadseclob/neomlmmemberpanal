@@ -16,13 +16,6 @@ export default function Register() {
         <img src={logo} alt="NeoFi" className="h-10 w-auto object-contain" />
       </div>
       <div className="w-full min-h-screen flex items-center justify-center px-4 py-10">
-
-        {/* Ambient blobs */}
-        <div className="fixed top-0 left-0 w-72 h-72 rounded-full opacity-30 blur-[80px] animate-pulse pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #7c3aed, #4f46e5)' }} />
-        <div className="fixed bottom-0 right-0 w-64 h-64 rounded-full opacity-25 blur-[80px] animate-pulse pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #2563eb, #7c3aed)', animationDelay: '1.5s' }} />
-
         {/* Glass Card */}
         <div
           className="relative w-full max-w-md md:max-w-lg rounded-3xl border border-white/8 px-8 md:px-10 py-10"
