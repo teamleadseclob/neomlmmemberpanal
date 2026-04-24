@@ -1,4 +1,3 @@
-import React from 'react';
 /**
  * SponsorTree – 3-level paginated tree with infinite children.
  *
@@ -11,7 +10,7 @@ import React from 'react';
  * • Fetches data from the gettree API endpoint.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../context/useAuth';
 import { gettree } from '../../config/apiService';

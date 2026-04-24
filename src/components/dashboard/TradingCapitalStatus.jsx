@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 function CapCircle({ percentage }) {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
@@ -82,6 +84,10 @@ function TradingCapitalStatus() {
       </div>
     </div>
   );
+}
+
+CapCircle.propTypes = {
+  percentage: PropTypes.number.isRequired,
 }
 
 export default TradingCapitalStatus;

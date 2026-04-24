@@ -10,7 +10,7 @@ export default function Footer() {
           {['Terms of Service', 'Privacy Policy', 'Regulatory Disclosure', 'Cookies'].map((link) => (
             <a
               key={link}
-              href="#"
+              href="https://www.neofi.com/legal" target="_blank" rel="noopener noreferrer"
               className="text-[9px] text-gray-600 tracking-widest uppercase hover:text-gray-400 transition-colors duration-200 whitespace-nowrap"
             >
               {link}

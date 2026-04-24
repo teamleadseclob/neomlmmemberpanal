@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 function PlaceholderPage({ title }) {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
@@ -13,6 +15,10 @@ function PlaceholderPage({ title }) {
       </div>
     </div>
   );
+}
+
+PlaceholderPage.propTypes = {
+  title: PropTypes.string.isRequired,
 }
 
 export default PlaceholderPage;
