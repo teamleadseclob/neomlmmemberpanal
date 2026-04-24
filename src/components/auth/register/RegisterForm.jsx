@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useAuth } from '../../../context/useAuth'
+import { register } from '../../../config/apiService'
 import RegisterInput from './RegisterInput'
 
 const CheckIcon = () => (
@@ -9,13 +11,15 @@ const CheckIcon = () => (
   </svg>
 )
 
-export default function RegisterForm(sponsorCode) {
-  const { login } = useAuth()
+export default function RegisterForm() {
+  const [searchParams] = useSearchParams()
+  const sponsorCode = searchParams.get('ref') || ''
+  const { login: saveToken } = useAuth()
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     fullName: '',
-    referralCode: sponsorCode?.ref || '',
+    referralCode: sponsorCode,
     password: '',
     confirmPassword: '',
   })
@@ -41,11 +45,12 @@ export default function RegisterForm(sponsorCode) {
     }
     setLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200))
-      login('demo-token-' + Date.now())
+      const res = await register(formData.fullName, formData.referralCode, formData.password, formData.referralCode)
+      saveToken(res?.data?.token, res?.data?.user)
+      toast.success('Account created successfully!')
       navigate('/', { replace: true })
-    } catch {
-      setError('Registration failed. Please try again.')
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
       setLoading(false)
     }
