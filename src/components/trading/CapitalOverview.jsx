@@ -72,21 +72,15 @@ function CapitalOverview({data}) {
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-sm font-bold text-white">Referral Multiplier</h4>
-            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#CB3CFF] text-white border border-purple-500/30">
               Active
             </span>
           </div>
 
-          {/* Without Referral row
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-gray-400">Without Referral</span>
-            <span className="text-xs font-bold text-white">2X LIMIT</span>
-          </div> */}
-
           {/* With Referral row */}
           <div className="flex items-center justify-between mb-5">
             <span className="text-xs text-purple-400 font-medium">With Referral</span>
-            <span className="text-xs font-bold text-purple-300">4X LIMIT</span>
+            <span className="text-xs font-bold text-purple-300">2X LIMIT</span>
           </div>
 
           {/* Buttons */}
@@ -94,8 +88,8 @@ function CapitalOverview({data}) {
             <button
               type="button"
               className="w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-2
-                         border border-[#1e1e3a] bg-[#0a0920] text-white
-                         hover:bg-[#1a1a3e] transition-colors duration-200 cursor-pointer"
+               border border-[#1e1e3a] bg-[#0a0920] text-white
+               hover:bg-[#1a1a3e] transition-colors duration-200 cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -107,7 +101,7 @@ function CapitalOverview({data}) {
             <button
               type="button"
               className="w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-2
-                         bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] text-white
+                         bg-linear-to-r from-[#7F25FB] to-[#CB3CFF] text-white
                          hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
