@@ -26,6 +26,10 @@ export default function LoginForm() {
     setLoading(true)
     try {
       const res = await login(userId, password)
+      if (res?.data?.user?.role === 'admin') {
+        toast.error('Admin accounts are not allowed to access this portal.')
+        return
+      }
       saveToken(res?.data?.token, res?.data?.user)
       toast.success(`Welcome back, ${res?.data?.user?.name}!`)
       navigate('/', { replace: true })

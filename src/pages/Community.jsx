@@ -10,7 +10,7 @@ function Community() {
   const [activeTab, setActiveTab] = useState('Sponsor Tree');
 
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-scrreen mx-auto">
       {/* Page title */}
       <CommunityHeader />
 

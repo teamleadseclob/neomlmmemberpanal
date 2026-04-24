@@ -24,7 +24,7 @@ function SwpPurchase() {
   }, [])
 
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-screen mx-auto">
       <SwpHeader />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-8">

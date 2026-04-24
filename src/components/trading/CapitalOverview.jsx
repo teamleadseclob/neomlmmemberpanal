@@ -1,9 +1,12 @@
-function CapitalOverview() {
-  const utilized = 12450;
-  const total = 40000;
-  const percentage = Math.round((utilized / total) * 100);
-  const tradingCapital = 100;
-  const remainingCapacity = 368.82;
+import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
+
+function CapitalOverview({data}) {
+  const utilized         = data?.totalInvested ?? 0
+  const total            = data?.maxInvestmentLimit ?? 0
+  const tradingCapital   = data?.totalInvested ?? 0
+  const remainingCapacity = data?.remainingInvestment ?? 0
+  const percentage       = total > 0 ? Math.round((utilized / total) * 100) : 0
 
   return (
     <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5 md:p-6 mb-8">
@@ -25,14 +28,14 @@ function CapitalOverview() {
           <div className="flex items-end justify-between mb-1">
             <span />
             <p className="text-2xl md:text-3xl font-bold text-white">
-              ${utilized.toLocaleString()}.00
+              ${utilized}
             </p>
           </div>
 
           {/* Utilized limit + total */}
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs text-gray-400">Utilized Limit</p>
-            <p className="text-sm text-gray-500 font-normal">/ ${total.toLocaleString()}.00</p>
+            <p className="text-sm text-gray-500 font-normal">/ ${total}</p>
           </div>
 
           {/* Progress bar */}
@@ -74,11 +77,11 @@ function CapitalOverview() {
             </span>
           </div>
 
-          {/* Without Referral row */}
+          {/* Without Referral row
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs text-gray-400">Without Referral</span>
             <span className="text-xs font-bold text-white">2X LIMIT</span>
-          </div>
+          </div> */}
 
           {/* With Referral row */}
           <div className="flex items-center justify-between mb-5">
@@ -97,7 +100,9 @@ function CapitalOverview() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
               </svg>
+              <Link to="/payout" className="hover:underline">
               Withdraw Profits
+              </Link>
             </button>
             <button
               type="button"
@@ -116,6 +121,19 @@ function CapitalOverview() {
       </div>
     </div>
   );
+}
+
+CapitalOverview.propTypes = {
+  data: PropTypes.shape({
+    totalInvested: PropTypes.number,
+    maxInvestmentLimit: PropTypes.number,
+    remainingInvestment: PropTypes.number,
+    swpBalance: PropTypes.number,
+  }),
+}
+
+CapitalOverview.defaultProps = {
+  data: null,
 }
 
 export default CapitalOverview;

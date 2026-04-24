@@ -7,7 +7,7 @@ import {
 
 function ReferralHub() {
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-screen mx-auto">
       {/* Page header with title + action buttons */}
       <ReferralHeader />
 

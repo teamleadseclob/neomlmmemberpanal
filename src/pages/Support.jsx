@@ -10,7 +10,7 @@ import {
 
 function Support() {
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-screen mx-auto">
       {/* Page header */}
       <SupportHeader />
 

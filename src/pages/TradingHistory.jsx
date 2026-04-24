@@ -13,7 +13,7 @@ function TradingHistory() {
   const progressPercent = 35;
 
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-screen mx-auto">
 
       {/* ── Page Header ──────────────────────────────────────── */}
       <div className="flex items-start justify-between mb-6">

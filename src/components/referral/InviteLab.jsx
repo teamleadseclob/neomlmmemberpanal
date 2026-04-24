@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import QRCodeGenerator from './Qrcode';
+import { getReferralLink } from '../common/referralLink';
 
 function InviteLab() {
   const [copied, setCopied] = useState(false);
-  const user =localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-  const referralLink = `neofi.io/register?ref=${user?.userId || 'NEO_USER'}`;
+  const referralLink = getReferralLink();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink);

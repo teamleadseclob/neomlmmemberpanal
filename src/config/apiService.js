@@ -27,15 +27,16 @@ export const purchaseswp = async (amount) => {
   return response.data
 }
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get(`/api/swp/status`)
-//   return response.data
-// }
+export const gettradingcapital = async () => {
+  const response = await axiosConfig.get(`/api/swp/status`)
+  return response.data
+}
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get(`/api/swp/status`)
-//   return response.data
-// }
+export const getprofile = async () => {
+  const response = await axiosConfig.get(`/api/users/me`)
+  return response.data
+}
+
 // export const getswp = async () => {
 //   const response = await axiosConfig.get(`/api/swp/status`)
 //   return response.data

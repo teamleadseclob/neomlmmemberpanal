@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import Footer from '../components/Footer';
+import { getprofile } from '../config/apiService';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import dashboardSelected from '../assets/icons/dashboardselected.png';
@@ -107,8 +108,22 @@ function HeaderActions() {
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [swpBalance, setSwpBalance] = useState(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await getprofile()
+        setSwpBalance(res?.data?.swpBalance ?? 0)
+      } catch {
+        setSwpBalance(0)
+      }
+    }
+    fetchProfile()
+  }, [])
 
   const handleNavigate = () => {
     setSidebarOpen(false);
@@ -169,7 +184,7 @@ export default function Layout() {
         <button
           type="button"
           className="flex items-center gap-2.5 px-3 py-2.5 mx-2 rounded-lg text-sm text-[#FFB4AB] hover:bg-[#1a1a2e] cursor-pointer whitespace-nowrap bg-transparent border-none"
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
         >
           <img src={logoutIcon} alt="" className="w-4 h-4 object-contain flex-shrink-0" draggable="false"/>
           <span className={`lg:block ${sidebarOpen ? 'block' : 'hidden'}`}>Logout</span>
@@ -196,14 +211,60 @@ export default function Layout() {
           <HeaderActions />
         </header>
 
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <div key={useLocation().pathname} className="page-enter">
-            <Outlet />
+            <Outlet context={{ swpBalance }} />
           </div>
         </main>
         <Footer />
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm w-full h-full border-none cursor-default"
+            onClick={() => setShowLogoutModal(false)}
+            aria-label="Close modal"
+          />
+          <div
+            className="relative z-10 w-full max-w-sm mx-4 rounded-2xl p-6"
+            style={{
+              background: 'rgba(10,8,35,0.95)',
+              backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(127,37,251,0.25)',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.06) inset',
+            }}
+          >
+            <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-white text-center mb-1">Sign Out</h3>
+            <p className="text-sm text-gray-400 text-center mb-6">
+              Are you sure you want to sign out of your account?
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-300 border border-[#1e1e3a] bg-transparent hover:bg-[#1a1a2e] transition-colors duration-200 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-500/80 hover:bg-red-500 transition-colors duration-200 cursor-pointer border-none"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

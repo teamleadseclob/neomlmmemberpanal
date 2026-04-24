@@ -11,7 +11,7 @@ import {
 
 function Dashboard() {
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-screen mx-auto">
       {/* Welcome banner */}
       <WelcomeSection />
 
