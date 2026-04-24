@@ -1,3 +1,4 @@
+import React from 'react';
 const SYSTEMS = [
   { name: 'Vault Servers', status: 'Operational', color: 'text-green-400' },
   { name: 'Payout Engine', status: 'Operational', color: 'text-green-400' },

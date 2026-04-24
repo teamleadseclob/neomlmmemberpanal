@@ -1,3 +1,4 @@
+import React from 'react';
 function TierBenefitsBanner() {
   return (
     <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 px-5 py-4 mb-4 flex items-center justify-between gap-4 flex-wrap">

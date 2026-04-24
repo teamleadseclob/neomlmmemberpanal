@@ -1,3 +1,4 @@
+import React from 'react';
 function ElitePrivilege() {
   return (
     <div className="rounded-xl p-5 md:p-6 relative" style={{ background: 'linear-gradient(#020717, #020717) padding-box, linear-gradient(135deg, #CB3CFF, #7F25FB) border-box', border: '1px solid transparent' }}>

@@ -1,3 +1,4 @@
+import React from 'react';
 function AcceleratorCard() {
   return (
     <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 flex flex-col items-center text-center">

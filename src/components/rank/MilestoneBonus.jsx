@@ -1,3 +1,4 @@
+import React from 'react';
 function MilestoneBonus() {
   return (
     <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-[#3b1578] via-[#2d1462] to-[#1a0a3e] border border-purple-500/20 p-5 md:p-6">

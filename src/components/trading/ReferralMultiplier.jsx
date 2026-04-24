@@ -1,3 +1,4 @@
+import React from 'react';
 function ReferralMultiplier() {
   return (
     <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 md:p-6 h-full flex flex-col">

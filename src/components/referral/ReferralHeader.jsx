@@ -1,3 +1,4 @@
+import React from 'react';
 function ReferralHeader() {
   return (
     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">

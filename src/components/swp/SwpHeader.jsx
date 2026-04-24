@@ -1,3 +1,4 @@
+import React from 'react';
 function SwpHeader() {
   return (
     <div className="mb-6">

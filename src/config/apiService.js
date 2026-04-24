@@ -37,10 +37,21 @@ export const getprofile = async () => {
   return response.data
 }
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get(`/api/swp/status`)
+export const getdashboard = async () => {
+  const response = await axiosConfig.get(`/api/users/dashboard`)
+  return response.data
+}
+
+// export const getdashboard = async () => {
+//   const response = await axiosConfig.get(`/api/users/dashboard`)
 //   return response.data
 // }
+
+// export const getdashboard = async () => {
+//   const response = await axiosConfig.get(`/api/users/dashboard`)
+//   return response.data
+// }
+
 // export const getswp = async () => {
 //   const response = await axiosConfig.get(`/api/swp/status`)
 //   return response.data

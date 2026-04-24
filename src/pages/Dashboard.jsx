@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   WelcomeSection,
   WalletCardsGrid,
@@ -8,36 +9,40 @@ import {
   TermsSection,
   DashboardFooter,
 } from '../components/dashboard';
+import { getdashboard } from '../config/apiService';
 
 function Dashboard() {
+  const [data, setData] = useState(null)
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res = await getdashboard()
+        setData(res.data)
+      } catch {
+        setData(null)
+      }
+    }
+    fetchDashboard()
+  }, [])
+
   return (
     <div className="max-w-screen mx-auto">
-      {/* Welcome banner */}
       <WelcomeSection />
-
-      {/* Wallet cards grid */}
-      <WalletCardsGrid />
-
-      {/* Revenue chart */}
+      <WalletCardsGrid data={data} />
       <RevenueChart />
+      <TeamPerformance data={data} />
 
-      {/* Team performance metrics */}
-      <TeamPerformance />
-
-      {/* Trading Capital + Accelerator row */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
         <div className="lg:col-span-3">
-          <TradingCapitalStatus />
+          <TradingCapitalStatus data={data} />
         </div>
         <div className="lg:col-span-2">
           <AcceleratorCard />
         </div>
       </div>
 
-      {/* Terms & conditions */}
       <TermsSection />
-
-      {/* Footer */}
       <DashboardFooter />
     </div>
   );

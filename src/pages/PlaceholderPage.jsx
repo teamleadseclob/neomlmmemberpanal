@@ -1,3 +1,4 @@
+import React from 'react';
 function PlaceholderPage({ title }) {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">

@@ -1,3 +1,4 @@
+import React from 'react';
 import PlexusBackground from './bg';
 import LoginCard from '../components/auth/loginCard';
 import logo from '../assets/logo.png';

@@ -1,3 +1,4 @@
+import React from 'react';
 function RankHeader() {
   return (
     <div className="mb-6">

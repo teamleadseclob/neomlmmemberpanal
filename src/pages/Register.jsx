@@ -1,3 +1,4 @@
+import React from 'react';
 import { useSearchParams, Navigate } from 'react-router-dom'
 import PlexusBackground from './bg'
 import RegisterForm from '../components/auth/register/RegisterForm'

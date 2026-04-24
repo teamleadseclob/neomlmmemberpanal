@@ -1,3 +1,4 @@
+import React from 'react';
 const BENEFITS = [
   {
     type: 'Daily SWP ROI',

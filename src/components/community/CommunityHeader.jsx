@@ -1,3 +1,4 @@
+import React from 'react';
 function CommunityHeader() {
   return (
     <div className="mb-6">

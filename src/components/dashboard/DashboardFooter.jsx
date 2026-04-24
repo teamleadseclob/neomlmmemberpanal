@@ -1,3 +1,4 @@
+import React from 'react';
 const FOOTER_LINKS = ['Basic Terms', 'General T&Cs', 'Privacy Policy'];
 
 function DashboardFooter() {

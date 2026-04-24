@@ -1,3 +1,4 @@
+import React from 'react';
 function SupportHeader() {
   return (
     <div className="mb-6">

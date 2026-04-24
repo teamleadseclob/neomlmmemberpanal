@@ -1,3 +1,4 @@
+import React from 'react';
 import { QRCodeSVG } from 'qrcode.react'
 
 function QRCodeGenerator(referralLink) {

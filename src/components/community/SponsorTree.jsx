@@ -1,3 +1,4 @@
+import React from 'react';
 /**
  * SponsorTree – 3-level paginated tree with infinite children.
  *

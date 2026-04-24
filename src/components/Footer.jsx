@@ -1,3 +1,4 @@
+import React from 'react';
 export default function Footer() {
   return (
     <footer className="border-t border-[#1e1e3a] mt-auto">

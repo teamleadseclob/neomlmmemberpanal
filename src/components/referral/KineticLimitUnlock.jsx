@@ -1,3 +1,4 @@
+import React from 'react';
 function KineticLimitUnlock() {
   const current = 12;
   const target = 20;

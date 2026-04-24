@@ -1,3 +1,4 @@
+import React from 'react';
 const REQUIREMENTS = [
   {
     label: 'Total Team Volume',

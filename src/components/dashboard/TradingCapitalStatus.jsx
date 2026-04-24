@@ -1,3 +1,4 @@
+import React from 'react';
 function CapCircle({ percentage }) {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;

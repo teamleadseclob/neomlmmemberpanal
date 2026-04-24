@@ -1,3 +1,6 @@
+import React from 'react';
+import { Link } from "react-router-dom";
+
 function WelcomeSection() {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -19,7 +22,9 @@ function WelcomeSection() {
                    whitespace-nowrap text-center align-middle"
         style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: '13px', lineHeight: '24px', letterSpacing: '0px' }}
       >
+        <Link to="/trading-capital" className="flex items-center gap-2">
         Quick Deposit
+        </Link>
       </button>
     </div>
   );

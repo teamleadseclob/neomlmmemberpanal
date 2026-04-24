@@ -1,3 +1,4 @@
+import React from 'react';
 const FAQ_ITEMS = [
   {
     title: 'Payout Processing Times',

@@ -1,3 +1,4 @@
+import React from 'react';
 import ReferralStatCard from './ReferralStatCard';
 
 const STAT_ITEMS = [

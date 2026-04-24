@@ -1,3 +1,4 @@
+import React from 'react';
 const TERMS_LIST = [
   'Users must be at least 18 years of age to participate in the NeoFi ecosystem.',
   'The platform provides advanced market observatory tools; users are solely responsible for their financial decisions.',

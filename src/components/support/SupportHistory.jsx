@@ -1,3 +1,4 @@
+import React from 'react';
 const TICKETS = [
   {
     id: '#WS-9281',

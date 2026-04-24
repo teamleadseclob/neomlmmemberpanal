@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types'
 import transactionsIcon from '../../assets/dashboard/transactions.png'
 import rewardIcon from '../../assets/dashboard/reward.png'
