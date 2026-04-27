@@ -6,6 +6,18 @@ const BENEFIT_ROWS = [
   { type: 'Min SWP Volume',     key: 'swpVolume',  format: (v) => `$${Number(v).toLocaleString()}` },
 ];
 
+function getHeaderClass(isCurrent, achieved) {
+  if (isCurrent) return 'text-purple-400';
+  if (achieved)  return 'text-green-400';
+  return 'text-gray-500';
+}
+
+function getCellClass(isCurrent, achieved) {
+  if (isCurrent) return 'text-white font-bold text-sm';
+  if (achieved)  return 'text-gray-400';
+  return 'text-gray-500';
+}
+
 function BenefitComparison({ ranks, currentRank }) {
   if (!ranks || ranks.length === 0) {
     return (
@@ -39,8 +51,7 @@ function BenefitComparison({ ranks, currentRank }) {
               {rankCells.map((r) => (
                 <th
                   key={r.name}
-                  className={`px-4 py-3.5 text-[10px] uppercase tracking-widest font-semibold
-                    ${r.isCurrent ? 'text-purple-400' : r.achieved ? 'text-green-400' : 'text-gray-500'}`}
+                  className={`px-4 py-3.5 text-[10px] uppercase tracking-widest font-semibold ${getHeaderClass(r.isCurrent, r.achieved)}`}
                 >
                   {r.name}
                   {r.isCurrent && (
@@ -59,8 +70,7 @@ function BenefitComparison({ ranks, currentRank }) {
                 {rankCells.map((r) => (
                   <td
                     key={r.name}
-                    className={`px-4 py-4 text-xs
-                      ${r.isCurrent ? 'text-white font-bold text-sm' : r.achieved ? 'text-gray-400' : 'text-gray-500'}`}
+                    className={`px-4 py-4 text-xs ${getCellClass(r.isCurrent, r.achieved)}`}
                   >
                     {row.format(r[row.key])}
                   </td>
