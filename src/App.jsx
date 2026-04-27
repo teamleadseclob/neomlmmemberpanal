@@ -13,6 +13,7 @@ const TradingCapital = lazy(() => import('./pages/TradingCapital'))
 const RewardHistory  = lazy(() => import('./pages/RewardHistory'))
 const TradingHistory = lazy(() => import('./pages/TradingHistory'))
 const RankReport     = lazy(() => import('./pages/RankReport'))
+const Payout         = lazy(() => import('./pages/Payout'))
 const Support        = lazy(() => import('./pages/Support'))
 const Services       = lazy(() => import('./pages/Services'))
 const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'))
@@ -53,7 +54,7 @@ function App() {
                 <Route path="trading-capital/reward-history"  element={<RewardHistory />} />
                 <Route path="trading-capital/trading-history" element={<TradingHistory />} />
                 <Route path="rank-report"                 element={<RankReport />} />
-                <Route path="payout"                      element={<PlaceholderPage title="Payout" />} />
+                <Route path="payout"                      element={<Payout />} />
                 <Route path="services"                    element={<Services />} />
                 <Route path="reports"                     element={<PlaceholderPage title="Reports" />} />
                 <Route path="support"                     element={<Support />} />

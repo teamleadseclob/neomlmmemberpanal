@@ -1,0 +1,160 @@
+import { useState } from 'react';
+import PropTypes from 'prop-types';
+
+export default function WithdrawFunds({ maxAmount, onSubmit }) {
+  const [amount, setAmount] = useState('');
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+
+  const handleOtpChange = (index, value) => {
+    if (value.length > 1) return;
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      const next = document.getElementById(`payout-otp-${index + 1}`);
+      if (next) next.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prev = document.getElementById(`payout-otp-${index - 1}`);
+      if (prev) prev.focus();
+    }
+  };
+
+  const handleSetMax = () => {
+    setAmount(maxAmount.toFixed(2));
+  };
+
+  const handleSubmit = () => {
+    if (onSubmit) {
+      onSubmit({
+        amount: parseFloat(amount) || 0,
+        otp: otp.join(''),
+        method: 'USDT-BEP20',
+      });
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6">
+      <h2 className="text-lg font-bold text-white mb-5">Withdraw Funds</h2>
+
+      {/* Amount input */}
+      <div className="mb-4">
+        <p className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-2.5">
+          Amount to Withdraw (USD)
+        </p>
+        <div
+          className="flex items-center gap-2 rounded-xl px-4 py-3.5"
+          style={{
+            background: 'rgba(10,8,35,0.8)',
+            border: '1px solid rgba(30,30,58,0.8)',
+          }}
+        >
+          <span className="text-gray-500 text-lg font-semibold">$</span>
+          <input
+            id="payout-amount-input"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="0.00"
+            className="flex-1 bg-transparent border-none outline-none text-white text-lg font-semibold placeholder:text-gray-600"
+            min="0"
+            step="0.01"
+          />
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-[10px] text-gray-500">Min: $100.00</p>
+          <button
+            type="button"
+            onClick={handleSetMax}
+            className="text-[10px] font-bold text-purple-400 hover:text-purple-300 transition-colors bg-transparent border-none cursor-pointer"
+          >
+            Withdraw Max
+          </button>
+        </div>
+      </div>
+
+      {/* Withdrawal method — Only USDT-BEP20 */}
+      <div className="mb-5">
+        <p className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-2.5">
+          Withdrawal Method
+        </p>
+        <div
+          className="flex items-center gap-3 rounded-xl px-4 py-3.5 cursor-pointer"
+          style={{
+            background: 'rgba(10,8,35,0.8)',
+            border: '1px solid rgba(127,37,251,0.35)',
+          }}
+        >
+          {/* Selected radio */}
+          <div className="w-4 h-4 rounded-full border-2 border-purple-500 flex items-center justify-center flex-shrink-0">
+            <div className="w-2 h-2 rounded-full bg-purple-500" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-white">USDT-BEP20</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">Processing: 15–30 mins</p>
+          </div>
+          {/* Tether icon */}
+          <div className="w-8 h-8 rounded-lg bg-[#26A17B]/15 flex items-center justify-center flex-shrink-0">
+            <svg className="w-4 h-4 text-[#26A17B]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" opacity="0.15"/>
+              <path d="M13.4 10.5v-1.9h3.7V6H6.9v2.6h3.7v1.9c-3.3.2-5.8 1-5.8 2 0 1.2 3 2.1 6.7 2.1s6.7-.9 6.7-2.1c0-1-2.5-1.8-5.8-2zm-.9 3.3c-3 0-5.4-.6-5.4-1.3s2.4-1.3 5.4-1.3 5.4.6 5.4 1.3-2.4 1.3-5.4 1.3z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* OTP Verification */}
+      <div className="mb-6">
+        <p className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-1.5">
+          Confirm Identity
+        </p>
+        <p className="text-[10px] text-gray-500 mb-3">
+          A 6-digit OTP has been sent to your registered email.
+        </p>
+        <div className="flex gap-2.5">
+          {otp.map((digit, i) => (
+            <input
+              key={i}
+              id={`payout-otp-${i}`}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleOtpChange(i, e.target.value)}
+              onKeyDown={(e) => handleOtpKeyDown(i, e)}
+              className="w-11 h-12 rounded-lg text-center text-white font-bold text-lg outline-none transition-all duration-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
+              style={{
+                background: 'rgba(10,8,35,0.8)',
+                border: '1px solid rgba(30,30,58,0.8)',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Submit button */}
+      <button
+        id="payout-submit-btn"
+        type="button"
+        onClick={handleSubmit}
+        className="w-full py-3.5 rounded-xl text-sm font-bold text-white border-none cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
+        style={{
+          background: 'linear-gradient(135deg, #7F25FB 0%, #CB3CFF 100%)',
+        }}
+      >
+        Submit Withdrawal Request
+      </button>
+    </div>
+  );
+}
+
+WithdrawFunds.propTypes = {
+  maxAmount: PropTypes.number.isRequired,
+  onSubmit: PropTypes.func,
+};

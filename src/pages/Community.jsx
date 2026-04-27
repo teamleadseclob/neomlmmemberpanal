@@ -4,24 +4,19 @@ import {
   CommunityStats,
   TreeControls,
   SponsorTree,
+  ReferralsTable,
 } from '../components/community';
 
 function Community() {
   const [activeTab, setActiveTab] = useState('Sponsor Tree');
 
   return (
-    <div className="max-w-scrreen mx-auto">
-      {/* Page title */}
+    <div className="max-w-screen mx-auto">
       <CommunityHeader />
-
-      {/* Stat cards row */}
       <CommunityStats />
-
-      {/* Legend + tabs */}
       <TreeControls activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Tree visualization */}
-      <SponsorTree />
+      {activeTab === 'Referrals' ? <ReferralsTable /> : <SponsorTree />}
     </div>
   );
 }

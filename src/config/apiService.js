@@ -42,13 +42,48 @@ export const getdashboard = async () => {
   return response.data
 }
 
-// export const getdashboard = async () => {
-//   const response = await axiosConfig.get(`/api/users/dashboard`)
+export const getnetworkstats = async (userId) => {
+  const response = await axiosConfig.get(`/api/network/stats/${userId}`)
+  return response.data
+}
+
+export const addinvestments = async (amount) => {
+  const response = await axiosConfig.post(`/api/investment`, { amount })
+  return response.data
+}
+
+export const getreferals = async () => {
+  const response = await axiosConfig.get('/api/users/referrals')
+  return response.data
+}
+
+export const getrankstatus = async () => {
+  const response = await axiosConfig.get('/api/rank/status')
+  return response.data
+}
+
+// export const getre = async () => {
+//   const response = await axiosConfig.get('/api/u')
 //   return response.data
 // }
 
-// export const getdashboard = async () => {
-//   const response = await axiosConfig.get(`/api/users/dashboard`)
+// // export const getswp = async () => {
+//   const response = await axiosConfig.get(`/api/swp/status`)
+//   return response.data
+// }
+
+// export const getswp = async () => {
+//   const response = await axiosConfig.get(`/api/swp/status`)
+//   return response.data
+// }
+
+// export const getswp = async () => {
+//   const response = await axiosConfig.get(`/api/swp/status`)
+//   return response.data
+// }
+
+// export const getswp = async () => {
+//   const response = await axiosConfig.get(`/api/swp/status`)
 //   return response.data
 // }
 

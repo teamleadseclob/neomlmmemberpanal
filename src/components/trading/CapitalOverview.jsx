@@ -1,8 +1,10 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import AddInvestmentModal from './AddInvestmentModal';
 
-function CapitalOverview({data}) {
+function CapitalOverview({data, onRefresh}) {
+  const [showModal, setShowModal] = useState(false);
   const utilized         = data?.totalInvested ?? 0
   const total            = data?.maxInvestmentLimit ?? 0
   const tradingCapital   = data?.totalInvested ?? 0
@@ -101,6 +103,7 @@ function CapitalOverview({data}) {
             </button>
             <button
               type="button"
+              onClick={() => setShowModal(true)}
               className="w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-2
                          bg-linear-to-r from-[#7F25FB] to-[#CB3CFF] text-white
                          hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none"
@@ -114,6 +117,13 @@ function CapitalOverview({data}) {
         </div>
 
       </div>
+
+      {showModal && (
+        <AddInvestmentModal
+          onClose={() => setShowModal(false)}
+          onSuccess={onRefresh}
+        />
+      )}
     </div>
   );
 }
@@ -125,10 +135,12 @@ CapitalOverview.propTypes = {
     remainingInvestment: PropTypes.number,
     swpBalance: PropTypes.number,
   }),
+  onRefresh: PropTypes.func,
 }
 
 CapitalOverview.defaultProps = {
   data: null,
+  onRefresh: null,
 }
 
 export default CapitalOverview;

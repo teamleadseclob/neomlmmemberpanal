@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import {
   RankHeader,
   TopStatsRow,
@@ -8,32 +8,39 @@ import {
   MilestoneBonus,
   BenefitComparison,
 } from '../components/rank';
+import { getrankstatus } from '../config/apiService';
 
 function RankReport() {
+  const [rankData, setRankData] = useState(null);
+
+  useEffect(() => {
+    getrankstatus()
+      .then((res) => setRankData(res.data))
+      .catch(() => {});
+  }, []);
+
+  // next unachieved rank
+  const nextRank = rankData?.ranks?.find((r) => !r.isAchieved) ?? null;
+  // achieved ranks sorted latest first
+  const achievedRanks = rankData?.ranks?.filter((r) => r.isAchieved).reverse() ?? [];
+
   return (
     <div className="max-w-screen mx-auto">
-      {/* Page header */}
       <RankHeader />
+      <TopStatsRow currentRank={rankData?.currentRank} />
+      <TierBenefitsBanner nextRank={nextRank} />
 
-      {/* Top stats: Achievement, Team Size, Ranking */}
-      <TopStatsRow />
-
-      {/* Platinum tier benefits banner */}
-      <TierBenefitsBanner />
-
-      {/* Middle row: Requirements + Achievement History + Milestone */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
         <div className="lg:col-span-3">
-          <PlatinumRequirements />
+          <PlatinumRequirements nextRank={nextRank} />
         </div>
         <div className="lg:col-span-2 flex flex-col gap-4">
-          <AchievementHistory />
-          <MilestoneBonus />
+          <AchievementHistory achievedRanks={achievedRanks} />
+          <MilestoneBonus nextRank={nextRank} />
         </div>
       </div>
 
-      {/* Rank benefit comparison table */}
-      <BenefitComparison />
+      <BenefitComparison ranks={rankData?.ranks ?? []} currentRank={rankData?.currentRank} />
     </div>
   );
 }

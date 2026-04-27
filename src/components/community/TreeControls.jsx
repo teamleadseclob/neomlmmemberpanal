@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 
 function TreeControls({ activeTab, onTabChange }) {
-  const tabs = ['Sponsor Tree', 'Tree View', 'Downline', 'Referrals'];
+  const tabs = ['Sponsor Tree', 'Referrals'];
 
   const legendItems = [
     { color: 'bg-green-500', label: 'Active Nodes' },
@@ -11,20 +11,7 @@ function TreeControls({ activeTab, onTabChange }) {
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-      {/* Ecosystem Legend */}
-      <div className="flex items-center gap-4 px-4 py-2.5 rounded-lg border border-[#1e1e3a] ">
-        <span className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-          Ecosystem Legend
-        </span>
-        {legendItems.map((item) => (
-          <div key={item.label} className="flex items-center gap-1.5">
-            <span className={`w-2.5 h-2.5 rounded-full ${item.color} flex-shrink-0`} />
-            <span className="text-[11px] text-gray-400">{item.label}</span>
-          </div>
-        ))}
-      </div>
-
+    <div className="flex items-center justify-end gap-4 mb-6">
       {/* Tab bar */}
       <div className="flex items-center gap-1 p-1 rounded-lg border border-[#1e1e3a] ">
         {tabs.map((tab) => (
