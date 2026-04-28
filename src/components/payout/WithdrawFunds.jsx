@@ -3,27 +3,6 @@ import PropTypes from 'prop-types';
 
 export default function WithdrawFunds({ maxAmount, onSubmit }) {
   const [amount, setAmount] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-
-  const handleOtpChange = (index, value) => {
-    if (value.length > 1) return;
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      const next = document.getElementById(`payout-otp-${index + 1}`);
-      if (next) next.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      const prev = document.getElementById(`payout-otp-${index - 1}`);
-      if (prev) prev.focus();
-    }
-  };
 
   const handleSetMax = () => {
     setAmount(maxAmount.toFixed(2));
@@ -32,8 +11,7 @@ export default function WithdrawFunds({ maxAmount, onSubmit }) {
   const handleSubmit = () => {
     if (onSubmit) {
       onSubmit({
-        amount: parseFloat(amount) || 0,
-        otp: otp.join(''),
+        amount: Number.parseFloat(amount) || 0,
         method: 'USDT-BEP20',
       });
     }
@@ -109,41 +87,12 @@ export default function WithdrawFunds({ maxAmount, onSubmit }) {
         </div>
       </div>
 
-      {/* OTP Verification */}
-      <div className="mb-6">
-        <p className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-1.5">
-          Confirm Identity
-        </p>
-        <p className="text-[10px] text-gray-500 mb-3">
-          A 6-digit OTP has been sent to your registered email.
-        </p>
-        <div className="flex gap-2.5">
-          {otp.map((digit, i) => (
-            <input
-              key={i}
-              id={`payout-otp-${i}`}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleOtpChange(i, e.target.value)}
-              onKeyDown={(e) => handleOtpKeyDown(i, e)}
-              className="w-11 h-12 rounded-lg text-center text-white font-bold text-lg outline-none transition-all duration-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
-              style={{
-                background: 'rgba(10,8,35,0.8)',
-                border: '1px solid rgba(30,30,58,0.8)',
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
       {/* Submit button */}
       <button
         id="payout-submit-btn"
         type="button"
         onClick={handleSubmit}
-        className="w-full py-3.5 rounded-xl text-sm font-bold text-white border-none cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
+        className="w-full py-3.5 mt-3.5 rounded-xl text-sm font-bold text-white border-none cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
         style={{
           background: 'linear-gradient(135deg, #7F25FB 0%, #CB3CFF 100%)',
         }}

@@ -35,20 +35,10 @@ function CommunityStats() {
         </div>
       </div>
 
-      {/* Community Volume */}
-      <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
-        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Community Volume</p>
-        <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-white">$124.5k</span>
-          <span className="text-xs text-gray-500">USDT</span>
-        </div>
-      </div>
-
       {/* Recent Activity */}
-      <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
+      {/* <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Recent Activity</p>
         <div className="flex items-center gap-0">
-          {/* Stacked avatars */}
           {['#7F25FB', '#D946EF', '#CB3CFF'].map((color, i) => (
             <div
               key={`avatar-${color}`}
@@ -65,7 +55,7 @@ function CommunityStats() {
             +13
           </span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

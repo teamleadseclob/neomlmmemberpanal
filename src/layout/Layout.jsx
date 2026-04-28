@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
@@ -125,6 +125,13 @@ export default function Layout() {
     fetchProfile()
   }, [])
 
+  const mainRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   const handleNavigate = () => {
     setSidebarOpen(false);
   };
@@ -211,7 +218,7 @@ export default function Layout() {
           <HeaderActions />
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6">
           <div key={useLocation().pathname} className="page-enter">
             <Outlet context={{ swpBalance }} />
           </div>

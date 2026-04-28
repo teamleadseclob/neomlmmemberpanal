@@ -8,7 +8,7 @@ function QRCodeGenerator(referralLink) {
       <div className="p-3 rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]">
         <QRCodeSVG
           value={referralLink.referralLink}
-          size={140}
+          size={200}
           bgColor="#12122a"
           fgColor="#E8E8F0"
           level="H"

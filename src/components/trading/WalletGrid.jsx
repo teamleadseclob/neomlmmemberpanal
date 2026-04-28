@@ -1,79 +1,81 @@
-import React from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import rewardImg    from '../../assets/capital/reward.png';
-import profitImg    from '../../assets/capital/profit.png';
-import multiImg     from '../../assets/capital/multylevekl.png';
-import swpImg       from '../../assets/capital/swp.png';
-import incomeImg    from '../../assets/capital/income.png';
-
-const WALLETS = [
-  {
-    id: 'main',
-    label: 'Main Wallet',
-    amount: 12450,
-    badge: { text: 'LIVE', type: 'live' },
-    hasWithdraw: true,
-    icon: <img src={incomeImg} alt="main" className="w-5 h-5 object-contain" />,
-    iconColor: 'bg-purple-500/20',
-  },
-  {
-    id: 'reward',
-    label: 'Reward Wallet Total',
-    amount: 3120.45,
-    cutOff: 20.45,
-    walletAmount: 20.45,
-    hasViewHistory: true,
-    historyRoute: '/trading-capital/reward-history',
-    icon: <img src={rewardImg} alt="reward" className="w-5 h-5 object-contain" />,
-    iconColor: 'bg-green-500/20',
-  },
-  {
-    id: 'profit',
-    label: 'Trading Profit',
-    amount: 842,
-    badge: { text: '+12% Monthly', type: 'positive' },
-    hasViewHistory: true,
-    historyRoute: '/trading-capital/trading-history',
-    icon: <img src={profitImg} alt="profit" className="w-5 h-5 object-contain" />,
-    iconColor: 'bg-blue-500/20',
-  },
-  {
-    id: 'multilevel',
-    label: 'Multilevel Rewards',
-    amount: 1950,
-    cutOff: 20.45,
-    walletAmount: 20.45,
-    icon: <img src={multiImg} alt="multilevel" className="w-5 h-5 object-contain" />,
-    iconColor: 'bg-purple-500/20',
-  },
-  {
-    id: 'cashback',
-    label: 'SWP Cashback',
-    amount: 420,
-    cutOff: 20.45,
-    walletAmount: 20.45,
-    icon: <img src={swpImg} alt="cashback" className="w-5 h-5 object-contain" />,
-    iconColor: 'bg-green-500/20',
-  },
-  {
-    id: 'total',
-    label: 'Total Income',
-    amount: 18782.55,
-    cutOff: 20.45,
-    walletAmount: 20.45,
-    badge: { text: 'NOTICE', type: 'notice' },
-    notice: '5% admin charge on transfers',
-    icon: <img src={incomeImg} alt="total" className="w-5 h-5 object-contain" />,
-    iconColor: 'bg-orange-500/20',
-  },
-];
+import { getbalence } from '../../config/apiService';
+import rewardImg from '../../assets/capital/reward.png';
+import profitImg  from '../../assets/capital/profit.png';
+import multiImg   from '../../assets/capital/multylevekl.png';
+import swpImg     from '../../assets/capital/swp.png';
+import incomeImg  from '../../assets/capital/income.png';
 
 const BADGE_STYLES = {
-  live: 'bg-green-500/20 text-green-400 border-green-500/30',
+  live:     'bg-green-500/20 text-green-400 border-green-500/30',
   positive: 'bg-green-500/20 text-green-400 border-green-500/30',
-  notice: 'bg-red-500/20 text-red-400 border-red-500/30',
+  notice:   'bg-red-500/20 text-red-400 border-red-500/30',
 };
+
+function buildWallets(data) {
+  return [
+    {
+      id:          'main',
+      label:       'Main Wallet',
+      amount:      data?.walletBalance ?? 0,
+      badge:       { text: 'LIVE', type: 'live' },
+      hasWithdraw: true,
+      icon:        <img src={incomeImg} alt="main" className="w-5 h-5 object-contain" />,
+    },
+    {
+      id:             'reward',
+      label:          'Reward Wallet Total',
+      amount:         data?.roiAndMlrCombined?.gross ?? 0,
+      cutOff:         data?.roiAndMlrCombined?.cutoff ?? 0,
+      walletAmount:   data?.roiAndMlrCombined?.net ?? 0,
+      hasViewHistory: true,
+      historyRoute:   '/trading-capital/reward-history',
+      icon:           <img src={rewardImg} alt="reward" className="w-5 h-5 object-contain" />,
+    },
+    {
+      id:             'profit',
+      label:          'Trading Profit',
+      amount:         data?.roi?.gross ?? 0,
+      cutOff:         data?.roi?.cutoff ?? 0,
+      walletAmount:   data?.roi?.net ?? 0,
+      hasViewHistory: true,
+      historyRoute:   '/trading-capital/trading-history',
+      icon:           <img src={profitImg} alt="profit" className="w-5 h-5 object-contain" />,
+    },
+    {
+      id:             'multilevel',
+      label:          'Multilevel Rewards',
+      amount:         data?.mlr?.gross ?? 0,
+      cutOff:         data?.mlr?.cutoff ?? 0,
+      walletAmount:   data?.mlr?.net ?? 0,
+      hasViewHistory: true,
+      historyRoute:   '/trading-capital/multilevel-history',
+      icon:           <img src={multiImg} alt="multilevel" className="w-5 h-5 object-contain" />,
+    },
+    {
+      id:             'cashback',
+      label:          'SWP Cashback',
+      amount:         data?.referral?.gross ?? 0,
+      cutOff:         data?.referral?.cutoff ?? 0,
+      walletAmount:   data?.referral?.net ?? 0,
+      hasViewHistory: true,
+      historyRoute:   '/trading-capital/referral-commission-history',
+      icon:           <img src={swpImg} alt="cashback" className="w-5 h-5 object-contain" />,
+    },
+    {
+      id:           'total',
+      label:        'Total Income',
+      amount:       data?.totalEarnings?.gross ?? 0,
+      cutOff:       data?.totalEarnings?.cutoff ?? 0,
+      walletAmount: data?.totalEarnings?.net ?? 0,
+      badge:        { text: 'NOTICE', type: 'notice' },
+      notice:       '5% admin charge on transfers',
+      icon:         <img src={incomeImg} alt="total" className="w-5 h-5 object-contain" />,
+    },
+  ];
+}
 
 function WalletItem({ wallet }) {
   const navigate = useNavigate();
@@ -82,7 +84,7 @@ function WalletItem({ wallet }) {
     <div className="group relative rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-4 md:p-5 transition-all duration-200 hover:border-purple-500/30 overflow-hidden">
       {/* Top row: icon + badge */}
       <div className="flex items-start justify-between mb-3">
-        <div className={`w-9 h-9 rounded-sm flex items-center justify-center flex-shrink-0 bg-[#A6E6FF1A]`}>
+        <div className="w-9 h-9 rounded-sm flex items-center justify-center flex-shrink-0 bg-[#A6E6FF1A]">
           {wallet.icon}
         </div>
         {wallet.badge && (
@@ -105,8 +107,8 @@ function WalletItem({ wallet }) {
         ${wallet.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </p>
 
-      {/* Withdraw button OR Cut off / Wallet Amount */}
-      {wallet.hasWithdraw ? (
+      {/* Withdraw button */}
+      {wallet.hasWithdraw && (
         <button
           type="button"
           className="w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide
@@ -115,8 +117,10 @@ function WalletItem({ wallet }) {
         >
           WITHDRAW
         </button>
-      ) : null}
-      {!wallet.hasWithdraw && wallet.cutOff !== undefined ? (
+      )}
+
+      {/* Cut off / Wallet Amount */}
+      {!wallet.hasWithdraw && wallet.cutOff !== undefined && (
         <div className="flex items-center justify-between pt-2 border-t border-[#1e1e3a]">
           <div>
             <p className="text-[10px] text-gray-500 mb-0.5">Cut off</p>
@@ -127,9 +131,9 @@ function WalletItem({ wallet }) {
             <p className="text-sm font-semibold text-white">${wallet.walletAmount.toFixed(2)}</p>
           </div>
         </div>
-      ) : null}
+      )}
 
-      {/* Hover: View History button */}
+      {/* Hover: View History */}
       {wallet.hasViewHistory && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#0a0920]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
           <button
@@ -152,28 +156,38 @@ function WalletItem({ wallet }) {
 
 WalletItem.propTypes = {
   wallet: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    amount: PropTypes.number.isRequired,
-    badge: PropTypes.shape({
-      text: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired,
-    }),
-    notice: PropTypes.string,
-    hasWithdraw: PropTypes.bool,
+    id:             PropTypes.string.isRequired,
+    label:          PropTypes.string.isRequired,
+    amount:         PropTypes.number.isRequired,
+    badge:          PropTypes.shape({ text: PropTypes.string.isRequired, type: PropTypes.string.isRequired }),
+    notice:         PropTypes.string,
+    hasWithdraw:    PropTypes.bool,
     hasViewHistory: PropTypes.bool,
-    historyRoute: PropTypes.string,
-    cutOff: PropTypes.number,
-    walletAmount: PropTypes.number,
-    icon: PropTypes.node.isRequired,
-    iconColor: PropTypes.string.isRequired,
+    historyRoute:   PropTypes.string,
+    cutOff:         PropTypes.number,
+    walletAmount:   PropTypes.number,
+    icon:           PropTypes.node.isRequired,
   }).isRequired,
 };
 
 function WalletGrid() {
+  const [data, setData] = useState(null);
+
+  const fetchBalance = useCallback(async () => {
+    try {
+      const res = await getbalence();
+      setData(res.data);
+    } catch {
+      setData(null);
+    }
+  }, []);
+
+  useEffect(() => { fetchBalance(); }, [fetchBalance]);
+
+  const wallets = buildWallets(data);
+
   return (
     <div className="mb-6">
-      {/* Section header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-white">Wallets</h2>
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0d0b2e]/80 text-gray-300 border border-[#1e1e3a]">
@@ -184,9 +198,8 @@ function WalletGrid() {
         </span>
       </div>
 
-      {/* Wallet cards grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {WALLETS.map((wallet) => (
+        {wallets.map((wallet) => (
           <WalletItem key={wallet.id} wallet={wallet} />
         ))}
       </div>

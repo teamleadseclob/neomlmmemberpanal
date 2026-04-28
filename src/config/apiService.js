@@ -62,30 +62,30 @@ export const getrankstatus = async () => {
   return response.data
 }
 
-// export const getre = async () => {
-//   const response = await axiosConfig.get('/api/u')
-//   return response.data
-// }
+export const getbalence = async () => {
+  const response = await axiosConfig.get('/api/investment/trading-capital')
+  return response.data
+}
 
-// // export const getswp = async () => {
-//   const response = await axiosConfig.get(`/api/swp/status`)
-//   return response.data
-// }
+export const getcombinedhistory = async () => {
+  const response = await axiosConfig.get('/api/roi/combined-history')
+  return response.data
+}
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get(`/api/swp/status`)
-//   return response.data
-// }
+export const getroihistory = async () => {
+  const response = await axiosConfig.get('/api/roi/history')
+  return response.data
+}
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get(`/api/swp/status`)
-//   return response.data
-// }
+export const getmultylevelhistory = async () => {
+  const response = await axiosConfig.get('/api/multilevel-rewards/history')
+  return response.data
+}
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get(`/api/swp/status`)
-//   return response.data
-// }
+export const getreferalhistory = async () => {
+  const response = await axiosConfig.get('/api/swp/commissions')
+  return response.data
+}
 
 // export const getswp = async () => {
 //   const response = await axiosConfig.get(`/api/swp/status`)

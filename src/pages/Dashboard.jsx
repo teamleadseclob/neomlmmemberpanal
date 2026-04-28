@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   WelcomeSection,
   WalletCardsGrid,
@@ -9,22 +9,23 @@ import {
   TermsSection,
   DashboardFooter,
 } from '../components/dashboard';
-import { getdashboard } from '../config/apiService';
+import { getdashboard, gettradingcapital } from '../config/apiService';
 
 function Dashboard() {
-  const [data, setData] = useState(null)
+  const [data, setData]               = useState(null);
+  const [capitalData, setCapitalData]  = useState(null);
 
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const res = await getdashboard()
-        setData(res.data)
-      } catch {
-        setData(null)
-      }
+  const fetchAll = useCallback(async () => {
+    try {
+      const [dash, cap] = await Promise.all([getdashboard(), gettradingcapital()]);
+      setData(dash.data);
+      setCapitalData(cap.data);
+    } catch {
+      setData(null);
     }
-    fetchDashboard()
-  }, [])
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   return (
     <div className="max-w-screen mx-auto">
@@ -35,7 +36,7 @@ function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
         <div className="lg:col-span-3">
-          <TradingCapitalStatus data={data} />
+          <TradingCapitalStatus data={capitalData} />
         </div>
         <div className="lg:col-span-2">
           <AcceleratorCard />

@@ -13,7 +13,7 @@ function InviteLab() {
   };
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#51425333] p-5 md:p-6">
+    <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5 md:p-6">
       {/* Header */}
       <div className="flex items-center gap-2.5 mb-5">
         <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
@@ -62,12 +62,10 @@ function InviteLab() {
           </div>
         </div>
 
-        {/* Right: QR code */}
         <div className="flex flex-col items-center justify-center">
-          <div className="w-35 h-40 rounded-xl  p-3 flex flex-col items-center justify-center ">
-              <QRCodeGenerator referralLink={referralLink} />
+          <div className="w-56 h-56 rounded-xl p-3 flex flex-col items-center justify-center">
+            <QRCodeGenerator referralLink={referralLink} />
           </div>
-          {/* <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-2.5 font-medium">Scan to Join</p> */}
         </div>
       </div>
     </div>

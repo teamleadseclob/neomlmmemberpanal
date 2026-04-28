@@ -8,14 +8,14 @@ import {
 
 /* ── Sample data (replace with API data) ─────────────────────────── */
 const PENDING = [
-  { id: '#TRX-88210', amount: 1250.00, timeAgo: '2h ago' },
+  { id: '#TRX-88210', amount: 1250, timeAgo: '2h ago' },
 ];
 
 const HISTORY = [
-  { id: 1, date: 'Oct 24, 2023', time: '14:22 PM', txid: '...88210', amount: 1250.00, method: 'USDT', status: 'Pending' },
-  { id: 2, date: 'Oct 20, 2023', time: '09:10 AM', txid: '...77391', amount: 4000.00, method: 'USDT', status: 'Success' },
-  { id: 3, date: 'Oct 15, 2023', time: '18:45 PM', txid: '...55281', amount: 800.00,  method: 'USDT', status: 'Pending' },
-  { id: 4, date: 'Oct 02, 2023', time: '11:05 AM', txid: '...22194', amount: 2100.00, method: 'USDT', status: 'Success' },
+  { id: 1, date: 'Oct 24, 2023', time: '14:22 PM', txid: '...88210', amount: 1250, method: 'USDT', status: 'Pending' },
+  { id: 2, date: 'Oct 20, 2023', time: '09:10 AM', txid: '...77391', amount: 4000, method: 'USDT', status: 'Success' },
+  { id: 3, date: 'Oct 15, 2023', time: '18:45 PM', txid: '...55281', amount: 800,  method: 'USDT', status: 'Pending' },
+  { id: 4, date: 'Oct 02, 2023', time: '11:05 AM', txid: '...22194', amount: 2100, method: 'USDT', status: 'Success' },
 ];
 
 export default function Payout() {
