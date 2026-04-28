@@ -45,7 +45,7 @@ function WalletCard({ iconType, label, amount, isHighlighted = false }) {
       <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label}</p>
       <p className={`text-3xl font-bold mt-0.5 transition-all duration-200
            'text-white group-hover:bg-linear-to-r group-hover:from-[#CB3CFF] group-hover:to-[#7F25FB] group-hover:bg-clip-text group-hover:text-transparent`}>
-        <AnimatedAmount value={typeof amount === 'number' ? amount : parseFloat(String(amount).replace(/[^0-9.]/g, '')) || 0} className="" />
+        <AnimatedAmount value={typeof amount === 'number' ? amount : Number.parseFloat(String(amount).replaceAll(/[^0-9.]/g, '')) || 0} className="" />
       </p>
     </div>
   );
