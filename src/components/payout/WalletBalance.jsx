@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
+import AnimatedAmount from '../common/AnimatedAmount';
 
 export default function WalletBalance({ balance, availableForWithdrawal, totalPaidOut }) {
-  const dollars = Math.floor(balance);
-  const cents = ((balance % 1) * 100).toFixed(0).padStart(2, '0');
-
   return (
     <div
       className="rounded-xl p-5 md:p-6 relative overflow-hidden"
@@ -12,7 +10,6 @@ export default function WalletBalance({ balance, availableForWithdrawal, totalPa
         border: '1px solid rgba(127,37,251,0.18)',
       }}
     >
-      {/* Glow accent */}
       <div
         className="absolute -top-20 -left-20 w-48 h-48 rounded-full opacity-20 pointer-events-none"
         style={{ background: 'radial-gradient(circle, #7F25FB 0%, transparent 70%)' }}
@@ -21,27 +18,31 @@ export default function WalletBalance({ balance, availableForWithdrawal, totalPa
       <p className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-3">
         Main Wallet Balance
       </p>
-      <p className="text-4xl md:text-5xl font-bold text-white mb-6 relative">
-        ${dollars.toLocaleString()}.
-        <span className="text-2xl md:text-3xl text-gray-400 font-semibold ml-0.5">{cents}</span>
-      </p>
+
+      <AnimatedAmount
+        value={balance}
+        large
+        className="text-4xl md:text-5xl font-bold text-white mb-6 relative"
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-xl border border-[#1e1e3a] p-4">
           <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">
             Available for Withdrawal
           </p>
-          <p className="text-lg md:text-xl font-bold text-green-400">
-            ${availableForWithdrawal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-          </p>
+          <AnimatedAmount
+            value={availableForWithdrawal}
+            className="text-lg md:text-xl font-bold text-green-400"
+          />
         </div>
         <div className="rounded-xl border border-[#1e1e3a] p-4">
           <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">
             Total Paid Out (YTD)
           </p>
-          <p className="text-lg md:text-xl font-bold text-white">
-            ${totalPaidOut.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-          </p>
+          <AnimatedAmount
+            value={totalPaidOut}
+            className="text-lg md:text-xl font-bold text-white"
+          />
         </div>
       </div>
     </div>
@@ -49,7 +50,7 @@ export default function WalletBalance({ balance, availableForWithdrawal, totalPa
 }
 
 WalletBalance.propTypes = {
-  balance: PropTypes.number.isRequired,
+  balance:                PropTypes.number.isRequired,
   availableForWithdrawal: PropTypes.number.isRequired,
-  totalPaidOut: PropTypes.number.isRequired,
+  totalPaidOut:           PropTypes.number.isRequired,
 };

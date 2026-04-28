@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import AddInvestmentModal from './AddInvestmentModal';
+import AnimatedAmount from '../common/AnimatedAmount';
 
 function CapitalOverview({data, onRefresh}) {
   const [showModal, setShowModal] = useState(false);
@@ -30,15 +31,13 @@ function CapitalOverview({data, onRefresh}) {
           {/* Amount row */}
           <div className="flex items-end justify-between mb-1">
             <span />
-            <p className="text-2xl md:text-3xl font-bold text-white">
-              ${utilized}
-            </p>
+            <AnimatedAmount value={utilized} className="text-2xl md:text-3xl font-bold text-white" />
           </div>
 
           {/* Utilized limit + total */}
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs text-gray-400">Utilized Limit</p>
-            <p className="text-sm text-gray-500 font-normal">/ ${total}</p>
+            <AnimatedAmount value={total} className="text-sm text-gray-500 font-normal" prefix="/ $" />
           </div>
 
           {/* Progress bar */}
@@ -52,20 +51,12 @@ function CapitalOverview({data, onRefresh}) {
           {/* Trading Capital & Remaining Capacity sub-cards */}
           <div className="grid grid-cols-2 gap-4 mt-auto">
             <div className="rounded-xl border border-[#1e1e3a] bg-[#0a0920]/80 p-4">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">
-                Trading Capital
-              </p>
-              <p className="text-xl md:text-2xl font-bold text-white">
-                ${tradingCapital.toFixed(2)}
-              </p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">Trading Capital</p>
+              <AnimatedAmount value={tradingCapital} className="text-xl md:text-2xl font-bold text-white" />
             </div>
             <div className="rounded-xl border border-[#1e1e3a] bg-[#0a0920]/80 p-4">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">
-                Remaining Capacity
-              </p>
-              <p className="text-xl md:text-2xl font-bold text-white">
-                ${remainingCapacity.toFixed(2)}
-              </p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">Remaining Capacity</p>
+              <AnimatedAmount value={remainingCapacity} className="text-xl md:text-2xl font-bold text-white" />
             </div>
           </div>
         </div>

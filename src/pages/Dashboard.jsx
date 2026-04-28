@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
   WelcomeSection,
   WalletCardsGrid,
@@ -15,17 +15,22 @@ function Dashboard() {
   const [data, setData]               = useState(null);
   const [capitalData, setCapitalData]  = useState(null);
 
-  const fetchAll = useCallback(async () => {
-    try {
-      const [dash, cap] = await Promise.all([getdashboard(), gettradingcapital()]);
-      setData(dash.data);
-      setCapitalData(cap.data);
-    } catch {
-      setData(null);
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchAll() {
+      try {
+        const [dash, cap] = await Promise.all([getdashboard(), gettradingcapital()]);
+        if (!cancelled) {
+          setData(dash.data);
+          setCapitalData(cap.data);
+        }
+      } catch {
+        if (!cancelled) setData(null);
+      }
     }
+    fetchAll();
+    return () => { cancelled = true; };
   }, []);
-
-  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   return (
     <div className="max-w-screen mx-auto">

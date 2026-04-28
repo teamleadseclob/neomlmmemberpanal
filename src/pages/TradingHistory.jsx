@@ -32,6 +32,29 @@ function TradingHistory() {
   const totalPages      = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
   const paginated       = history.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  function renderRows() {
+    if (loading) {
+      return (
+        <tr><td colSpan={6} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
+      );
+    }
+    if (paginated.length === 0) {
+      return (
+        <tr><td colSpan={6} className="px-5 py-12 text-center text-sm text-gray-500">No transaction history found.</td></tr>
+      );
+    }
+    return paginated.map((row) => (
+      <tr key={row._id ?? row.id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
+        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.date ?? row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+        <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.txnId ?? row._id ?? '—'}</td>
+        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.gross ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.cutoff ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4 text-sm font-bold text-white">${(row.net ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4"><span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-green-500/15 text-green-400 border-green-500/30">{row.status ?? 'Success'}</span></td>
+      </tr>
+    ));
+  }
+
   return (
     <div className="max-w-screen mx-auto">
       <div className="flex items-start justify-between mb-6">
@@ -111,20 +134,7 @@ function TradingHistory() {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr><td colSpan={6} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
-              ) : paginated.length === 0 ? (
-                <tr><td colSpan={6} className="px-5 py-12 text-center text-sm text-gray-500">No transaction history found.</td></tr>
-              ) : paginated.map((row) => (
-                <tr key={row._id ?? row.id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
-                  <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.date ?? row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
-                  <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.txnId ?? row._id ?? '—'}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-white">${(row.gross ?? 0).toFixed(2)}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-white">${(row.cutoff ?? 0).toFixed(2)}</td>
-                  <td className="px-5 py-4 text-sm font-bold text-white">${(row.net ?? 0).toFixed(2)}</td>
-                  <td className="px-5 py-4"><span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-green-500/15 text-green-400 border-green-500/30">{row.status ?? 'Success'}</span></td>
-                </tr>
-              ))}
+              {renderRows()}
             </tbody>
           </table>
         </div>

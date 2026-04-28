@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { getbalence } from '../../config/apiService';
+import AnimatedAmount from '../common/AnimatedAmount';
 import rewardImg from '../../assets/capital/reward.png';
 import profitImg  from '../../assets/capital/profit.png';
 import multiImg   from '../../assets/capital/multylevekl.png';
@@ -103,9 +104,10 @@ function WalletItem({ wallet }) {
       <p className="text-xs text-gray-400 mb-1">{wallet.label}</p>
 
       {/* Amount */}
-      <p className="text-2xl md:text-3xl font-bold text-white mb-3 transition-all duration-200 group-hover:bg-gradient-to-r group-hover:from-[#CB3CFF] group-hover:to-[#7F25FB] group-hover:bg-clip-text group-hover:text-transparent">
-        ${wallet.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-      </p>
+      <AnimatedAmount
+        value={wallet.amount}
+        className="text-2xl md:text-3xl font-bold text-white mb-3 transition-all duration-200 group-hover:bg-gradient-to-r group-hover:from-[#CB3CFF] group-hover:to-[#7F25FB] group-hover:bg-clip-text group-hover:text-transparent"
+      />
 
       {/* Withdraw button */}
       {wallet.hasWithdraw && (
@@ -124,11 +126,11 @@ function WalletItem({ wallet }) {
         <div className="flex items-center justify-between pt-2 border-t border-[#1e1e3a]">
           <div>
             <p className="text-[10px] text-gray-500 mb-0.5">Cut off</p>
-            <p className="text-sm font-semibold text-white">${wallet.cutOff.toFixed(2)}</p>
+            <AnimatedAmount value={wallet.cutOff} className="text-sm font-semibold text-white" />
           </div>
           <div className="text-right">
             <p className="text-[10px] text-gray-500 mb-0.5">Wallet Amount</p>
-            <p className="text-sm font-semibold text-white">${wallet.walletAmount.toFixed(2)}</p>
+            <AnimatedAmount value={wallet.walletAmount} className="text-sm font-semibold text-white" />
           </div>
         </div>
       )}

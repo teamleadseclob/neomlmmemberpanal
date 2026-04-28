@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import AnimatedAmount from '../common/AnimatedAmount'
 import transactionsIcon from '../../assets/dashboard/transactions.png'
 import rewardIcon from '../../assets/dashboard/reward.png'
 import profitIcon from '../../assets/dashboard/profit.png'
@@ -44,7 +45,7 @@ function WalletCard({ iconType, label, amount, isHighlighted = false }) {
       <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label}</p>
       <p className={`text-3xl font-bold mt-0.5 transition-all duration-200
            'text-white group-hover:bg-linear-to-r group-hover:from-[#CB3CFF] group-hover:to-[#7F25FB] group-hover:bg-clip-text group-hover:text-transparent`}>
-        {amount}
+        <AnimatedAmount value={typeof amount === 'number' ? amount : parseFloat(String(amount).replace(/[^0-9.]/g, '')) || 0} className="" />
       </p>
     </div>
   );

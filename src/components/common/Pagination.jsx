@@ -5,7 +5,7 @@ function Pagination({ page, totalPages, total, pageSize, setPage }) {
   const to   = Math.min(page * pageSize, total);
 
   return (
-    <div className="flex items-center justify-between px-5 py-3.5 border-t border-[#1e1e3a] bg-[#0f0f1e]">
+    <div className="flex items-center justify-between px-5 py-3.5 border-t border-[#1e1e3a]">
       <p className="text-xs text-gray-500">
         {`Showing `}<span className="text-white font-semibold">{from}</span>{`–`}<span className="text-white font-semibold">{to}</span>{` of `}<span className="text-white font-semibold">{total}</span>
       </p>
