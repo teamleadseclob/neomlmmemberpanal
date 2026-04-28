@@ -42,18 +42,12 @@ export default function AnimatedAmount({ value, className, large, duration, pref
   const dollars  = Math.floor(animated);
   const cents    = ((animated % 1) * 100).toFixed(0).padStart(2, '0');
 
-  if (large) {
-    return (
-      <p className={className}>
-        {prefix}{dollars.toLocaleString()}.
-        <span className="text-2xl md:text-3xl text-gray-400 font-semibold ml-0.5">{cents}</span>
-      </p>
-    );
-  }
-
   return (
     <p className={className}>
-      {prefix}{dollars.toLocaleString()}.{cents}
+      {prefix}{dollars.toLocaleString()}.
+      {large
+        ? <span className="text-2xl md:text-3xl text-gray-400 font-semibold ml-0.5">{cents}</span>
+        : cents}
     </p>
   );
 }
