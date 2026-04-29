@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   WalletBalance,
   PendingRequests,
@@ -10,10 +10,7 @@ import {
 export default function Payout() {
   const [walletData, setWalletData]   = useState({ balance: 0, availableForWithdrawal: 0, totalPaidOut: 0 });
   const [pendingTxs, setPendingTxs]   = useState([]);
-
-  const handleWithdraw = (data) => {
-    console.log('Withdrawal request:', data);
-  };
+  const historyRefresh = useRef(null);
 
   return (
     <div className="max-w-screen mx-auto">
@@ -39,10 +36,10 @@ export default function Payout() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
         <div className="lg:col-span-2">
-          <WithdrawFunds maxAmount={walletData.availableForWithdrawal} onSubmit={handleWithdraw} />
+          <WithdrawFunds maxAmount={walletData.availableForWithdrawal} onSuccess={() => historyRefresh.current?.()} />
         </div>
         <div className="lg:col-span-3">
-          <WithdrawalHistory onWalletData={setWalletData} onPendingData={setPendingTxs} />
+          <WithdrawalHistory onWalletData={setWalletData} onPendingData={setPendingTxs} onRefreshRef={historyRefresh} />
         </div>
       </div>
 
