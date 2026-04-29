@@ -31,6 +31,10 @@ export const getreferals = async () => {
   return response.data
 }
 
+export const sendreferallink = async (email) => {
+  const response = await axiosConfig.post('/api/users/send-referral',{email})
+  return response.data
+}
 // ─── Community ────────────────────────────────────────────────────────────────
 
 export const gettree = async (userId) => {
@@ -119,10 +123,7 @@ export const getwithdrawal = async (page = 1, limit = 5, status = 'completed') =
 //   return response.data
 // }
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get('/api/withdrawal')
-//   return response.data
-// }
+
 
 // export const getswp = async () => {
 //   const response = await axiosConfig.get('/api/withdrawal')

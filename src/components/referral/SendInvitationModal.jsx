@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { getReferralLink } from '../common/referralLink';
+import { sendreferallink } from '../../config/apiService';
 
 function SendInvitationModal({ onClose }) {
   const referralLink = getReferralLink();
@@ -30,7 +31,7 @@ function SendInvitationModal({ onClose }) {
     setError('');
     setLoading(true);
     // Simulate API call
-    await new Promise((r) => setTimeout(r, 1200));
+    await sendreferallink(email);
     setLoading(false);
     setSuccess(true);
   };
