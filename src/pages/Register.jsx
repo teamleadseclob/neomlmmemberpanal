@@ -8,6 +8,7 @@ export default function Register() {
   const [searchParams] = useSearchParams()
   const ref = searchParams.get('ref')
 
+  
   // if (!ref?.trim()) {
   //   return <Navigate to="/login" replace />
   // }

@@ -19,6 +19,7 @@ export default function RegisterForm() {
 
   const [formData, setFormData] = useState({
     fullName: '',
+    email: '',
     referralCode: sponsorCode,
     password: '',
     confirmPassword: '',
@@ -45,7 +46,7 @@ export default function RegisterForm() {
     }
     setLoading(true)
     try {
-      const res = await register(formData.fullName, formData.referralCode, formData.password, formData.referralCode)
+      const res = await register(formData.fullName, formData.email, formData.referralCode, formData.password, formData.referralCode)
       saveToken(res?.data?.token, res?.data?.user)
       toast.success('Account created successfully!')
       navigate('/', { replace: true })
@@ -72,6 +73,10 @@ export default function RegisterForm() {
       <RegisterInput id="fullName" name="fullName" label="Full Name"
         placeholder="Enter your full name" value={formData.fullName}
         onChange={handleChange} autoComplete="name" />
+
+      <RegisterInput id="email" name="email" label="Email"
+        placeholder="Enter your email" value={formData.email}
+        onChange={handleChange} autoComplete="email" />
 
       <RegisterInput id="referralCode" name="referralCode" label="Referral Code"
         placeholder="Enter referral code" value={formData.referralCode}
