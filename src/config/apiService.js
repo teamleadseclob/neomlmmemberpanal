@@ -24,6 +24,11 @@ export const getprofile = async () => {
   return response.data
 }
 
+export const getgraph = async (month, year) => {
+  const response = await axiosConfig.get(`/api/users/me/income-chart?month=${month}&year=${year}`)
+  return response.data
+}
+
 // ─── Referral Hub ─────────────────────────────────────────────────────────────
 
 export const getreferals = async () => {
@@ -107,8 +112,8 @@ export const getrankstatus = async () => {
 
 // ─── Payout ───────────────────────────────────────────────────────────────────
 
-export const withdraw = async () => {
-  const response = await axiosConfig.post('/api/withdrawal')
+export const withdraw = async (amount) => {
+  const response = await axiosConfig.post('/api/withdrawal', { amount })
   return response.data
 }
 

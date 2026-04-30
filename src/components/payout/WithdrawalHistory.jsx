@@ -75,7 +75,7 @@ function TxHashCell({ txHash }) {
 TxHashCell.propTypes = { txHash: PropTypes.string };
 TxHashCell.defaultProps = { txHash: null };
 
-export default function WithdrawalHistory({ onWalletData, onPendingData }) {
+export default function WithdrawalHistory({ onWalletData, onPendingData, onRefreshRef }) {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [page, setPage]                 = useState(1);
@@ -109,6 +109,11 @@ export default function WithdrawalHistory({ onWalletData, onPendingData }) {
   }, [page, activeStatus]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  /* expose fetchData so parent can trigger a refresh */
+  useEffect(() => {
+    if (onRefreshRef) onRefreshRef.current = fetchData;
+  }, [fetchData, onRefreshRef]);
 
   const handleStatusChange = (status) => {
     setActiveStatus(status);
@@ -222,8 +227,10 @@ export default function WithdrawalHistory({ onWalletData, onPendingData }) {
 WithdrawalHistory.propTypes = {
   onWalletData:  PropTypes.func,
   onPendingData: PropTypes.func,
+  onRefreshRef:  PropTypes.shape({ current: PropTypes.func }),
 };
 WithdrawalHistory.defaultProps = {
   onWalletData:  null,
   onPendingData: null,
+  onRefreshRef:  null,
 };

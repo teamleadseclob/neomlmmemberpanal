@@ -1,23 +1,12 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { getgraph } from '../../config/apiService';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-/* daily revenue seed per month — deterministic pseudo-random */
-function generateMonthData(monthIdx) {
-  const seed   = (monthIdx + 1) * 137;
-  const days   = new Date(2025, monthIdx + 1, 0).getDate();
-  let running  = 1000 + seed * 30;
-  return Array.from({ length: days }, (_, d) => {
-    running += Math.sin((d + seed) * 0.7) * 800 + 400;
-    return { day: d + 1, value: Math.max(200, Math.round(running)) };
-  });
-}
-
-const PAD       = { left: 0, right: 10, top: 10, bottom: 5 };
+const PAD    = { left: 0, right: 10, top: 10, bottom: 5 };
 
 function getDynamicYLabels(dataPoints) {
-  const maxVal  = Math.max(...dataPoints.map((d) => d.value)) * 1.1 || 1;
-  const step    = maxVal / 6;
+  const maxVal = Math.max(...dataPoints.map((d) => d.value)) * 1.1 || 1;
+  const step   = maxVal / 6;
   return Array.from({ length: 7 }, (_, i) => {
     const v = step * i;
     if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
@@ -55,9 +44,7 @@ function drawChart(canvas, dataPoints, progress = 1, hoverIdx = -1) {
 
   ctx.clearRect(0, 0, width, height);
 
-  /* dynamic max — highest value in current data + 10% headroom */
   const maxVal = Math.max(...dataPoints.map((d) => d.value)) * 1.1 || 1;
-
   const points = dataPoints.map((d, i) => ({
     x: PAD.left + (i / Math.max(dataPoints.length - 1, 1)) * chartW,
     y: PAD.top  + chartH - (d.value / maxVal) * chartH,
@@ -132,7 +119,6 @@ function formatValue(v) {
   return `$${v}`;
 }
 
-/* X-axis: show every ~5th day label to avoid crowding */
 function xLabels(days) {
   return Array.from({ length: days }, (_, i) => {
     const d = i + 1;
@@ -149,25 +135,44 @@ function RevenueChart() {
 
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
+  const [selectedYear]                    = useState(now.getFullYear());
   const [dropdownOpen,  setDropdownOpen]  = useState(false);
-  const [tooltip, setTooltip] = useState(null);
+  const [tooltip,       setTooltip]       = useState(null);
+  const [dataPoints,    setDataPoints]    = useState([]);
+  const [totalRevenue,  setTotalRevenue]  = useState(0);
+  const [loading,       setLoading]       = useState(false);
 
-  const dataPoints   = useMemo(() => generateMonthData(selectedMonth), [selectedMonth]);
-  const totalRevenue  = useMemo(() => dataPoints.reduce((s, d) => s + d.value, 0), [dataPoints]);
-  const yLabels       = useMemo(() => getDynamicYLabels(dataPoints), [dataPoints]);
+  /* fetch from API when month changes */
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    /* API uses 1-indexed month */
+    getgraph(selectedMonth + 1, selectedYear)
+      .then((res) => {
+        if (cancelled) return;
+        const daily = res.data?.dailyRevenue ?? [];
+        const pts   = daily.map((d) => ({ day: d.day, value: d.value }));
+        setDataPoints(pts);
+        setTotalRevenue(res.data?.totalRevenue ?? 0);
+      })
+      .catch(() => { if (!cancelled) setDataPoints([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [selectedMonth, selectedYear]);
 
-  /* sync ref so canvas callbacks always have latest data */
   dataRef.current = dataPoints;
+
+  const yLabels = useMemo(() => getDynamicYLabels(dataPoints), [dataPoints]);
 
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (canvas) drawChart(canvas, dataRef.current, progressRef.current, hoverIdxRef.current);
   }, []);
 
-  /* re-animate when month changes */
+  /* re-animate when data changes */
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || dataPoints.length === 0) return;
     progressRef.current = 0;
     hoverIdxRef.current = -1;
     setTooltip(null);
@@ -185,9 +190,8 @@ function RevenueChart() {
       if (elapsed < DURATION) rafId = requestAnimationFrame(animate);
     };
     rafId = requestAnimationFrame(animate);
-
     return () => cancelAnimationFrame(rafId);
-  }, [selectedMonth]);
+  }, [dataPoints]);
 
   /* resize */
   useEffect(() => {
@@ -201,7 +205,7 @@ function RevenueChart() {
   const handleMouseMove = useCallback((e) => {
     const canvas  = canvasRef.current;
     const wrapper = wrapperRef.current;
-    if (!canvas || !wrapper) return;
+    if (!canvas || !wrapper || dataRef.current.length === 0) return;
 
     const rect   = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -240,6 +244,7 @@ function RevenueChart() {
         <div className="flex items-center gap-3">
           <h3 className="text-sm text-gray-400">Monthly Revenue</h3>
           <span className="text-xl font-bold text-white">{formatValue(totalRevenue)}</span>
+          {loading && <span className="w-4 h-4 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />}
         </div>
 
         <div className="flex items-center gap-4">
@@ -247,7 +252,7 @@ function RevenueChart() {
             <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" />{' '}Revenue
           </span>
 
-          {/* Custom month dropdown */}
+          {/* Month dropdown */}
           <div className="relative">
             <button
               type="button"
@@ -259,7 +264,7 @@ function RevenueChart() {
               <svg className="w-3.5 h-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
               </svg>
-              {MONTHS[selectedMonth]} 2025
+              {MONTHS[selectedMonth]} {selectedYear}
               <svg className={`w-3 h-3 text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
               </svg>
@@ -295,10 +300,7 @@ function RevenueChart() {
         </div>
 
         <div className="flex-1 flex flex-col">
-          <div
-            ref={wrapperRef}
-            className="relative flex-1 min-h-50"
-          >
+          <div ref={wrapperRef} className="relative flex-1 min-h-50">
             <canvas
               ref={canvasRef}
               className="w-full h-full block cursor-crosshair"
@@ -319,14 +321,13 @@ function RevenueChart() {
               >
                 <div className="bg-[#1a1a3e] border border-[#2e2e5e] rounded-lg px-3 py-1.5 text-center shadow-xl whitespace-nowrap">
                   <p className="text-sm font-bold text-white">{formatValue(tooltip.value)}</p>
-                  <p className="text-[10px] text-gray-500">{MONTHS[selectedMonth]} {tooltip.day}, 2025</p>
+                  <p className="text-[10px] text-gray-500">{MONTHS[selectedMonth]} {tooltip.day}, {selectedYear}</p>
                 </div>
                 <div className="w-2 h-2 bg-[#1a1a3e] border-r border-b border-[#2e2e5e] rotate-45 mx-auto -mt-1" />
               </div>
             )}
           </div>
 
-          {/* X-axis: day labels */}
           <div className="flex justify-between text-[10px] text-gray-600 pt-2 select-none overflow-hidden">
             {labels.map((l, i) => (
               <span key={i} className="text-center" style={{ width: `${100 / labels.length}%` }}>{l}</span>
