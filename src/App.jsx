@@ -20,8 +20,10 @@ const Support        = lazy(() => import('./pages/Support'))
 const Services       = lazy(() => import('./pages/Services'))
 const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'))
 const Login          = lazy(() => import('./pages/Login'))
-const Register       = lazy(() => import('./pages/Register'))
-const NotFound       = lazy(() => import('./pages/NotFound'))
+const Register            = lazy(() => import('./pages/Register'))
+const OtpVerify           = lazy(() => import('./pages/OtpVerify'))
+const NotFound            = lazy(() => import('./pages/NotFound'))
+const TermsAndConditions  = lazy(() => import('./pages/TermsAndConditions'))
 
 function PageLoader() {
   return (
@@ -38,7 +40,9 @@ function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/login"    element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register"    element={<Register />} />
+            <Route path="/verify-otp"  element={<OtpVerify />} />
+            <Route path="/terms"       element={<TermsAndConditions />} />
 
             <Route
               path="/"
@@ -51,17 +55,17 @@ function App() {
               <Route element={<SwpGuard />}>
                 <Route index                              element={<Dashboard />} />
                 <Route path="referral-links"              element={<ReferralHub />} />
-                <Route path="community"                   element={<Community />} />
-                <Route path="trading-capital"             element={<TradingCapital />} />
+                {/* <Route path="community"                   element={<Community />} /> */}
+                {/* <Route path="trading-capital"             element={<TradingCapital />} /> */}
                 {/* <Route path="trading-capital/reward-history"  element={<RewardHistory />} />
                 <Route path="trading-capital/trading-history"    element={<TradingHistory />} />
                 <Route path="trading-capital/multilevel-history"       element={<MultilevelHistory />} />
                 <Route path="trading-capital/referral-commission-history" element={<ReferralCommissionHistory />} /> */}
                 <Route path="rank-report"                 element={<RankReport />} />
                 <Route path="payout"                      element={<Payout />} />
-                <Route path="services"                    element={<Services />} />
+                {/* <Route path="services"                    element={<Services />} /> */}
                 <Route path="reports"                     element={<PlaceholderPage title="Reports" />} />
-                <Route path="support"                     element={<Support />} />
+                {/* <Route path="support"                     element={<Support />} /> */}
               </Route>
               <Route path="swp-purchase" element={<SwpPurchase />} />
             </Route>

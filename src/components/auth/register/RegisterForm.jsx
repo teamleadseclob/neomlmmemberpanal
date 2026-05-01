@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { useAuth } from '../../../context/useAuth'
 import { register } from '../../../config/apiService'
 import RegisterInput from './RegisterInput'
 
@@ -14,11 +13,11 @@ const CheckIcon = () => (
 export default function RegisterForm() {
   const [searchParams] = useSearchParams()
   const sponsorCode = searchParams.get('ref') || ''
-  const { login: saveToken } = useAuth()
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     fullName: '',
+    email: '',
     referralCode: sponsorCode,
     password: '',
     confirmPassword: '',
@@ -45,10 +44,9 @@ export default function RegisterForm() {
     }
     setLoading(true)
     try {
-      const res = await register(formData.fullName, formData.referralCode, formData.password, formData.referralCode)
-      saveToken(res?.data?.token, res?.data?.user)
-      toast.success('Account created successfully!')
-      navigate('/', { replace: true })
+      await register(formData.fullName, formData.email, formData.referralCode, formData.password, formData.referralCode)
+      toast.success('OTP sent to your email!')
+      navigate('/verify-otp', { state: { email: formData.email } })
     } catch (err) {
       setError(err?.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
@@ -72,6 +70,10 @@ export default function RegisterForm() {
       <RegisterInput id="fullName" name="fullName" label="Full Name"
         placeholder="Enter your full name" value={formData.fullName}
         onChange={handleChange} autoComplete="name" />
+
+      <RegisterInput id="email" name="email" label="Email"
+        placeholder="Enter your email" value={formData.email}
+        onChange={handleChange} autoComplete="email" />
 
       <RegisterInput id="referralCode" name="referralCode" label="Referral Code"
         placeholder="Enter referral code" value={formData.referralCode}

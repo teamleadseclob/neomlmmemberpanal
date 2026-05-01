@@ -7,8 +7,18 @@ export const login = async (userId, password) => {
   return response.data
 }
 
-export const register = async (name, email, password, sponsorId) => {
+export const register = async (name, email, sponsorId,password ) => {
   const response = await axiosConfig.post('/api/auth/register', { name, email, password, sponsorId })
+  return response.data
+}
+
+export const sendotp = async ( email, otp ) => {
+  const response = await axiosConfig.post('/api/auth/verify-otp', { email, otp })
+  return response.data
+}
+
+export const resendotp = async ( email ) => {
+  const response = await axiosConfig.post('/api/auth/resend-otp', { email })
   return response.data
 }
 
