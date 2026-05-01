@@ -12,6 +12,16 @@ export const register = async (name, email, sponsorId,password ) => {
   return response.data
 }
 
+export const sendotp = async ( email, otp ) => {
+  const response = await axiosConfig.post('/api/auth/verify-otp', { email, otp })
+  return response.data
+}
+
+export const resendotp = async ( email ) => {
+  const response = await axiosConfig.post('/api/auth/resend-otp', { email })
+  return response.data
+}
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export const getdashboard = async () => {

@@ -20,7 +20,8 @@ const Support        = lazy(() => import('./pages/Support'))
 const Services       = lazy(() => import('./pages/Services'))
 const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'))
 const Login          = lazy(() => import('./pages/Login'))
-const Register       = lazy(() => import('./pages/Register'))
+const Register            = lazy(() => import('./pages/Register'))
+const OtpVerify           = lazy(() => import('./pages/OtpVerify'))
 const NotFound            = lazy(() => import('./pages/NotFound'))
 const TermsAndConditions  = lazy(() => import('./pages/TermsAndConditions'))
 
@@ -39,8 +40,9 @@ function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/login"    element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/terms"    element={<TermsAndConditions />} />
+            <Route path="/register"    element={<Register />} />
+            <Route path="/verify-otp"  element={<OtpVerify />} />
+            <Route path="/terms"       element={<TermsAndConditions />} />
 
             <Route
               path="/"
