@@ -1,10 +1,83 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import toast from 'react-hot-toast';
+import { createticket } from '../../config/apiService';
 
-function RaiseTicket() {
-  const [category, setCategory] = useState('Payout');
-  const [priority, setPriority] = useState('Low');
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
+const CATEGORIES = ['Account Issues', 'SWP & Investment', 'Commission & Rewards', 'Withdrawal', 'Technical Issue', 'Other']
+const PRIORITIES = ['low', 'high']
+
+function Dropdown({ label, options, value, onChange, display }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">{label}</p>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
+                   hover:border-purple-500/50 transition-colors cursor-pointer bg-transparent"
+      >
+        <span>{display(value)}</span>
+        <svg className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+      {open && (
+        <ul className="absolute z-20 mt-1 w-full border border-[#1e1e3a] rounded-lg overflow-hidden"
+            style={{ background: '#0d0b2e' }}>
+          {options.map((opt) => (
+            <li key={opt}>
+              <button
+                type="button"
+                onClick={() => { onChange(opt); setOpen(false) }}
+                className={`w-full text-left px-3 py-2.5 text-sm transition-colors cursor-pointer bg-transparent border-none
+                            ${value === opt ? 'text-purple-400' : 'text-gray-300 hover:text-white hover:bg-[#1a1a3e]'}`}
+              >
+                {display(opt)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+function RaiseTicket({ onSuccess }) {
+  const [category, setCategory] = useState(CATEGORIES[0])
+  const [priority, setPriority] = useState('low')
+  const [subject, setSubject]   = useState('')
+  const [message, setMessage]   = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async () => {
+    if (!subject.trim() || !message.trim()) {
+      toast.error('Subject and message are required.')
+      return
+    }
+    setSubmitting(true)
+    try {
+      await createticket({ category, fields: [], priority, subject, message })
+      toast.success('Ticket submitted successfully!')
+      setSubject('')
+      setMessage('')
+      setCategory(CATEGORIES[0])
+      setPriority('low')
+      onSuccess?.()
+    } catch {
+      toast.error('Failed to submit ticket. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6">
@@ -18,51 +91,20 @@ function RaiseTicket() {
 
       {/* Category + Priority row */}
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label htmlFor="category" className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5 block">
-            Category
-          </label>
-          <div className="relative">
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full appearance-none   border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
-                         focus:outline-none focus:border-purple-500/50 cursor-pointer"
-            >
-              <option value="Payout">Payout</option>
-              <option value="Technical">Technical</option>
-              <option value="Rewards">Rewards</option>
-              <option value="Account">Account</option>
-              <option value="Other">Other</option>
-            </select>
-            <svg className="w-4 h-4 text-gray-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-            </svg>
-          </div>
-        </div>
-        <div>
-          <label htmlFor="priority" className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5 block">
-            Priority
-          </label>
-          <div className="relative">
-            <select
-              id="priority"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              className="w-full appearance-none  border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
-                         focus:outline-none focus:border-purple-500/50 cursor-pointer"
-            >
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-              <option value="Urgent">Urgent</option>
-            </select>
-            <svg className="w-4 h-4 text-gray-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-            </svg>
-          </div>
-        </div>
+        <Dropdown
+          label="Category"
+          options={CATEGORIES}
+          value={category}
+          onChange={setCategory}
+          display={(v) => v}
+        />
+        <Dropdown
+          label="Priority"
+          options={PRIORITIES}
+          value={priority}
+          onChange={setPriority}
+          display={(v) => v.charAt(0).toUpperCase() + v.slice(1)}
+        />
       </div>
 
       {/* Subject */}
@@ -76,7 +118,7 @@ function RaiseTicket() {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder="Brief summary of your inquiry"
-          className="w-full   border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
+          className="w-full border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
                      placeholder:text-gray-600 focus:outline-none focus:border-purple-500/50"
         />
       </div>
@@ -87,8 +129,7 @@ function RaiseTicket() {
           Message
         </label>
         <div className="border border-[#1e1e3a] rounded-lg overflow-hidden">
-          {/* Toolbar */}
-          <div className="flex items-center gap-1 px-3 py-2 border-b border-[#1e1e3a]  ">
+          <div className="flex items-center gap-1 px-3 py-2 border-b border-[#1e1e3a]">
             <button type="button" className="w-7 h-7 rounded flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#1a1a3e] transition-colors cursor-pointer bg-transparent border-none">
               <span className="text-sm font-bold">B</span>
             </button>
@@ -100,11 +141,6 @@ function RaiseTicket() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
               </svg>
             </button>
-            <button type="button" className="w-7 h-7 rounded flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#1a1a3e] transition-colors cursor-pointer bg-transparent border-none">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-              </svg>
-            </button>
           </div>
           <textarea
             id="message"
@@ -112,7 +148,7 @@ function RaiseTicket() {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Describe your issue in detail..."
             rows={4}
-            className="w-full   px-3 py-3 text-sm text-white resize-none
+            className="w-full px-3 py-3 text-sm text-white resize-none
                        placeholder:text-gray-600 focus:outline-none border-none"
           />
         </div>
@@ -131,15 +167,22 @@ function RaiseTicket() {
         </button>
         <button
           type="button"
+          onClick={handleSubmit}
+          disabled={submitting}
           className="px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide
                      bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] text-white
-                     hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none"
+                     hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none
+                     disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Submit Inquiry
+          {submitting ? 'Submitting...' : 'Submit Inquiry'}
         </button>
       </div>
     </div>
   );
+}
+
+RaiseTicket.propTypes = {
+  onSuccess: PropTypes.func,
 }
 
 export default RaiseTicket;

@@ -1,7 +1,6 @@
 import {
   ReferralHeader,
   InviteLab,
-  ReferralStatsGrid,
 } from '../components/referral';
 
 function ReferralHub() {
@@ -11,7 +10,7 @@ function ReferralHub() {
       <div className="mb-6">
         <InviteLab />
       </div>
-      <ReferralStatsGrid />
+      {/* <ReferralStatsGrid /> */}
     </div>
   );
 }

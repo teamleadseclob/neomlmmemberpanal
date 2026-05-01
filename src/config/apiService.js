@@ -133,24 +133,25 @@ export const getwithdrawal = async (page = 1, limit = 5, status = 'completed') =
   return response.data
 }
 
-// export const getwithdrawal = async () => {
-//   const response = await axiosConfig.get(`/api/withdrawal/history?status=${completed}&page=1&limit=5`)
-//   return response.data
-// }
+export const geteventes= async () => {
+  const response = await axiosConfig.get('/api/events')
+  return response.data
+}
 
+// ─── Support Tickets ──────────────────────────────────────────────────────────
 
+export const createticket = async (body) => {
+  const response = await axiosConfig.post('/api/support/tickets', body)
+  return response.data
+}
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get('/api/withdrawal')
-//   return response.data
-// }
+export const gettickets = async (page = 1, limit = 10, status = '') => {
+  const query = status ? `page=${page}&limit=${limit}&status=${status}` : `page=${page}&limit=${limit}`
+  const response = await axiosConfig.get(`/api/support/tickets?${query}`)
+  return response.data
+}
 
-// export const getswp = async () => {
-//   const response = await axiosConfig.get('/api/withdrawal')
-//   return response.data
-// }
-
-// export const getswp = async () => {
-//   const response = await axiosConfig.get('/api/withdrawal')
-//   return response.data
-// }
+export const getticketbyid = async (ticketId) => {
+  const response = await axiosConfig.get(`/api/support/tickets/${ticketId}`)
+  return response.data
+}

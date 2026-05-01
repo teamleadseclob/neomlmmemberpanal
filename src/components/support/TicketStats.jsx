@@ -1,9 +1,10 @@
 import React from 'react';
-const STATS = [
+import PropTypes from 'prop-types';
+
+const STAT_CONFIG = [
   {
-    id: 'total',
+    key: 'total',
     label: 'Total Tickets',
-    value: '24',
     iconBg: 'bg-blue-500/20',
     icon: (
       <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -12,9 +13,8 @@ const STATS = [
     ),
   },
   {
-    id: 'active',
+    key: 'open',
     label: 'Active / Open',
-    value: '03',
     iconBg: 'bg-yellow-500/20',
     icon: (
       <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -23,9 +23,8 @@ const STATS = [
     ),
   },
   {
-    id: 'resolved',
+    key: 'resolved',
     label: 'Resolved',
-    value: '21',
     iconBg: 'bg-green-500/20',
     icon: (
       <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -35,20 +34,32 @@ const STATS = [
   },
 ];
 
-function TicketStats() {
+function TicketStats({ summary }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      {STATS.map((stat) => (
-        <div key={stat.id} className="rounded-xl border border-[#1e1e3a]  p-5">
+      {STAT_CONFIG.map((stat) => (
+        <div key={stat.key} className="rounded-xl border border-[#1e1e3a] p-5">
           <div className={`w-9 h-9 rounded-lg ${stat.iconBg} flex items-center justify-center mb-3`}>
             {stat.icon}
           </div>
           <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1">{stat.label}</p>
-          <p className="text-3xl font-bold text-white">{stat.value}</p>
+          <p className="text-3xl font-bold text-white">
+            {summary ? String(summary[stat.key] ?? 0).padStart(2, '0') : '--'}
+          </p>
         </div>
       ))}
     </div>
   );
+}
+
+TicketStats.propTypes = {
+  summary: PropTypes.shape({
+    total: PropTypes.number,
+    open: PropTypes.number,
+    inProgress: PropTypes.number,
+    resolved: PropTypes.number,
+    closed: PropTypes.number,
+  }),
 }
 
 export default TicketStats;

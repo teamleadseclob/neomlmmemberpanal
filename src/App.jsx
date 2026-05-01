@@ -55,17 +55,17 @@ function App() {
               <Route element={<SwpGuard />}>
                 <Route index                              element={<Dashboard />} />
                 <Route path="referral-links"              element={<ReferralHub />} />
-                {/* <Route path="community"                   element={<Community />} /> */}
-                {/* <Route path="trading-capital"             element={<TradingCapital />} /> */}
-                {/* <Route path="trading-capital/reward-history"  element={<RewardHistory />} />
+                <Route path="community"                   element={<Community />} />
+                <Route path="trading-capital"             element={<TradingCapital />} />
+                <Route path="trading-capital/reward-history"  element={<RewardHistory />} />
                 <Route path="trading-capital/trading-history"    element={<TradingHistory />} />
                 <Route path="trading-capital/multilevel-history"       element={<MultilevelHistory />} />
-                <Route path="trading-capital/referral-commission-history" element={<ReferralCommissionHistory />} /> */}
+                <Route path="trading-capital/referral-commission-history" element={<ReferralCommissionHistory />} />
                 <Route path="rank-report"                 element={<RankReport />} />
                 <Route path="payout"                      element={<Payout />} />
-                {/* <Route path="services"                    element={<Services />} /> */}
-                <Route path="reports"                     element={<PlaceholderPage title="Reports" />} />
-                {/* <Route path="support"                     element={<Support />} /> */}
+                <Route path="services"                    element={<Services />} />
+                {/* <Route path="reports"                     element={<PlaceholderPage title="Reports" />} /> */}
+                <Route path="support"                     element={<Support />} />
               </Route>
               <Route path="swp-purchase" element={<SwpPurchase />} />
             </Route>

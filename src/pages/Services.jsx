@@ -6,13 +6,11 @@ import {
   SearchBar,
   ModulesList,
 } from '../components/services';
-import axiosConfig from '../config/axiosConfig';
+import { geteventes } from '../config/apiService';
 
-async function fetchServices(tab, search, page) {
-  const res = await axiosConfig.get('/api/services', {
-    params: { type: tab, search, page },
-  })
-  return res.data
+async function fetchServices() {
+  const res = await geteventes()
+  return res.data ?? []
 }
 
 function Services() {
@@ -27,9 +25,9 @@ function Services() {
     const load = async () => {
       setLoading(true)
       try {
-        const data = await fetchServices(activeTab, search, currentPage)
-        setModules(data.data ?? [])
-        setTotalPages(data.totalPages ?? 1)
+        const data = await fetchServices()
+        setModules(data)
+        setTotalPages(1)
       } catch {
         setModules([])
       } finally {

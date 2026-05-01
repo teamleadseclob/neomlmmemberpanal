@@ -21,8 +21,6 @@ import payoutIcon from '../assets/icons/payout.png';
 import payoutSelected from '../assets/icons/payoutseleted.png';
 import serviceIcon from '../assets/icons/service.png';
 import serviceSelected from '../assets/icons/serviceseleted.png';
-import reportIcon from '../assets/icons/report.png';
-import reportSelected from '../assets/icons/reportseleted.png';
 import supportIcon from '../assets/icons/supprt.png';
 import supportSelected from '../assets/icons/supportseleted.png';
 import logoutIcon from '../assets/icons/logout.png';
@@ -36,7 +34,7 @@ const NAV_ITEMS = [
   { icon: rankIcon,      iconSelected: rankSelected,      label: 'Rank Report',      path: '/rank-report' },
   { icon: payoutIcon,    iconSelected: payoutSelected,    label: 'Payout',           path: '/payout' },
   { icon: serviceIcon,   iconSelected: serviceSelected,   label: 'Services',         path: '/services' },
-  { icon: reportIcon,    iconSelected: reportSelected,    label: 'Reports',          path: '/reports' },
+  // { icon: reportIcon,    iconSelected: reportSelected,    label: 'Reports',          path: '/reports' },
   { icon: supportIcon,   iconSelected: supportSelected,   label: 'Support',          path: '/support' },
 ];
 
