@@ -6,7 +6,6 @@ import {
   SupportHistory,
   ElitePrivilege,
   FaqQuickLinks,
-  SystemsStatus,
 } from '../components/support';
 import { gettickets } from '../config/apiService';
 
@@ -42,7 +41,6 @@ function Support() {
         <div className="lg:col-span-2 flex flex-col gap-4">
           <ElitePrivilege />
           <FaqQuickLinks />
-          {/* <SystemsStatus /> */}
         </div>
       </div>
     </div>

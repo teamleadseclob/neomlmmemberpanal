@@ -1,31 +1,23 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { getgraph } from '../../config/apiService';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const PAD    = { left: 0, right: 10, top: 10, bottom: 5 };
 
-function getDynamicYLabels(dataPoints) {
-  const maxVal = Math.max(...dataPoints.map((d) => d.value)) * 1.1 || 1;
-  const step   = maxVal / 6;
-  return Array.from({ length: 7 }, (_, i) => {
-    const v = step * i;
-    if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
-    if (v >= 1000)    return `${(v / 1000).toFixed(0)}K`;
-    return `${Math.round(v)}`;
-  });
-}
 
 function getPoints(canvas, dataPoints) {
-  const rect   = canvas.getBoundingClientRect();
-  const chartW = rect.width  - PAD.left - PAD.right;
-  const chartH = rect.height - PAD.top  - PAD.bottom;
-  const maxVal = Math.max(...dataPoints.map((d) => d.value)) * 1.1 || 1;
+  const rect   = canvas.getBoundingClientRect()
+  const chartW = rect.width  - PAD.left - PAD.right
+  const chartH = rect.height - PAD.top  - PAD.bottom
+  const values = dataPoints.map((d) => d.value).filter((v) => Number.isFinite(v) && v >= 0)
+  const maxVal = values.length > 0 ? Math.max(...values) * 1.1 : 1
+  const safeMax = maxVal > 0 ? maxVal : 1
   return dataPoints.map((d, i) => ({
     x:     PAD.left + (i / Math.max(dataPoints.length - 1, 1)) * chartW,
-    y:     PAD.top  + chartH - (d.value / maxVal) * chartH,
+    y:     PAD.top  + chartH - ((Number.isFinite(d.value) ? d.value : 0) / safeMax) * chartH,
     value: d.value,
     day:   d.day,
-  }));
+  }))
 }
 
 function drawChart(canvas, dataPoints, progress = 1, hoverIdx = -1) {
@@ -44,11 +36,13 @@ function drawChart(canvas, dataPoints, progress = 1, hoverIdx = -1) {
 
   ctx.clearRect(0, 0, width, height);
 
-  const maxVal = Math.max(...dataPoints.map((d) => d.value)) * 1.1 || 1;
-  const points = dataPoints.map((d, i) => ({
+  const values  = dataPoints.map((d) => d.value).filter((v) => Number.isFinite(v) && v >= 0)
+  const maxVal  = values.length > 0 ? Math.max(...values) * 1.1 : 1
+  const safeMax = maxVal > 0 ? maxVal : 1
+  const points  = dataPoints.map((d, i) => ({
     x: PAD.left + (i / Math.max(dataPoints.length - 1, 1)) * chartW,
-    y: PAD.top  + chartH - (d.value / maxVal) * chartH,
-  }));
+    y: PAD.top  + chartH - ((Number.isFinite(d.value) ? d.value : 0) / safeMax) * chartH,
+  }))
 
   const clipX = PAD.left + chartW * progress;
   ctx.save();
@@ -162,7 +156,6 @@ function RevenueChart() {
 
   dataRef.current = dataPoints;
 
-  const yLabels = useMemo(() => getDynamicYLabels(dataPoints), [dataPoints]);
 
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -295,9 +288,6 @@ function RevenueChart() {
 
       {/* Chart */}
       <div className="flex gap-2">
-        <div className="flex flex-col-reverse justify-between text-[10px] text-gray-600 pr-1 pb-5 select-none">
-          {yLabels.map((l) => <span key={l}>{l}</span>)}
-        </div>
 
         <div className="flex-1 flex flex-col">
           <div ref={wrapperRef} className="relative flex-1 min-h-50">

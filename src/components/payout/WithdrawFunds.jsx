@@ -10,7 +10,7 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
   const handleSetMax = () => setAmount(maxAmount.toFixed(2));
 
   const handleSubmit = async () => {
-    const parsed = parseFloat(amount);
+    const parsed = Number.parseFloat(amount);
 
     if (!parsed || parsed <= 0) {
       toast.error('Please enter a valid amount.');
