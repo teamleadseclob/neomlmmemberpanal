@@ -21,7 +21,7 @@ function getCellClass(isCurrent, achieved) {
 function BenefitComparison({ ranks, currentRank }) {
   if (!ranks || ranks.length === 0) {
     return (
-      <div id="rank-progression-table" className="rounded-xl border border-[#1e1e3a] p-5 md:p-6 mt-6">
+      <div id="rank-progression-table" className="rounded-xl p-5 md:p-6 mt-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
         <h3 className="text-base font-bold text-white mb-5">Rank Progression & Requirements</h3>
         <p className="text-sm text-gray-500">No rank data available.</p>
       </div>
@@ -38,7 +38,7 @@ function BenefitComparison({ ranks, currentRank }) {
   }));
 
   return (
-    <div id="rank-progression-table" className="rounded-xl border border-[#1e1e3a] p-5 md:p-6 mt-6">
+    <div id="rank-progression-table" className="rounded-xl p-5 md:p-6 mt-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <h3 className="text-base font-bold text-white mb-5">Rank Progression & Requirements</h3>
 
       <div className="overflow-x-auto">

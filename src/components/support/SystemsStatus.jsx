@@ -7,7 +7,7 @@ const SYSTEMS = [
 
 function SystemsStatus() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />

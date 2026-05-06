@@ -49,7 +49,7 @@ RequirementRow.defaultProps = { unit: '' };
 function PlatinumRequirements({ nextRank }) {
   if (!nextRank) {
     return (
-      <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6 h-full flex items-center justify-center">
+      <div className="rounded-xl p-5 md:p-6 h-full flex items-center justify-center" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
         <p className="text-sm text-gray-500">No rank data available.</p>
       </div>
     );
@@ -58,7 +58,7 @@ function PlatinumRequirements({ nextRank }) {
   const { criteria } = nextRank;
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6 h-full">
+    <div className="rounded-xl p-5 md:p-6 h-full" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <h3 className="text-base font-bold text-white mb-5">{nextRank.name} Rank Requirements</h3>
 
       <div className="flex flex-col gap-5">

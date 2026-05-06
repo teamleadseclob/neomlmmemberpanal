@@ -378,7 +378,7 @@ GrandchildrenTree.defaultProps = {
    ══════════════════════════════════════════════════════════════ */
 function TreeLoading() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/40 p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <div className="flex flex-col items-center justify-center py-16 gap-4">
         <div className="w-10 h-10 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />
         <p className="text-sm text-gray-400">Loading sponsor tree…</p>
@@ -389,7 +389,7 @@ function TreeLoading() {
 
 function TreeError({ message }) {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/40 p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <div className="flex flex-col items-center justify-center py-16 gap-4">
         <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
           <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -574,7 +574,7 @@ function SponsorTree() {
   const crumbs = buildCrumbs(treeData, navPath);
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a]  p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
 
       <BreadcrumbNav crumbs={crumbs} navPath={navPath} goBack={goBack} setNavPath={setNavPath} />
 

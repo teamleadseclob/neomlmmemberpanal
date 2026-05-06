@@ -38,7 +38,7 @@ function TicketStats({ summary }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       {STAT_CONFIG.map((stat) => (
-        <div key={stat.key} className="rounded-xl border border-[#1e1e3a] p-5">
+        <div key={stat.key} className="rounded-xl p-5" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
           <div className={`w-9 h-9 rounded-lg ${stat.iconBg} flex items-center justify-center mb-3`}>
             {stat.icon}
           </div>

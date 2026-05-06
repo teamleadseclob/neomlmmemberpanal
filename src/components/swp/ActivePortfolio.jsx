@@ -10,14 +10,14 @@ export default function ActivePortfolio({ data }) {
 
   if (!data) {
     return (
-      <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5 md:p-6 h-full flex items-center justify-center">
+      <div className="rounded-xl p-5 md:p-6 h-full flex items-center justify-center" style={{ background: '#181F3066', border: '1px solid #EEB1FF1A' }}>
         <span className="w-7 h-7 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6 h-full flex flex-col">
+    <div className="rounded-xl p-5 md:p-6 h-full flex flex-col" style={{ background: '#181F3066', border: '1px solid #EEB1FF1A' }}>
       {/* Header row */}
       <div className="flex items-start justify-between mb-4">
         <div>

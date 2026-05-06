@@ -35,7 +35,7 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
   };
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <h2 className="text-lg font-bold text-white mb-5">Withdraw Funds</h2>
 
       {/* Amount */}
@@ -48,7 +48,7 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
         </label>
         <div
           className="flex items-center gap-2 rounded-xl px-4 py-3.5"
-          style={{ background: 'rgba(10,8,35,0.8)', border: '1px solid rgba(30,30,58,0.8)' }}
+          style={{ background: '#000000', border: '1px solid rgba(30,30,58,0.8)' }}
         >
           <span className="text-gray-500 text-lg font-semibold">$</span>
           <input
@@ -81,7 +81,7 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
         </p>
         <div
           className="flex items-center gap-3 rounded-xl px-4 py-3.5"
-          style={{ background: 'rgba(10,8,35,0.8)', border: '1px solid rgba(127,37,251,0.35)' }}
+          style={{ background: '#000000', border: '1px solid rgba(127,37,251,0.35)' }}
         >
           <div className="w-4 h-4 rounded-full border-2 border-purple-500 flex items-center justify-center shrink-0">
             <div className="w-2 h-2 rounded-full bg-purple-500" />
@@ -105,7 +105,7 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
         type="button"
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full py-3.5 mt-3.5 rounded-xl text-sm font-bold text-white border-none cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full py-3.5 mt-3.5 rounded-xl text-xs font-bold text-white border-none cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 disabled:opacity-60 disabled:cursor-not-allowed"
         style={{ background: 'linear-gradient(135deg, #7F25FB 0%, #CB3CFF 100%)' }}
       >
         {loading ? (

@@ -16,7 +16,7 @@ const FAQ_ITEMS = [
 
 function FaqQuickLinks() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -30,7 +30,7 @@ function FaqQuickLinks() {
         {FAQ_ITEMS.map((item) => (
           <div
             key={item.title}
-            className="rounded-lg border border-[#1e1e3a] bg-[#0a0920]/80 px-4 py-3 cursor-pointer
+            className="rounded-lg border border-[#1e1e3a]  px-4 py-3 cursor-pointer
                        hover:border-purple-500/30 transition-colors duration-200"
           >
             <p className="text-xs font-bold text-white mb-0.5">{item.title}</p>

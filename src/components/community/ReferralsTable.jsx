@@ -20,14 +20,14 @@ function ReferralsTable() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-[#1e1e3a] p-10 flex items-center justify-center">
+      <div className="rounded-xl p-10 flex items-center justify-center" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
         <div className="w-8 h-8 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] overflow-hidden">
+    <div className="rounded-xl overflow-hidden" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left">

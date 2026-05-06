@@ -116,7 +116,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
   }
 
   return (
-    <div className="relative rounded-xl border border-[#1e1e3a] p-5 flex flex-col hover:border-purple-500/30 transition-all duration-200">
+    <div className="relative rounded-xl p-5 flex flex-col hover:border-purple-500/30 transition-all duration-200" style={{ background: '#181F3066', border: '1px solid #EEB1FF1A' }}>
       {badge && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <span className="text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-linear-to-r from-[#7F25FB] to-[#CB3CFF] text-white whitespace-nowrap">

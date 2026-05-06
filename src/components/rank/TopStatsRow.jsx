@@ -8,7 +8,7 @@ function CurrentAchievement({ currentRank }) {
   const progress = 72;
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 h-full flex flex-col">
+    <div className="rounded-xl p-5 h-full flex flex-col" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <div className="flex items-start justify-between mb-4">
         <div>
           <p className="text-[10px] text-green-400 uppercase tracking-[2px] font-bold mb-1">Current Achievement</p>
@@ -48,7 +48,7 @@ CurrentAchievement.defaultProps = { currentRank: null };
 
 function TotalTeamSize() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 h-full flex flex-col">
+    <div className="rounded-xl p-5 h-full flex flex-col" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <div className="w-9 h-9 flex items-center justify-center mb-3">
         <img src={communityImg} alt="community" className="w-5 h-5 object-contain" />
       </div>
@@ -66,7 +66,7 @@ function TotalTeamSize() {
 
 function GlobalRanking() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 h-full flex flex-col">
+    <div className="rounded-xl p-5 h-full flex flex-col" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <div className="w-9 h-9 flex items-center justify-center mb-3">
         <img src={globalImg} alt="global ranking" className="w-5 h-5 object-contain" />
       </div>

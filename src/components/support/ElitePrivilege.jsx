@@ -1,7 +1,7 @@
 import React from 'react';
 function ElitePrivilege() {
   return (
-    <div className="rounded-xl p-5 md:p-6 relative" style={{ background: 'linear-gradient(#020717, #020717) padding-box, linear-gradient(135deg, #CB3CFF, #7F25FB) border-box', border: '1px solid transparent' }}>
+    <div className="rounded-xl p-5 md:p-6 relative" style={{ background: 'linear-gradient(#081028, #081028) padding-box, linear-gradient(128.49deg, #CB3CFF 19.86%, #7F25FB 68.34%) border-box', border: '1px solid transparent', borderRadius: '12px' }}>
       {/* Badge */}
       <div className="flex items-center gap-2 mb-3">
         <div className="w-7 h-7 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">

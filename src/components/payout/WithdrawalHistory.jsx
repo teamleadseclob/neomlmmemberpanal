@@ -174,7 +174,7 @@ export default function WithdrawalHistory({ onWalletData, onPendingData, onRefre
   }
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] px-5 pt-4 h-full flex flex-col min-h-[520px]">
+    <div className="rounded-xl px-5 pt-4 h-full flex flex-col min-h-[520px]" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-bold text-white">Withdrawal History</h2>
         <button

@@ -42,7 +42,7 @@ function Support() {
         <div className="lg:col-span-2 flex flex-col gap-4">
           <ElitePrivilege />
           <FaqQuickLinks />
-          <SystemsStatus />
+          {/* <SystemsStatus /> */}
         </div>
       </div>
     </div>

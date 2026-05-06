@@ -13,7 +13,7 @@ function AchievementHistory({ achievedRanks }) {
       ];
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <h3 className="text-base font-bold text-white mb-5">Achievement History</h3>
 
       <div className="flex flex-col">

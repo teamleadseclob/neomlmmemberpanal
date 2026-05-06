@@ -80,7 +80,7 @@ function RaiseTicket({ onSuccess }) {
   }
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6">
+    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-base font-bold text-white">Raise a New Ticket</h3>
