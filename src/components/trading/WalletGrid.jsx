@@ -113,6 +113,7 @@ function WalletItem({ wallet }) {
       {wallet.hasWithdraw && (
         <button
           type="button"
+          onClick={() => navigate('/payout')}
           className="w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide
                      bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] text-white
                      hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none"
