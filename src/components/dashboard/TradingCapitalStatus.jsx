@@ -44,7 +44,7 @@ function TradingCapitalStatus({ data }) {
     : 0;
 
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#0d0b2e]/60 p-5">
+    <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5">
       <div className="flex flex-col md:flex-row items-center gap-6">
         <CapCircle percentage={percentage} />
 
@@ -55,13 +55,13 @@ function TradingCapitalStatus({ data }) {
           </p>
 
           <div className="flex gap-4 mb-3">
-            <div className="flex-1">
+            <div className="flex-1 p-2.5 rounded bg-[#141B2C]">
               <p className="text-[10px] text-gray-500 mb-0.5">Investment Limit</p>
               <p className="text-base font-bold text-white">
                 ${investmentLimit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 p-2.5 rounded bg-[#141B2C]">
               <p className="text-[10px] text-gray-500 mb-0.5">Amount Invested</p>
               <p className="text-base font-bold text-white">
                 ${totalInvested.toLocaleString(undefined, { minimumFractionDigits: 2 })}
