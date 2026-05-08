@@ -8,8 +8,8 @@ function WelcomeSection() {
         <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
           Welcome back, Alex.
         </h1>
-        <p className="text-sm text-gray-400 mt-1 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />{' '}
+        <p className="text-xs md:text-sm text-gray-400 mt-1 flex items-center gap-1.5 whitespace-nowrap">
+          <span className="w-2 h-2 rounded-full bg-[#CB3CFF] inline-block" />{' '}
           Observatory is live. Market data synchronized.
         </p>
       </div>

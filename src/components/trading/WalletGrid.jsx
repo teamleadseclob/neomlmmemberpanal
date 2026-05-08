@@ -88,16 +88,31 @@ function WalletItem({ wallet }) {
         <div className="w-9 h-9 rounded-sm flex items-center justify-center flex-shrink-0 bg-[#A6E6FF1A]">
           {wallet.icon}
         </div>
-        {wallet.badge && (
-          <div className="flex flex-col items-end gap-1">
-            <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${BADGE_STYLES[wallet.badge.type]}`}>
-              {wallet.badge.text}
-            </span>
-            {wallet.notice && (
-              <span className="text-[9px] text-gray-500">{wallet.notice}</span>
-            )}
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Mobile: always visible history button */}
+          {wallet.hasViewHistory && (
+            <button
+              type="button"
+              onClick={() => navigate(wallet.historyRoute)}
+              className="md:hidden flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border border-purple-500/30 text-purple-400 bg-purple-500/10 cursor-pointer"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              History
+            </button>
+          )}
+          {wallet.badge && (
+            <div className="flex flex-col items-end gap-1">
+              <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${BADGE_STYLES[wallet.badge.type]}`}>
+                {wallet.badge.text}
+              </span>
+              {wallet.notice && (
+                <span className="text-[9px] text-gray-500">{wallet.notice}</span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Label */}

@@ -24,31 +24,35 @@ export default function RegisterForm() {
   })
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [errors, setErrors] = useState({})
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    setErrors((prev) => ({ ...prev, [name]: '' }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
-    if (!formData.fullName.trim() || !formData.referralCode.trim() || !formData.password.trim()) {
-      setError('Please fill in all fields'); return
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match'); return
-    }
-    if (!agreeTerms) {
-      setError('You must agree to the Terms of Service'); return
-    }
+    const newErrors = {}
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required'
+    if (!formData.email.trim()) newErrors.email = 'Email is required'
+    if (!formData.referralCode.trim()) newErrors.referralCode = 'Referral code is required'
+    if (!formData.password.trim()) newErrors.password = 'Password is required'
+    if (!formData.confirmPassword.trim()) newErrors.confirmPassword = 'Please confirm your password'
+    else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match'
+    if (!agreeTerms) newErrors.agreeTerms = 'You must agree to the Terms of Service'
+
+    if (Object.keys(newErrors).length) { setErrors(newErrors); return }
+    setErrors({})
+
     setLoading(true)
     try {
       await register(formData.fullName, formData.email, formData.referralCode, formData.password, formData.referralCode)
       toast.success('OTP sent to your email!')
       navigate('/verify-otp', { state: { email: formData.email } })
     } catch (err) {
-      setError(err?.response?.data?.message || 'Registration failed. Please try again.')
+      setErrors({ api: err?.response?.data?.message || 'Registration failed. Please try again.' })
     } finally {
       setLoading(false)
     }
@@ -56,49 +60,54 @@ export default function RegisterForm() {
 
   const checkboxClass = agreeTerms
     ? 'bg-gradient-to-br from-purple-600 to-purple-500 border-transparent shadow-[0_0_10px_rgba(147,51,234,0.4)]'
-    : 'bg-white/5 border-purple-400/40'
+    : errors.agreeTerms
+      ? 'bg-white/5 border-red-500/60'
+      : 'bg-white/5 border-purple-400/40'
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-      {error && (
+      {errors.api && (
         <div className="bg-red-500/10 border border-red-500/30 text-red-300 text-xs px-3.5 py-2.5 rounded-xl text-center">
-          {error}
+          {errors.api}
         </div>
       )}
 
       <RegisterInput id="fullName" name="fullName" label="Full Name"
         placeholder="Enter your full name" value={formData.fullName}
-        onChange={handleChange} autoComplete="name" />
+        onChange={handleChange} autoComplete="name" error={errors.fullName} />
 
       <RegisterInput id="email" name="email" label="Email"
         placeholder="Enter your email" value={formData.email}
-        onChange={handleChange} autoComplete="email" />
+        onChange={handleChange} autoComplete="email" error={errors.email} />
 
       <RegisterInput id="referralCode" name="referralCode" label="Referral Code"
         placeholder="Enter referral code" value={formData.referralCode}
-        onChange={handleChange} readOnly />
+        onChange={handleChange} readOnly error={errors.referralCode} />
 
       <RegisterInput id="password" name="password" label="Password" type="password"
         placeholder="Create password" value={formData.password}
-        onChange={handleChange} autoComplete="new-password" />
+        onChange={handleChange} autoComplete="new-password" error={errors.password} />
 
       <RegisterInput id="confirmPassword" name="confirmPassword" label="Confirm Password" type="password"
         placeholder="Confirm password" value={formData.confirmPassword}
-        onChange={handleChange} autoComplete="new-password" />
+        onChange={handleChange} autoComplete="new-password" error={errors.confirmPassword} />
 
       {/* Agree terms */}
-      <label className="flex items-center gap-2.5 cursor-pointer select-none mt-1" htmlFor="agreeTerms">
-        <input id="agreeTerms" type="checkbox" checked={agreeTerms}
-          onChange={(e) => setAgreeTerms(e.target.checked)} className="hidden" />
-        <span className={`w-5 h-5 rounded-[5px] border flex items-center justify-center flex-shrink-0 transition-all duration-200 ${checkboxClass}`}>
-          {agreeTerms && <CheckIcon />}
-        </span>
-        <span className="text-white/70 text-sm">
-          I agree to the{' '}
-          <a href="/terms" className="text-purple-400 hover:text-purple-300 underline font-semibold">Terms of Service</a>
-        </span>
-      </label>
+      <div>
+        <label className="flex items-center gap-2.5 cursor-pointer select-none mt-1" htmlFor="agreeTerms">
+          <input id="agreeTerms" type="checkbox" checked={agreeTerms}
+            onChange={(e) => { setAgreeTerms(e.target.checked); setErrors((p) => ({ ...p, agreeTerms: '' })) }} className="hidden" />
+          <span className={`w-5 h-5 rounded-[5px] border flex items-center justify-center flex-shrink-0 transition-all duration-200 ${checkboxClass}`}>
+            {agreeTerms && <CheckIcon />}
+          </span>
+          <span className="text-white/70 text-sm">
+            I agree to the{' '}
+            <a href="/terms" className="text-purple-400 hover:text-purple-300 underline font-semibold">Terms of Service</a>
+          </span>
+        </label>
+        {errors.agreeTerms && <p className="mt-1.5 text-red-400 text-xs">{errors.agreeTerms}</p>}
+      </div>
 
       {/* Submit */}
       <button

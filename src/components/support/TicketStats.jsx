@@ -1,36 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import tickets from "../../assets/support/tickets.png";
+import active from "../../assets/support/active.png";
+import resolved from "../../assets/support/resolved.png";
 
 const STAT_CONFIG = [
   {
     key: 'total',
     label: 'Total Tickets',
-    iconBg: 'bg-blue-500/20',
-    icon: (
-      <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
-      </svg>
-    ),
+    iconBg: 'bg-[#1E293B]',
+    icon:tickets
   },
   {
     key: 'open',
     label: 'Active / Open',
-    iconBg: 'bg-yellow-500/20',
-    icon: (
-      <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-      </svg>
-    ),
+    iconBg: 'bg-[#10B9811A]',
+    icon: active
   },
   {
     key: 'resolved',
     label: 'Resolved',
-    iconBg: 'bg-green-500/20',
-    icon: (
-      <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-      </svg>
-    ),
+    iconBg: 'bg-[#3B82F61A]',
+    icon: resolved
   },
 ];
 
@@ -38,9 +29,9 @@ function TicketStats({ summary }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       {STAT_CONFIG.map((stat) => (
-        <div key={stat.key} className="rounded-xl p-5" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
+        <div key={stat.key} className="rounded-2xl p-5" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
           <div className={`w-9 h-9 rounded-lg ${stat.iconBg} flex items-center justify-center mb-3`}>
-            {stat.icon}
+            <img src={stat.icon} className='w-4' alt={stat.label} />
           </div>
           <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1">{stat.label}</p>
           <p className="text-3xl font-bold text-white">

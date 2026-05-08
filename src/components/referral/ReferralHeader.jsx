@@ -9,7 +9,7 @@ function ReferralHeader() {
       {/* Title */}
       <div>
         <h1 className="text-2xl font-bold text-white mb-1">Referral Hub</h1>
-        <p className="text-sm text-gray-400">
+        <p className="text-[8px] md:text-sm text-gray-400">
           Manage your kinetic network and accelerate your earnings capacity.
         </p>
       </div>
@@ -20,7 +20,7 @@ function ReferralHeader() {
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-md text-xs font-bold
+          className="flex items-center gap-2 px-5 py-2.5 md:mt-6 rounded-md text-xs font-bold
                      bg-linear-to-r from-[#D946EF] to-[#CB3CFF] text-white
                      hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200 border-none cursor-pointer"
         >

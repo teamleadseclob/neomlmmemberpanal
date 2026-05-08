@@ -11,6 +11,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({ userId: '', password: '' })
 
   const { login: saveToken } = useAuth()
   const navigate = useNavigate()
@@ -18,10 +19,11 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!userId.trim() || !password.trim()) {
-      toast.error('Please fill in all fields')
-      return
-    }
+    const newErrors = { userId: '', password: '' }
+    if (!userId.trim()) newErrors.userId = 'User ID is required'
+    if (!password.trim()) newErrors.password = 'Password is required'
+    if (newErrors.userId || newErrors.password) { setErrors(newErrors); return }
+    setErrors({ userId: '', password: '' })
 
     setLoading(true)
     try {
@@ -43,10 +45,12 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit}>
       <InputField label="User ID" type="text" placeholder="Enter user ID"
-        value={userId} onChange={(e) => setUserId(e.target.value)} />
+        value={userId} onChange={(e) => { setUserId(e.target.value); setErrors((p) => ({ ...p, userId: '' })) }}
+        error={errors.userId} />
 
       <InputField label="Password" type="password" placeholder="Enter password"
-        value={password} onChange={(e) => setPassword(e.target.value)} />
+        value={password} onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: '' })) }}
+        error={errors.password} />
 
       <LoginOptions remember={remember} onRememberChange={() => setRemember((r) => !r)} />
 
@@ -67,7 +71,7 @@ export default function LoginForm() {
         <div className="flex-1 h-px bg-white/10" />
       </div>
 
-      <p className="text-center text-white/30 text-xs leading-relaxed">
+      <p className="text-center text-white/30 text-[10px] leading-relaxed">
         By continuing, you agree to NeoFi&apos;s{' '}
         <a href="/terms" className="text-white/60 font-semibold underline">Terms of Service</a>{' '}and{' '}
         <a href="/privacy" className="text-white/60 font-semibold underline">Privacy Policy</a>

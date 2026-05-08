@@ -37,13 +37,14 @@ export function useCountUp(target, duration = 1200) {
  *   duration   {number}  — animation duration in ms (default 1200)
  *   prefix     {string}  — prefix symbol (default '$')
  */
-export default function AnimatedAmount({ value, className, large, duration, prefix }) {
-  const animated = useCountUp(value, duration);
+export default function AnimatedAmount({ value, className, large, duration, prefix, style }) {
+  const safeVal  = Number.isFinite(value) ? value : 0
+  const animated = useCountUp(safeVal, duration);
   const dollars  = Math.floor(animated);
   const cents    = ((animated % 1) * 100).toFixed(0).padStart(2, '0');
 
   return (
-    <p className={className}>
+    <p className={className} style={style}>
       {prefix}{dollars.toLocaleString()}.
       {large
         ? <span className="text-2xl md:text-3xl text-gray-400 font-semibold ml-0.5">{cents}</span>
@@ -58,6 +59,7 @@ AnimatedAmount.propTypes = {
   large:     PropTypes.bool,
   duration:  PropTypes.number,
   prefix:    PropTypes.string,
+  style:     PropTypes.object,
 };
 
 AnimatedAmount.defaultProps = {
@@ -65,4 +67,5 @@ AnimatedAmount.defaultProps = {
   large:     false,
   duration:  1200,
   prefix:    '$',
+  style:     undefined,
 };

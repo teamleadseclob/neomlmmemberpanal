@@ -8,7 +8,7 @@ import tradingImg    from '../../assets/dashboard/trading.png'
 
 function TeamPerformance({ data }) {
   const items = [
-    { img: currentImg,    label: 'CURRENT RANK',    value: data?.currentRank ?? '—' },
+    { img: currentImg,    label: 'CURRENT RANK',    value: data?.currentRank ?? 'No Rank Achieved' },
     { img: affiliatesImg, label: 'TOTAL AFFILIATES', value: data?.totalDirectReferrals ?? 0 },
     { img: downlineImg,   label: 'TOTAL DOWNLINES',  value: data?.totalDownline ?? 0 },
     { img: swpImg,        label: 'SWP PURCHASED',    value: `$${(data?.totalSwpPurchased ?? 0).toLocaleString()}` },

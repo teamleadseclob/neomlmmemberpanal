@@ -15,7 +15,7 @@ const EyeClosedIcon = () => (
   </svg>
 )
 
-export default function RegisterInput({ id, name, label, type, placeholder, value, onChange, readOnly, autoComplete }) {
+export default function RegisterInput({ id, name, label, type, placeholder, value, onChange, readOnly, autoComplete, error }) {
   const [showPw, setShowPw] = useState(false)
   const isPassword = type === 'password'
   const inputType = isPassword && showPw ? 'text' : type
@@ -33,11 +33,13 @@ export default function RegisterInput({ id, name, label, type, placeholder, valu
           onChange={onChange}
           readOnly={readOnly}
           autoComplete={autoComplete}
-          className={`w-full border rounded-xl px-4 py-[14px] lg:py-[16px] text-sm lg:text-base placeholder-white/25 outline-none transition-all duration-200 block
+          className={`w-full border rounded-xl px-4 py-[14px] lg:py-[16px] text-sm lg:text-base outline-none transition-all duration-200 block
             ${readOnly
               ? 'bg-white/3 border-white/5 text-white/40 cursor-not-allowed select-none'
-              : 'bg-white/5 border-white/10 text-white focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)] caret-purple-400 cursor-default focus:cursor-text'}`}
-          style={{            WebkitBoxShadow: '0 0 0px 1000px rgba(255,255,255,0.0) inset',
+              : error
+                ? 'bg-white/5 border-red-500/60 text-white focus:border-red-500/80 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15)] caret-purple-400 cursor-default focus:cursor-text'
+                : 'bg-white/5 border-white/10 text-white focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)] caret-purple-400 cursor-default focus:cursor-text'}`}
+          style={{ WebkitBoxShadow: '0 0 0px 1000px rgba(255,255,255,0.0) inset',
             WebkitTextFillColor: '#ffffff',
             caretColor: '#a855f7',
             transition: 'background-color 5000s ease-in-out 0s', paddingRight: isPassword ? '48px' : undefined }}
@@ -60,6 +62,7 @@ export default function RegisterInput({ id, name, label, type, placeholder, valu
           </button>
         )}
       </div>
+      {error && <p className="mt-1.5 text-red-400 text-xs">{error}</p>}
     </div>
   )
 }
@@ -74,6 +77,7 @@ RegisterInput.propTypes = {
   onChange: PropTypes.func.isRequired,
   readOnly: PropTypes.bool,
   autoComplete: PropTypes.string,
+  error: PropTypes.string,
 }
 
 RegisterInput.defaultProps = {
@@ -81,4 +85,5 @@ RegisterInput.defaultProps = {
   placeholder: '',
   readOnly: false,
   autoComplete: 'off',
+  error: '',
 }

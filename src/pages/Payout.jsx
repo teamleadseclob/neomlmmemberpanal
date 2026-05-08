@@ -8,8 +8,8 @@ import {
 } from '../components/payout';
 
 export default function Payout() {
-  const [walletData, setWalletData]   = useState({ balance: 0, availableForWithdrawal: 0, totalPaidOut: 0 });
-  const [pendingTxs, setPendingTxs]   = useState([]);
+  const [walletData, setWalletData] = useState({ balance: 0, availableForWithdrawal: 0, totalPaidOut: 0 });
+  const [pendingTxs, setPendingTxs] = useState([]);
   const historyRefresh = useRef(null);
 
   return (
@@ -21,6 +21,7 @@ export default function Payout() {
         </p>
       </div>
 
+      {/* Top row — wallet balance + pending */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
         <div className="lg:col-span-3">
           <WalletBalance
@@ -34,11 +35,13 @@ export default function Payout() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
-        <div className="lg:col-span-2">
+      {/* Bottom row — withdraw + history */}
+      <div className="grid grid-cols-12 gap-8 mb-6 items-stretch">
+        <div className="col-span-12 lg:col-span-5 h-full">
           <WithdrawFunds maxAmount={walletData.availableForWithdrawal} onSuccess={() => historyRefresh.current?.()} />
         </div>
-        <div className="lg:col-span-3">
+
+        <div className="col-span-12 lg:col-span-7">
           <WithdrawalHistory onWalletData={setWalletData} onPendingData={setPendingTxs} onRefreshRef={historyRefresh} />
         </div>
       </div>

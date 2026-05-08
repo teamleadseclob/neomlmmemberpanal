@@ -116,7 +116,11 @@ function formatValue(v) {
 function xLabels(days) {
   return Array.from({ length: days }, (_, i) => {
     const d = i + 1;
-    return (d === 1 || d % 5 === 0 || d === days) ? String(d) : '';
+    const isLast     = d === days;
+    const isMultOf5  = d % 5 === 0;
+    // hide the multOf5 label if last day is within 2 days of it
+    if (isMultOf5 && !isLast && days - d < 3) return '';
+    return (d === 1 || isMultOf5 || isLast) ? String(d) : '';
   });
 }
 
@@ -318,10 +322,20 @@ function RevenueChart() {
             )}
           </div>
 
-          <div className="flex justify-between text-[10px] text-gray-600 pt-2 select-none overflow-hidden">
-            {labels.map((l, i) => (
-              <span key={i} className="text-center" style={{ width: `${100 / labels.length}%` }}>{l}</span>
-            ))}
+          <div className="relative h-5 pt-2 select-none">
+            {labels.map((l, i) => {
+              if (!l) return null;
+              const pct = (i / Math.max(dataPoints.length - 1, 1)) * 100;
+              return (
+                <span
+                  key={i}
+                  className="absolute text-[10px] text-gray-600 -translate-x-1/2"
+                  style={{ left: `${pct}%` }}
+                >
+                  {l}
+                </span>
+              );
+            })}
           </div>
         </div>
       </div>

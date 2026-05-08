@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import toast from 'react-hot-toast';
+import { MdOutlineMoneyOff, MdOutlineAccountBalanceWallet, MdWarningAmber } from 'react-icons/md';
 import { withdraw } from '../../config/apiService';
 
 export default function WithdrawFunds({ maxAmount, onSuccess }) {
@@ -35,7 +36,7 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
   };
 
   return (
-    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
+    <div className="rounded-xl p-5 md:p-6 h-full flex flex-col" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <h2 className="text-lg font-bold text-white mb-5">Withdraw Funds</h2>
 
       {/* Amount */}
@@ -97,6 +98,21 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
             </svg>
           </div>
         </div>
+      </div>
+
+      {/* Notice */}
+      <div className="mb-4 rounded-lg p-3 flex flex-col gap-2" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Withdrawal Notice</p>
+        {[
+          { icon: <MdOutlineMoneyOff className="text-yellow-400/60" size={13} />,            text: 'A 5% admin charge applies to all withdrawals.' },
+          { icon: <MdOutlineAccountBalanceWallet className="text-green-400/60" size={13} />, text: 'Only USDT-BEP20 (BSC) is supported.' },
+          { icon: <MdWarningAmber className="text-orange-400/60" size={13} />,               text: 'Withdrawal requests are reviewed and accepted by admin.' },
+        ].map((item) => (
+          <div key={item.text} className="flex items-start gap-2">
+            <span className="flex-shrink-0 mt-0.5">{item.icon}</span>
+            <p className="text-[11px] text-white/25 leading-relaxed">{item.text}</p>
+          </div>
+        ))}
       </div>
 
       {/* Submit */}

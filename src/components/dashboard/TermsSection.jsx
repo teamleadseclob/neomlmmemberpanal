@@ -13,7 +13,7 @@ function TermsSection() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       {/* General T&Cs Summary */}
       <div>
-        <h3 className="text-xs font-bold text-gray-300 tracking-[0.15em] uppercase mb-4">
+        <h3 className="text-xs font-bold bg-linear-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent tracking-[0.15em] uppercase mb-4">
           General T&amp;Cs Summary
         </h3>
         <ul className="space-y-3">

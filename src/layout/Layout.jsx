@@ -155,7 +155,7 @@ export default function Layout() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed md:static z-30 h-full flex flex-col py-6
+          fixed md:static z-20 h-full flex flex-col py-6
           border-r border-[#1e1e3a] bg-[#020717]
           transition-all duration-300
           ${sidebarOpen ? 'w-52' : 'w-0 md:w-16 lg:w-52'}
@@ -221,7 +221,7 @@ export default function Layout() {
             <Outlet context={{ swpBalance }} />
           </div>
         </main>
-        <Footer />
+        {/* <Footer /> */}
       </div>
 
       {/* Logout Confirmation Modal */}

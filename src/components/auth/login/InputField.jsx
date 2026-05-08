@@ -15,13 +15,26 @@ const EyeClosedIcon = () => (
   </svg>
 )
 
-export default function InputField({ label, type, placeholder, value, onChange }) {
+const placeholderStyle = `
+  .input-placeholder::placeholder {
+    color: #9CA3AF;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    opacity: 1;
+  }
+`
+
+export default function InputField({ label, type, placeholder, value, onChange, error }) {
   const [showPw, setShowPw] = useState(false)
   const isPassword = type === 'password'
   const inputType = isPassword && showPw ? 'text' : type
 
   return (
-    <div className="mb-5">
+    <div className="mb-4">
+      <style>{placeholderStyle}</style>
       <label className="block text-white text-sm font-semibold mb-2">{label}</label>
       <div className="relative">
         <input
@@ -29,7 +42,11 @@ export default function InputField({ label, type, placeholder, value, onChange }
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white text-sm placeholder-white/25 outline-none transition-all duration-200 focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)] caret-purple-400 cursor-default focus:cursor-text"
+          className={`w-full bg-white/5 border rounded-xl px-4 py-2.5 sm:py-3.5 text-white outline-none transition-all duration-200 caret-purple-400 cursor-default focus:cursor-text input-placeholder ${
+            error
+              ? 'border-red-500/60 focus:border-red-500/80 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15)]'
+              : 'border-white/10 focus:border-purple-500/60 focus:shadow-[0_0_0_3px_rgba(147,51,234,0.15)]'
+          }`}
           style={{
             paddingRight: isPassword ? '48px' : undefined,
             WebkitBoxShadow: '0 0 0px 1000px rgba(255,255,255,0.0) inset',
@@ -48,6 +65,7 @@ export default function InputField({ label, type, placeholder, value, onChange }
           </button>
         )}
       </div>
+      {error && <p className="mt-1.5 text-red-400 text-xs">{error}</p>}
     </div>
   )
 }
@@ -58,9 +76,11 @@ InputField.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  error: PropTypes.string,
 }
 
 InputField.defaultProps = {
   type: 'text',
   placeholder: '',
+  error: '',
 }

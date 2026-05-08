@@ -22,6 +22,7 @@ export default function WalletBalance({ balance, availableForWithdrawal, totalPa
       <AnimatedAmount
         value={balance}
         large
+        prefix="$"
         className="text-4xl md:text-5xl font-bold text-white mb-6 relative"
       />
 
@@ -30,12 +31,12 @@ export default function WalletBalance({ balance, availableForWithdrawal, totalPa
           <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">
             Available for Withdrawal
           </p>
-          <span
-            className="text-lg md:text-xl font-bold"
-            style={{ background: 'linear-gradient(128.49deg, #CB3CFF 19.86%, #7F25FB 68.34%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', display: 'inline-block' }}
-          >
-            <AnimatedAmount value={availableForWithdrawal} className="" />
-          </span>
+          <AnimatedAmount
+            value={availableForWithdrawal}
+            prefix="$"
+            className="text-lg md:text-xl font-bold bg-clip-text text-transparent"
+            style={{ backgroundImage: 'linear-gradient(128.49deg, #CB3CFF 19.86%, #7F25FB 68.34%)' }}
+          />
         </div>
         <div className="rounded-xl border border-[#1e1e3a] p-4" style={{ background: '#00000033' }}>
           <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">

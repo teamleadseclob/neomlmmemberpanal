@@ -50,6 +50,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+input::placeholder {
+  color: #9CA3AF !important;
+  -webkit-text-fill-color: #9CA3AF !important;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0;
+  opacity: 1;
+}
+
 img {
   -webkit-user-drag: none;
   -khtml-user-drag: none;

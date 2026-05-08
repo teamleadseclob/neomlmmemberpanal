@@ -22,8 +22,8 @@ function Dropdown({ label, options, value, onChange, display }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
-                   hover:border-purple-500/50 transition-colors cursor-pointer bg-transparent"
+        className="w-full bg-black flex items-center justify-between border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
+                   hover:border-purple-500/50 transition-colors cursor-pointer"
       >
         <span>{display(value)}</span>
         <svg className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -31,7 +31,7 @@ function Dropdown({ label, options, value, onChange, display }) {
         </svg>
       </button>
       {open && (
-        <ul className="absolute z-20 mt-1 w-full border border-[#1e1e3a] rounded-lg overflow-hidden"
+        <ul className="absolute  z-20 mt-1 w-full border border-[#1e1e3a] rounded-lg overflow-hidden"
             style={{ background: '#0d0b2e' }}>
           {options.map((opt) => (
             <li key={opt}>
@@ -51,12 +51,29 @@ function Dropdown({ label, options, value, onChange, display }) {
   )
 }
 
-function RaiseTicket({ onSuccess }) {
+Dropdown.propTypes = {
+  label:    PropTypes.string.isRequired,
+  options:  PropTypes.arrayOf(PropTypes.string).isRequired,
+  value:    PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  display:  PropTypes.func.isRequired,
+}
+
+function RaiseTicket({ onSuccess, prefill }) {
   const [category, setCategory] = useState(CATEGORIES[0])
   const [priority, setPriority] = useState('low')
   const [subject, setSubject]   = useState('')
   const [message, setMessage]   = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const cardRef = useRef(null)
+
+  useEffect(() => {
+    if (!prefill) return
+    if (prefill.category && CATEGORIES.includes(prefill.category)) setCategory(prefill.category)
+    if (prefill.subject)  setSubject(prefill.subject)
+    if (prefill.message)  setMessage(prefill.message)
+    cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [prefill])
 
   const handleSubmit = async () => {
     if (!subject.trim() || !message.trim()) {
@@ -80,17 +97,18 @@ function RaiseTicket({ onSuccess }) {
   }
 
   return (
-    <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
+    <div ref={cardRef} className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-base font-bold text-white">Raise a New Ticket</h3>
-        <span className="text-[10px] text-green-400 uppercase tracking-widest font-bold">
+        <span className="text-[10px] uppercase tracking-widest font-bold  bg-clip-text text-transparent"
+          style={{ backgroundImage: 'linear-gradient(128.49deg, #CB3CFF 19.86%, #7F25FB 68.34%)' }}>
           Average Response: 2H
         </span>
       </div>
 
       {/* Category + Priority row */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <Dropdown
           label="Category"
           options={CATEGORIES}
@@ -118,7 +136,7 @@ function RaiseTicket({ onSuccess }) {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder="Brief summary of your inquiry"
-          className="w-full border border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
+          className="w-full  border bg-black border-[#1e1e3a] rounded-lg px-3 py-2.5 text-sm text-white
                      placeholder:text-gray-600 focus:outline-none focus:border-purple-500/50"
         />
       </div>
@@ -128,8 +146,8 @@ function RaiseTicket({ onSuccess }) {
         <label htmlFor="message" className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5 block">
           Message
         </label>
-        <div className="border border-[#1e1e3a] rounded-lg overflow-hidden">
-          <div className="flex items-center gap-1 px-3 py-2 border-b border-[#1e1e3a]">
+        <div className="border bg-black border-[#1e1e3a] rounded-lg overflow-hidden">
+          <div className="flex bg-[#1E293B80] items-center gap-1 px-3 py-2 border-b border-[#1e1e3a]">
             <button type="button" className="w-7 h-7 rounded flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#1a1a3e] transition-colors cursor-pointer bg-transparent border-none">
               <span className="text-sm font-bold">B</span>
             </button>
@@ -148,7 +166,7 @@ function RaiseTicket({ onSuccess }) {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Describe your issue in detail..."
             rows={4}
-            className="w-full px-3 py-3 text-sm text-white resize-none
+            className="w-full bg-black px-3 py-3 text-sm text-white resize-none
                        placeholder:text-gray-600 focus:outline-none border-none"
           />
         </div>
@@ -183,6 +201,16 @@ function RaiseTicket({ onSuccess }) {
 
 RaiseTicket.propTypes = {
   onSuccess: PropTypes.func,
+  prefill:   PropTypes.shape({
+    category: PropTypes.string,
+    subject:  PropTypes.string,
+    message:  PropTypes.string,
+  }),
+}
+
+RaiseTicket.defaultProps = {
+  onSuccess: null,
+  prefill:   null,
 }
 
 export default RaiseTicket;

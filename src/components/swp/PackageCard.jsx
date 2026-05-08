@@ -20,10 +20,6 @@ const TIER_ICONS = {
   star: (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>),
 }
 
-const STATIC_BTN_CLASS = {
-  repurchase: 'border border-purple-500/50 text-purple-400 bg-transparent hover:bg-purple-500/10 transition-all duration-200',
-}
-
 const BUTTON_LABELS = {
   repurchase: 'Repurchase',
 }
@@ -89,14 +85,45 @@ function SelectTierLabel({ hovered }) {
 
 function StaticButton({ btnType, loading, onClick }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={loading}
-      className={`w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${STATIC_BTN_CLASS[btnType]}`}
-    >
-      {loading ? SPINNER : BUTTON_LABELS[btnType]}
-    </button>
+    <div className="flex justify-center">
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={loading}
+        style={{
+          background: 'transparent',
+          border: '1px solid rgba(139,92,246,0.5)',
+          borderRadius: '8px',
+          width: '50%',
+          color: 'rgb(192,132,252)',
+          transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+          padding: '10px 0',
+          fontSize: '12px',
+          fontWeight: 600,
+          letterSpacing: '0.05em',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          opacity: loading ? 0.6 : 1,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'linear-gradient(to right, #7F25FB, #CB3CFF)';
+          e.currentTarget.style.border = '1px solid transparent';
+          e.currentTarget.style.borderRadius = '4px';
+          e.currentTarget.style.width = '100%';
+          e.currentTarget.style.color = '#fff';
+          e.currentTarget.style.boxShadow = '0 8px 24px rgba(127,37,251,0.35)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.border = '1px solid rgba(139,92,246,0.5)';
+          e.currentTarget.style.borderRadius = '8px';
+          e.currentTarget.style.width = '50%';
+          e.currentTarget.style.color = 'rgb(192,132,252)';
+          e.currentTarget.style.boxShadow = 'none';
+        }}
+      >
+        {loading ? SPINNER : BUTTON_LABELS[btnType]}
+      </button>
+    </div>
   )
 }
 

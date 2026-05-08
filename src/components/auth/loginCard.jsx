@@ -3,10 +3,10 @@ import LoginForm from './login/LoginForm'
 
 export default function LoginCard() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="w-full min-h-screen flex items-center justify-center px-5 py-20">
       {/* Card */}
       <div
-        className="relative w-full max-w-120 rounded-3xl border border-white/8 p-11"
+        className="relative w-full max-w-md rounded-2xl sm:rounded-3xl border border-white/8 p-6 sm:p-11"
         style={{
           background: 'rgba(255,255,255,0.04)',
           backdropFilter: 'blur(28px) saturate(180%)',
@@ -19,8 +19,8 @@ export default function LoginCard() {
         <div className="absolute top-0 left-[20%] right-[20%] h-px rounded-full pointer-events-none"
           style={{ background: 'linear-gradient(90deg, transparent, rgba(167,139,250,0.6), rgba(96,165,250,0.5), transparent)' }} />
 
-        <h1 className="text-center text-white font-black text-4xl tracking-tight mb-2">Welcome back!</h1>
-        <p className="text-center text-white/40 text-sm mb-8">Enter your credentials to access your dashboard.</p>
+        <h1 className="text-center text-white font-black text-2xl sm:text-4xl tracking-tight mb-1.5 sm:mb-2">Welcome back!</h1>
+        <p className="text-center text-white/40 text-xs sm:text-sm mb-5 sm:mb-8">Enter your credentials to access your dashboard.</p>
 
         <LoginForm />
       </div>

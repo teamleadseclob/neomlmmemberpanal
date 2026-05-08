@@ -69,6 +69,11 @@ export const getswpplan = async () => {
   return response.data
 }
 
+export const getswphistory = async () => {
+  const response = await axiosConfig.get(`/api/swp/purchases`)
+  return response.data
+}
+
 export const purchaseswp = async (amount) => {
   const response = await axiosConfig.post(`/api/swp/purchase`, { amount })
   return response.data

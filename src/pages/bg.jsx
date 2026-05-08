@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-const N    = isMobile ? 60 : 200;
-const CONN = isMobile ? 120 : 270;
-const STAR_COUNT = isMobile ? 4 : 6;
+function getN()    { return window.innerWidth < 768 ? 80 : 200 }
+function getCONN() { return window.innerWidth < 768 ? 150 : 270 }
+function getSTARS(){ return window.innerWidth < 768 ? 3  : 6   }
 
 function yColor(y, H, boost = 0) {
   const t = Math.max(0, Math.min(1, y / H));
@@ -42,10 +41,15 @@ export default function PlexusBackground({ children, style }) {
     const stars = [];
     const ripples = [];
     let mouseX = -9999, mouseY = -9999;
+    let N = getN(), CONN = getCONN(), STAR_COUNT = getSTARS();
 
     function resize() {
-      W = canvas.width = canvas.offsetWidth;
-      H = canvas.height = canvas.offsetHeight;
+      const dpr = window.devicePixelRatio || 1;
+      W = canvas.offsetWidth;
+      H = canvas.offsetHeight;
+      canvas.width  = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function initNodes() {
@@ -216,22 +220,26 @@ export default function PlexusBackground({ children, style }) {
         const mdx = p.x - mouseX, mdy = p.y - mouseY;
         const mouseDist = Math.hypot(mdx, mdy);
         const mouseScale = mouseDist < 80 ? 1 + (80 - mouseDist) / 80 * 1.5 : 1;
-        const gr = p.r * 8 * pulse * p.depth * mouseScale;
+        const isMob = W < 768;
+        const glowMult = isMob ? 3 : 8;
+        const gr = p.r * glowMult * pulse * p.depth * mouseScale;
 
-        const gw = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, gr);
-        gw.addColorStop(0, `rgba(${Math.min(255, c.r + 80)},${Math.min(255, c.g + 30)},${Math.min(255, c.b + 80)},0.95)`);
-        gw.addColorStop(0.25, `rgba(${c.r},${c.g},${c.b},0.4)`);
-        gw.addColorStop(0.6, `rgba(${c.r},${c.g},${c.b},0.1)`);
-        gw.addColorStop(1, `rgba(${c.r},${c.g},${c.b},0)`);
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
-        ctx.fillStyle = gw;
-        ctx.fill();
+        if (!isMob) {
+          const gw = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, gr);
+          gw.addColorStop(0, `rgba(${Math.min(255, c.r + 80)},${Math.min(255, c.g + 30)},${Math.min(255, c.b + 80)},0.95)`);
+          gw.addColorStop(0.25, `rgba(${c.r},${c.g},${c.b},0.4)`);
+          gw.addColorStop(0.6, `rgba(${c.r},${c.g},${c.b},0.1)`);
+          gw.addColorStop(1, `rgba(${c.r},${c.g},${c.b},0)`);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
+          ctx.fillStyle = gw;
+          ctx.fill();
+        }
 
         const coreR = p.r * pulse * p.depth * mouseScale;
         ctx.beginPath();
         ctx.arc(p.x, p.y, coreR, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,200,255,0.95)";
+        ctx.fillStyle = `rgba(${Math.min(255, c.r + 80)},${Math.min(255, c.g + 30)},${Math.min(255, c.b + 80)},0.95)`;
         ctx.fill();
       }
 
@@ -283,7 +291,10 @@ export default function PlexusBackground({ children, style }) {
     initNodes();
     draw();
 
-    const ro = new ResizeObserver(() => { resize(); initNodes(); });
+    const ro = new ResizeObserver(() => {
+      N = getN(); CONN = getCONN(); STAR_COUNT = getSTARS();
+      resize(); initNodes();
+    });
     ro.observe(canvas.parentElement);
 
     return () => {
@@ -296,12 +307,12 @@ export default function PlexusBackground({ children, style }) {
   }, []);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: "100vh", background: "#000", overflow: "hidden", ...style }}>
+    <div style={{ position: "relative", width: "100%", minHeight: "100vh", height: "100%", background: "#000", overflow: "hidden", ...style }}>
       <canvas
         ref={canvasRef}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", cursor: "crosshair" }}
+        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "block" }}
       />
-      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+      <div style={{ position: "relative", zIndex: 1, width: "100%", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         {children}
       </div>
     </div>

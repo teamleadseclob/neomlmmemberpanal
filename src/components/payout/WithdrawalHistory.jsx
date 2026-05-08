@@ -121,56 +121,109 @@ export default function WithdrawalHistory({ onWalletData, onPendingData, onRefre
   };
 
   function renderRows() {
-    if (loading) {
-      return (
-        <tr>
-          <td colSpan={5} className="py-16 text-center">
-            <div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" />
-          </td>
-        </tr>
-      );
-    }
-    if (transactions.length === 0) {
-      return (
-        <tr>
-          <td colSpan={5} className="py-16 text-center text-sm text-gray-500">
-            No {activeStatus === 'all' ? '' : activeStatus} withdrawal history found.
-          </td>
-        </tr>
-      );
-    }
-    return transactions.map((tx) => (
-      <tr key={tx._id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
-        <td className="py-3 pr-4">
-          <p className="text-[11px] font-semibold text-gray-300">
-            {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
-          </p>
-          <p className="text-[9px] text-gray-500 mt-0.5">
-            {new Date(tx.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-          </p>
-        </td>
-        <td className="py-3 pr-4">
-          <TxHashCell txHash={tx.txHash} />
-        </td>
-        <td className="py-3 pr-4">
-          <p className="text-[11px] font-bold text-white">${(tx.amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-          {tx.calculationDetails?.fee > 0 && (
-            <p className="text-[9px] text-gray-500">Fee: ${tx.calculationDetails.fee}</p>
-          )}
-        </td>
-        <td className="py-3 pr-4 text-[11px] text-gray-400 font-mono">
-          {tx.walletAddress ? `${tx.walletAddress.slice(0, 6)}...${tx.walletAddress.slice(-4)}` : '—'}
-        </td>
-        <td className="py-3">
-          <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${getStatusStyle(tx.status)}`}>
-            {tx.status ?? 'pending'}
-          </span>
-          {tx.rejectionReason && (
-            <p className="text-[9px] text-red-400 mt-0.5">{tx.rejectionReason}</p>
-          )}
+    if (loading) return (
+      <tr>
+        <td colSpan={5} className="py-16 text-center">
+          <div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" />
         </td>
       </tr>
-    ));
+    );
+    if (transactions.length === 0) return (
+      <tr>
+        <td colSpan={5} className="py-16 text-center text-sm text-gray-500">
+          No {activeStatus === 'all' ? '' : activeStatus} withdrawal history found.
+        </td>
+      </tr>
+    );
+    return (
+      <>
+        {transactions.map((tx, idx) => (
+          <tr key={tx._id} className="transition-colors hover:bg-white/5" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: idx % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent' }}>
+            <td className="py-3 pr-4">
+              <p className="text-[11px] font-semibold text-white/80">
+                {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+              </p>
+              <p className="text-[9px] text-white/35 mt-0.5">
+                {new Date(tx.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </td>
+            <td className="py-3 pr-4"><TxHashCell txHash={tx.txHash} /></td>
+            <td className="py-3 pr-4">
+              <p className="text-[11px] font-bold text-white">${(tx.amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+              {tx.calculationDetails?.fee > 0 && (
+                <p className="text-[9px] text-white/35">Fee: ${tx.calculationDetails.fee}</p>
+              )}
+            </td>
+            <td className="py-3 pr-4 text-[11px] text-white/50 font-mono">
+              {tx.walletAddress ? `${tx.walletAddress.slice(0, 6)}...${tx.walletAddress.slice(-4)}` : '—'}
+            </td>
+            <td className="py-3">
+              <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${getStatusStyle(tx.status)}`}>
+                {tx.status ?? 'pending'}
+              </span>
+              {tx.rejectionReason && <p className="text-[9px] text-red-400 mt-0.5">{tx.rejectionReason}</p>}
+            </td>
+          </tr>
+        ))}
+      </>
+    );
+  }
+
+  function renderCards() {
+    if (loading) return (
+      <div className="py-16 flex justify-center">
+        <div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin" />
+      </div>
+    );
+    if (transactions.length === 0) return (
+      <p className="py-12 text-center text-sm text-gray-500">
+        No {activeStatus === 'all' ? '' : activeStatus} withdrawal history found.
+      </p>
+    );
+    return (
+      <div className="flex flex-col gap-3">
+        {transactions.map((tx) => (
+          <div key={tx._id} className="rounded-xl p-4 flex flex-col gap-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold text-white/80">
+                  {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                </p>
+                <p className="text-[10px] text-white/35">
+                  {new Date(tx.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+              <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${getStatusStyle(tx.status)}`}>
+                {tx.status ?? 'pending'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-white/40">Amount</span>
+              <span className="text-sm font-bold text-white">${(tx.amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+            </div>
+            {tx.calculationDetails?.fee > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-white/40">Fee</span>
+                <span className="text-[11px] text-white/50">${tx.calculationDetails.fee}</span>
+              </div>
+            )}
+            {tx.walletAddress && (
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-white/40">Wallet</span>
+                <span className="text-[11px] text-white/50 font-mono">{tx.walletAddress.slice(0, 6)}...{tx.walletAddress.slice(-4)}</span>
+              </div>
+            )}
+            {tx.txHash && (
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-white/40">Tx Hash</span>
+                <TxHashCell txHash={tx.txHash} />
+              </div>
+            )}
+            {tx.rejectionReason && <p className="text-[10px] text-red-400">{tx.rejectionReason}</p>}
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -206,12 +259,18 @@ export default function WithdrawalHistory({ onWalletData, onPendingData, onRefre
         ))}
       </div>
 
-      <div className="overflow-x-auto flex-1">
+      {/* Mobile: cards */}
+      <div className="md:hidden flex flex-col gap-3 flex-1">
+        {renderCards()}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden md:block overflow-x-auto flex-1">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-[#1e1e3a]">
-              {['Date / Time', 'Tx Hash', 'Amount', 'Wallet Address', 'Status'].map((h) => (
-                <th key={h} className="pb-3 text-[10px] text-gray-500 uppercase tracking-widest font-semibold pr-4">{h}</th>
+            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              {['Date & Time', 'Tx Hash', 'Amount', 'Wallet Address', 'Status'].map((h) => (
+                <th key={h} className="py-3.5 pr-4 text-[10px] text-white/50 uppercase tracking-widest font-semibold whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>

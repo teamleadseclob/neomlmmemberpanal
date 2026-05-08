@@ -6,6 +6,7 @@ import {
   CapacityLogic,
   PackagesGrid,
   CustomCapacity,
+  SwpHistory,
 } from '../components/swp'
 
 function SwpPurchase() {
@@ -43,6 +44,7 @@ function SwpPurchase() {
       />
 
       <CustomCapacity />
+      <SwpHistory />
     </div>
   )
 }

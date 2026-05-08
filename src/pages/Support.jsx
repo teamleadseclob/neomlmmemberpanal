@@ -13,6 +13,7 @@ function Support() {
   const [tickets, setTickets]   = useState([])
   const [summary, setSummary]   = useState(null)
   const [loading, setLoading]   = useState(false)
+  const [prefill, setPrefill]   = useState(null)
 
   const fetchTickets = async () => {
     setLoading(true)
@@ -34,13 +35,13 @@ function Support() {
       <SupportHeader />
       <TicketStats summary={summary} />
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-3 flex flex-col gap-4">
-          <RaiseTicket onSuccess={fetchTickets} />
+        <div className="lg:col-span-3 flex flex-col gap-4 order-2 lg:order-1">
+          <RaiseTicket onSuccess={fetchTickets} prefill={prefill} />
           <SupportHistory tickets={tickets} loading={loading} />
         </div>
-        <div className="lg:col-span-2 flex flex-col gap-4">
+        <div className="lg:col-span-2 flex flex-col gap-4 order-1 lg:order-2">
           <ElitePrivilege />
-          <FaqQuickLinks />
+          <FaqQuickLinks onSelect={setPrefill} />
         </div>
       </div>
     </div>
