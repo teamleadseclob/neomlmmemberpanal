@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSearchParams, Navigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import PlexusBackground from './bg'
 import RegisterForm from '../components/auth/register/RegisterForm'
 import logo from '../assets/logo.png'
@@ -7,11 +7,6 @@ import logo from '../assets/logo.png'
 export default function Register() {
   const [searchParams] = useSearchParams()
   const ref = searchParams.get('ref')
-
-  
-  // if (!ref?.trim()) {
-  //   return <Navigate to="/login" replace />
-  // }
   return (
     <PlexusBackground>
       <div className="absolute top-6 left-8 z-10">

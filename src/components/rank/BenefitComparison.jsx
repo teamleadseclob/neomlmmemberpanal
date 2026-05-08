@@ -6,6 +6,16 @@ const BENEFIT_ROWS = [
   { type: 'Min SWP Volume',   key: 'swpVolume', format: (v) => `$${Number(v).toLocaleString()}` },
 ];
 
+function getHeaderColor(isCurrent, achieved) {
+  if (isCurrent) return '#ffffff';
+  if (achieved) return 'rgba(255,255,255,0.7)';
+  return 'rgba(255,255,255,0.4)';
+}
+
+function getCellColor(isCurrent) {
+  return isCurrent ? '#ffffff' : 'rgba(255,255,255,0.7)';
+}
+
 function BenefitComparison({ ranks, currentRank }) {
   if (!ranks || ranks.length === 0) {
     return (
@@ -40,7 +50,7 @@ function BenefitComparison({ ranks, currentRank }) {
                 <th
                   key={r.name}
                   className="px-4 py-4 text-xs uppercase tracking-widest font-semibold whitespace-nowrap"
-                  style={{ color: r.isCurrent ? '#ffffff' : r.achieved ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)' }}
+                  style={{ color: getHeaderColor(r.isCurrent, r.achieved) }}
                 >
                   {r.name}
                   {r.isCurrent && (
@@ -67,7 +77,7 @@ function BenefitComparison({ ranks, currentRank }) {
                   <td
                     key={r.name}
                     className="px-4 py-4 text-xs whitespace-nowrap"
-                    style={{ color: r.isCurrent ? '#ffffff' : r.achieved ? '#CBD5E1' : '#ffffff',
+                    style={{ color: getCellColor(r.isCurrent),
                       fontWeight: r.isCurrent ? 700 : 400,
                     }}
                   >

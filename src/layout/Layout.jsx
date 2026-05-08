@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import Footer from '../components/Footer';
 import { getprofile } from '../config/apiService';
 
 import dashboardIcon from '../assets/icons/dashboard.png';

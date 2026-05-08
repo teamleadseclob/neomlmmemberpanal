@@ -104,9 +104,9 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
       <div className="mb-4 rounded-lg p-3 flex flex-col gap-2" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
         <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Withdrawal Notice</p>
         {[
-          { icon: <MdOutlineMoneyOff className="text-yellow-400/60" size={13} />,            text: 'A 5% admin charge applies to all withdrawals.' },
+          { icon: <MdOutlineMoneyOff className="text-yellow-400/60" size={13} />, text: 'A 5% admin charge applies to all withdrawals.' },
           { icon: <MdOutlineAccountBalanceWallet className="text-green-400/60" size={13} />, text: 'Only USDT-BEP20 (BSC) is supported.' },
-          { icon: <MdWarningAmber className="text-orange-400/60" size={13} />,               text: 'Withdrawal requests are reviewed and accepted by admin.' },
+          { icon: <MdWarningAmber className="text-orange-400/60" size={13} />, text: 'Withdrawal requests are reviewed and accepted by admin.' },
         ].map((item) => (
           <div key={item.text} className="flex items-start gap-2">
             <span className="flex-shrink-0 mt-0.5">{item.icon}</span>

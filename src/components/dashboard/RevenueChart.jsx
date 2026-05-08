@@ -328,7 +328,7 @@ function RevenueChart() {
               const pct = (i / Math.max(dataPoints.length - 1, 1)) * 100;
               return (
                 <span
-                  key={i}
+                  key={`day-${i}`}
                   className="absolute text-[10px] text-gray-600 -translate-x-1/2"
                   style={{ left: `${pct}%` }}
                 >

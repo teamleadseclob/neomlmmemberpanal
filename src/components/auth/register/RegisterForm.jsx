@@ -58,11 +58,12 @@ export default function RegisterForm() {
     }
   }
 
-  const checkboxClass = agreeTerms
-    ? 'bg-gradient-to-br from-purple-600 to-purple-500 border-transparent shadow-[0_0_10px_rgba(147,51,234,0.4)]'
-    : errors.agreeTerms
-      ? 'bg-white/5 border-red-500/60'
-      : 'bg-white/5 border-purple-400/40'
+  const getCheckboxClass = () => {
+    if (agreeTerms) return 'bg-gradient-to-br from-purple-600 to-purple-500 border-transparent shadow-[0_0_10px_rgba(147,51,234,0.4)]';
+    if (errors.agreeTerms) return 'bg-white/5 border-red-500/60';
+    return 'bg-white/5 border-purple-400/40';
+  }
+  const checkboxClass = getCheckboxClass()
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
