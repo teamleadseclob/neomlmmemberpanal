@@ -12,15 +12,21 @@ function SendInvitationModal({ onClose }) {
   const [error, setError] = useState('');
   const [visible, setVisible] = useState(false);
 
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(onClose, 300);
+  };
+
   useEffect(() => {
     const t = requestAnimationFrame(() => setVisible(true));
     return () => cancelAnimationFrame(t);
   }, []);
 
-  const handleClose = () => {
-    setVisible(false);
-    setTimeout(onClose, 300);
-  };
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') handleClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
 
   const isValidEmail = (val) => /\S+@\S+\.\S+/.test(val);
 
@@ -35,16 +41,22 @@ function SendInvitationModal({ onClose }) {
 
   return createPortal(
     <div
-      onClick={handleClose}
       className="fixed inset-0 flex items-center justify-center px-4"
       style={{
         backgroundColor: visible ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0)',
         transition: 'background-color 300ms',
       }}
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-lg rounded-2xl bg-[#272938] p-7 shadow-2xl border border-[#CB3CFF]"
+      <button
+        type="button"
+        aria-label="Close modal"
+        onClick={handleClose}
+        className="absolute inset-0 w-full h-full border-none bg-transparent cursor-default"
+      />
+      <dialog
+        open
+        aria-modal="true"
+        className="relative z-10 w-full max-w-lg rounded-2xl bg-[#272938] p-7 shadow-2xl border border-[#CB3CFF] m-0"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? 'translateY(0) scale(1)' : 'translateY(24px) scale(0.95)',
@@ -96,7 +108,7 @@ function SendInvitationModal({ onClose }) {
           <>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Send Invitation</h2>
-              <button onClick={handleClose} className="text-gray-400 hover:text-white transition-colors cursor-pointer bg-transparent border-none">
+              <button type="button" onClick={handleClose} className="text-gray-400 hover:text-white transition-colors cursor-pointer bg-transparent border-none">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -131,7 +143,7 @@ function SendInvitationModal({ onClose }) {
             </button>
           </>
         )}
-      </div>
+      </dialog>
     </div>,
     document.getElementById('modal-root')
   );

@@ -12,7 +12,7 @@ export default function OtpVerify() {
   const navigate = useNavigate()
   const { login: saveToken } = useAuth()
 
-  const [otp, setOtp] = useState(Array(6).fill(''))
+  const [otp, setOtp] = useState(new Array(6).fill(''))
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [error, setError] = useState('')
@@ -21,7 +21,7 @@ export default function OtpVerify() {
   const getCountdown = () => {
     const sentAt = localStorage.getItem('otp_sent_at')
     if (!sentAt) return 0
-    const elapsed = Math.floor((Date.now() - parseInt(sentAt)) / 1000)
+    const elapsed = Math.floor((Date.now() - Number.parseInt(sentAt, 10)) / 1000)
     return Math.max(0, 30 - elapsed)
   }
 
@@ -40,7 +40,7 @@ export default function OtpVerify() {
     try {
       await resendotp(email)
       toast.success('OTP resent to your email!')
-      setOtp(Array(6).fill(''))
+      setOtp(new Array(6).fill(''))
       localStorage.setItem('otp_sent_at', Date.now().toString())
       setCountdown(30)
       inputs.current[0]?.focus()
@@ -66,7 +66,7 @@ export default function OtpVerify() {
   }
 
   const handlePaste = (e) => {
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
+    const pasted = e.clipboardData.getData('text').replaceAll(/\D/g, '').slice(0, 6)
     if (!pasted) return
     const next = [...otp]
     pasted.split('').forEach((ch, i) => { next[i] = ch })
@@ -144,7 +144,7 @@ export default function OtpVerify() {
             <div className="flex justify-center gap-3" onPaste={handlePaste}>
               {otp.map((digit, idx) => (
                 <input
-                  key={idx}
+                  key={`otp-${idx}`}
                   ref={(el) => (inputs.current[idx] = el)}
                   type="text"
                   inputMode="numeric"
@@ -188,15 +188,15 @@ export default function OtpVerify() {
                 className="text-sm font-semibold transition-colors disabled:cursor-not-allowed"
                 style={{ color: countdown > 0 ? 'rgba(255,255,255,0.25)' : 'rgba(167,139,250,1)' }}
               >
-                {resending
-                  ? <span className="inline-flex items-center gap-1.5">
+                {(() => {
+                  if (resending) return (
+                    <span className="inline-flex items-center gap-1.5">
                       <span className="w-3.5 h-3.5 border-[2px] border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
                       Sending...
                     </span>
-                  : countdown > 0
-                    ? `Resend OTP in ${countdown}s`
-                    : 'Resend OTP'
-                }
+                  )
+                  return countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'
+                })()}
               </button>
             </div>
           </form>
