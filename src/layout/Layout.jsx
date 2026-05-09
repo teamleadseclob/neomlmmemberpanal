@@ -199,19 +199,27 @@ export default function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Header */}
-        <header className="h-14 flex-shrink-0 border-b border-[#1e1e3a] flex items-center justify-end px-4 md:px-6 gap-3">
-          {/* Hamburger (mobile) */}
-          <button
-            type="button"
-            className="md:hidden text-gray-400 hover:text-white flex-shrink-0 bg-transparent border-none cursor-pointer"
-            onClick={() => setSidebarOpen((prev) => !prev)}
-            aria-label="Toggle sidebar"
-            
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+        <header className="h-14 flex-shrink-0 border-b border-[#1e1e3a] flex items-center justify-between px-4 md:px-6 gap-3">
+          {/* Hamburger + Brand (mobile) */}
+          <div className="flex items-center gap-3 md:hidden">
+            <button
+              type="button"
+              className="text-gray-400 hover:text-white flex-shrink-0 bg-transparent border-none cursor-pointer"
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              aria-label="Toggle sidebar"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <p
+              className="font-bold bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] bg-clip-text text-transparent"
+              style={{ fontFamily: 'Space Grotesk', fontSize: '20px', fontWeight: 700, letterSpacing: '-1px' }}
+            >
+              NEOFI
+            </p>
+          </div>
+          <div className="hidden md:block" />
           <HeaderActions />
         </header>
 
