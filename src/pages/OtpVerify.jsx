@@ -83,9 +83,9 @@ export default function OtpVerify() {
     setLoading(true)
     try {
       const res = await sendotp(email, code)
-      saveToken(res?.token, res?.user)
+      saveToken(res?.data?.token, res?.data?.user)
       localStorage.removeItem('otp_sent_at')
-      toast.success('Email verified! Welcome to NeoFi 🎉')
+      toast.success(res?.data?.message)
       navigate('/', { replace: true })
     } catch (err) {
       setError(err?.response?.data?.message || 'Invalid OTP. Please try again.')
