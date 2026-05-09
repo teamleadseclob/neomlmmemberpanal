@@ -6,11 +6,11 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token'))
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user')
-    return stored ? JSON.parse(stored) : null
+    try { return JSON.parse(localStorage.getItem('user')) } catch { return null }
   })
 
   const login = (authToken, userData) => {
+    if (!authToken || !userData) return
     localStorage.setItem('token', authToken)
     localStorage.setItem('user', JSON.stringify(userData))
     setToken(authToken)
