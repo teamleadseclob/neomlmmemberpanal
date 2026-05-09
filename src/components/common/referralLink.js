@@ -3,7 +3,7 @@
  * To change the base URL, edit only BASE_URL below.
  */
 
-const BASE_URL = 'neofi.io/register'
+const BASE_URL = 'neofiacademy.com/register'
 
 function getStoredUserId() {
   const stored = localStorage.getItem('user')
