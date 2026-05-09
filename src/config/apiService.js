@@ -46,8 +46,15 @@ export const getreferals = async () => {
   return response.data
 }
 
-export const sendreferallink = async (email,referralLink) => {
-  const response = await axiosConfig.post('/api/users/send-referral', { email, referralLink })
+export const sendreferallink = async (email, referralLink) => {
+  const response = await axiosConfig.post(
+    '/api/users/send-referral',
+    {
+      email,
+      referralLink: `https://${referralLink}`,
+    }
+  )
+
   return response.data
 }
 // ─── Community ────────────────────────────────────────────────────────────────
