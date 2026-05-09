@@ -28,7 +28,7 @@ function SendInvitationModal({ onClose }) {
     if (!email || !isValidEmail(email)) { setError('Please enter a valid email address.'); return; }
     setError('');
     setLoading(true);
-    await sendreferallink(email);
+    await sendreferallink(email, referralLink);
     setLoading(false);
     setSuccess(true);
   };
