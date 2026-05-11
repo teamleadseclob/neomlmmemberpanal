@@ -124,18 +124,7 @@ function WalletItem({ wallet }) {
         className="text-2xl md:text-3xl font-bold text-white mb-3 transition-all duration-200 group-hover:bg-gradient-to-r group-hover:from-[#CB3CFF] group-hover:to-[#7F25FB] group-hover:bg-clip-text group-hover:text-transparent"
       />
 
-      {/* Withdraw button */}
-      {wallet.hasWithdraw && (
-        <button
-          type="button"
-          onClick={() => navigate('/payout')}
-          className="w-full py-2.5 rounded-lg text-xs font-semibold tracking-wide
-                     bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] text-white
-                     hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none"
-        >
-          WITHDRAW
-        </button>
-      )}
+
 
       {/* Cut off / Wallet Amount */}
       {!wallet.hasWithdraw && wallet.cutOff !== undefined && (

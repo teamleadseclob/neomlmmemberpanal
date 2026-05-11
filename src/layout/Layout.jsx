@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { getprofile } from '../config/apiService';
 
@@ -86,18 +86,19 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
 }
 
 function HeaderActions() {
-  const user =localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
-
       <div className="flex items-center gap-2 pl-2 border-l border-[#1e1e3a]">
         <div className="text-right hidden sm:block">
-          <p className="text-sm font-semibold leading-tight capitalize text-white">{user?.name||"Hello"}</p>
+          <p className="text-sm font-semibold leading-tight capitalize text-white">{user?.name || 'Hello'}</p>
           <p className="text-[10px] text-purple-400 tracking-widest">{user?.email}</p>
         </div>
-        <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg capitalize bg-purple-700 flex items-center justify-center text-md font-bold flex-shrink-0 text-white">
-          {user?.name ? user.name[0] : "H"}
-        </div>
+        <Link to="/profile">
+          <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg capitalize bg-purple-700 flex items-center justify-center text-md font-bold flex-shrink-0 text-white hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer">
+            {user?.name ? user.name[0] : 'H'}
+          </div>
+        </Link>
       </div>
     </div>
   );

@@ -36,12 +36,17 @@ function CapCircle({ percentage }) {
 
 CapCircle.propTypes = { percentage: PropTypes.number.isRequired };
 
-function TradingCapitalStatus({ data }) {
-  const totalInvested  = data?.totalInvested      ?? 0;
+function TradingCapitalStatus({ data, rewardLimit }) {
+  const totalInvested   = data?.totalInvested      ?? 0;
   const investmentLimit = data?.maxInvestmentLimit ?? 0;
-  const percentage     = investmentLimit > 0
+  const percentage      = investmentLimit > 0
     ? Math.min(Math.round((totalInvested / investmentLimit) * 100), 100)
     : 0;
+
+  const roiEarned  = rewardLimit?.roi?.earned  ?? 0;
+  const roiCap     = rewardLimit?.roi?.capMultiplier ?? '2x';
+  const mlrEarned  = rewardLimit?.mlr?.earned  ?? 0;
+  const mlrCap     = rewardLimit?.mlr?.capMultiplier ?? '2x';
 
   return (
     <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5">
@@ -56,15 +61,15 @@ function TradingCapitalStatus({ data }) {
 
           <div className="flex gap-4 mb-3">
             <div className="flex-1 p-2.5 rounded bg-[#141B2C]">
-              <p className="text-[10px] text-gray-500 mb-0.5">Investment Limit</p>
+              <p className="text-[10px] text-gray-500 mb-0.5">ROI ({roiCap})</p>
               <p className="text-base font-bold text-white">
-                ${investmentLimit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                ${roiEarned.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
             </div>
             <div className="flex-1 p-2.5 rounded bg-[#141B2C]">
-              <p className="text-[10px] text-gray-500 mb-0.5">Amount Invested</p>
+              <p className="text-[10px] text-gray-500 mb-0.5">Multi level reward ({mlrCap})</p>
               <p className="text-base font-bold text-white">
-                ${totalInvested.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                ${mlrEarned.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
             </div>
           </div>
@@ -90,7 +95,8 @@ TradingCapitalStatus.propTypes = {
     totalInvested:      PropTypes.number,
     maxInvestmentLimit: PropTypes.number,
   }),
+  rewardLimit: PropTypes.object,
 };
-TradingCapitalStatus.defaultProps = { data: null };
+TradingCapitalStatus.defaultProps = { data: null, rewardLimit: null };
 
 export default TradingCapitalStatus;

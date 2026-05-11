@@ -17,8 +17,8 @@ function WalletCardsGrid({ data }) {
   const WALLET_DATA = [
     { iconType: 'wallet',     label: 'Main Wallet',         amount: fmt(data?.walletBalance) },
     { iconType: 'reward',     label: 'Reward Wallet',       amount: fmt(rewardTotal) },
-    { iconType: 'profit',     label: 'Trading Profit',      amount: fmt(earnings.roi?.net) },
-    { iconType: 'multilevel', label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.net) },
+    { iconType: 'profit',     label: 'Trading Profit',      amount: fmt(earnings.roi?.thisMonth) },
+    { iconType: 'multilevel', label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.thisMonth) },
     { iconType: 'cashback',   label: 'SWP Cashback',        amount: fmt(earnings.commissions?.net) },
     { iconType: 'total',      label: 'Total Income',        amount: fmt(summary.totalNetEarnings), isHighlighted: true },
   ]

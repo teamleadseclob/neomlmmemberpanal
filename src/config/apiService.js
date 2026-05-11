@@ -34,6 +34,16 @@ export const getprofile = async () => {
   return response.data
 }
 
+export const updateprofile = async (name,password) => {
+  const response = await axiosConfig.patch(`/api/users/me`, { name, password })
+  return response.data
+}
+
+export const getrewardlimit = async () => {
+  const response = await axiosConfig.get(`/api/users/me/earning-limits`)
+  return response.data
+}
+
 export const getgraph = async (month, year) => {
   const response = await axiosConfig.get(`/api/users/me/income-chart?month=${month}&year=${year}`)
   return response.data

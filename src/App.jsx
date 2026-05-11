@@ -24,6 +24,7 @@ const Register            = lazy(() => import('./pages/Register'))
 const OtpVerify           = lazy(() => import('./pages/OtpVerify'))
 const NotFound            = lazy(() => import('./pages/NotFound'))
 const TermsAndConditions  = lazy(() => import('./pages/TermsAndConditions'))
+const Profile             = lazy(() => import('./pages/Profile'))
 
 function PageLoader() {
   return (
@@ -66,6 +67,7 @@ function App() {
                 <Route path="services"                    element={<Services />} />
                 {/* <Route path="reports"                     element={<PlaceholderPage title="Reports" />} /> */}
                 <Route path="support"                     element={<Support />} />
+                <Route path="profile"                     element={<Profile />} />
               </Route>
               <Route path="swp-purchase" element={<SwpPurchase />} />
             </Route>
