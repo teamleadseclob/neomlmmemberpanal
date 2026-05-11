@@ -25,24 +25,33 @@ const EditIcon = () => (
 
 function ConfirmModal({ onConfirm, onCancel, loading }) {
   return createPortal(
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center px-4"
-      style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}
-      onClick={onCancel}>
-      <div className="relative w-full max-w-sm rounded-2xl bg-[#0d0d1f] border border-[#1e1e3a] p-6"
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-[99999]"
+        style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}
+        onClick={onCancel}
+        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+        aria-hidden="true"
+      />
+      {/* Native dialog for full accessibility */}
+      <dialog
+        open
+        className="fixed inset-0 z-[100000] m-auto w-full max-w-sm rounded-2xl bg-[#0d0d1f] border border-[#1e1e3a] p-6 text-white"
         style={{ boxShadow: '0 16px 48px rgba(0,0,0,0.5)' }}
-        onClick={(e) => e.stopPropagation()}>
-
+        onClose={onCancel}
+        aria-labelledby="confirm-title"
+        aria-describedby="confirm-desc"
+      >
         <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mx-auto mb-4">
           <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931z" />
           </svg>
         </div>
-
-        <h3 className="text-lg font-bold text-white text-center mb-1">Save Changes?</h3>
-        <p className="text-sm text-gray-400 text-center mb-6">
+        <h3 id="confirm-title" className="text-lg font-bold text-white text-center mb-1">Save Changes?</h3>
+        <p id="confirm-desc" className="text-sm text-gray-400 text-center mb-6">
           Are you sure you want to update your profile information?
         </p>
-
         <div className="flex gap-3">
           <button type="button" onClick={onCancel}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-300 border border-[#1e1e3a] bg-transparent hover:bg-white/5 transition-colors cursor-pointer">
@@ -55,8 +64,8 @@ function ConfirmModal({ onConfirm, onCancel, loading }) {
               : 'Confirm'}
           </button>
         </div>
-      </div>
-    </div>,
+      </dialog>
+    </>,
     document.getElementById('modal-root')
   );
 }
@@ -66,6 +75,56 @@ ConfirmModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
 };
+
+const validatePassword = (password, confirmPassword) => {
+  const e = {};
+  if (password.length < 6) { e.password = 'Password must be at least 6 characters'; return e; }
+  if (!/[A-Z]/.test(password)) { e.password = 'Must contain at least one uppercase letter'; return e; }
+  if (!/\d/.test(password)) { e.password = 'Must contain at least one number'; return e; }
+  if (!confirmPassword) { e.confirmPassword = 'Please confirm your password'; return e; }
+  if (password !== confirmPassword) { e.confirmPassword = 'Passwords do not match'; }
+  return e;
+};
+
+const validateForm = (fullName, password, confirmPassword) => {
+  const e = {};
+  if (!fullName.trim()) e.fullName = 'Full name is required';
+  if (password) Object.assign(e, validatePassword(password, confirmPassword));
+  return e;
+};
+
+function PasswordField({ label, value, show, onChange, onToggle, error }) {
+  return (
+    <div>
+      <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1.5">{label}</p>
+      <div className={`flex items-center border-b transition-colors ${error ? 'border-red-500/60' : 'border-[#2a2a4a] focus-within:border-purple-500'}`}>
+        <input
+          type={show ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          placeholder={`Enter ${label.toLowerCase()}`}
+          className="flex-1 bg-transparent text-white text-base pb-1.5 outline-none placeholder-gray-600"
+        />
+        <button type="button" onClick={onToggle}
+          className="text-gray-500 hover:text-gray-300 bg-transparent border-none cursor-pointer pb-1"
+          aria-label={show ? 'Hide password' : 'Show password'}>
+          {show ? <EyeIcon /> : <EyeOffIcon />}
+        </button>
+      </div>
+      {error && <p className="mt-1 text-red-400 text-xs">{error}</p>}
+    </div>
+  );
+}
+
+PasswordField.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  show: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  error: PropTypes.string,
+};
+PasswordField.defaultProps = { error: '' };
 
 export default function ProfileCard({ user, onSave }) {
   const [editing, setEditing] = useState(false);
@@ -88,21 +147,8 @@ export default function ProfileCard({ user, onSave }) {
     setEditing(false);
   };
 
-  const validate = () => {
-    const e = {};
-    if (!fullName.trim()) e.fullName = 'Full name is required';
-    if (password) {
-      if (password.length < 6) e.password = 'Password must be at least 6 characters';
-      else if (!/[A-Z]/.test(password)) e.password = 'Must contain at least one uppercase letter';
-      else if (!/[0-9]/.test(password)) e.password = 'Must contain at least one number';
-      if (!confirmPassword) e.confirmPassword = 'Please confirm your password';
-      else if (password !== confirmPassword) e.confirmPassword = 'Passwords do not match';
-    }
-    return e;
-  };
-
   const handleSaveClick = () => {
-    const e = validate();
+    const e = validateForm(fullName, password, confirmPassword);
     if (Object.keys(e).length) { setErrors(e); return; }
     setErrors({});
     setShowConfirmModal(true);
@@ -117,6 +163,8 @@ export default function ProfileCard({ user, onSave }) {
     setPassword('');
     setConfirmPassword('');
   };
+
+  const clearError = (field) => setErrors((p) => ({ ...p, [field]: '' }));
 
   return (
     <>
@@ -152,7 +200,8 @@ export default function ProfileCard({ user, onSave }) {
               <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1.5">Full Name</p>
               {editing
                 ? <>
-                    <input type="text" value={fullName} onChange={(e) => { setFullName(e.target.value); setErrors(p => ({ ...p, fullName: '' })); }}
+                    <input type="text" value={fullName}
+                      onChange={(e) => { setFullName(e.target.value); clearError('fullName'); }}
                       className={`w-full bg-transparent border-b text-white text-base pb-1.5 outline-none transition-colors ${errors.fullName ? 'border-red-500/60' : 'border-[#2a2a4a] focus:border-purple-500'}`} />
                     {errors.fullName && <p className="mt-1 text-red-400 text-xs">{errors.fullName}</p>}
                   </>
@@ -161,46 +210,26 @@ export default function ProfileCard({ user, onSave }) {
             </div>
 
             {/* Password */}
-            <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1.5">Password</p>
-              {editing
-                ? <>
-                    <div className={`flex items-center border-b transition-colors ${errors.password ? 'border-red-500/60' : 'border-[#2a2a4a] focus-within:border-purple-500'}`}>
-                      <input type={showPw ? 'text' : 'password'} value={password}
-                        onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: '' })); }}
-                        placeholder="Enter new password"
-                        className="flex-1 bg-transparent text-white text-base pb-1.5 outline-none placeholder-gray-600" />
-                      <button type="button" onClick={() => setShowPw(p => !p)}
-                        className="text-gray-500 hover:text-gray-300 bg-transparent border-none cursor-pointer pb-1">
-                        {showPw ? <EyeIcon /> : <EyeOffIcon />}
-                      </button>
-                    </div>
-                    {errors.password && <p className="mt-1 text-red-400 text-xs">{errors.password}</p>}
-                  </>
-                : <p className="text-white text-base border-b border-[#2a2a4a] pb-1.5 tracking-widest">••••••••••</p>
-              }
-            </div>
+            {editing
+              ? <PasswordField label="Password" value={password} show={showPw}
+                  onChange={(e) => { setPassword(e.target.value); clearError('password'); }}
+                  onToggle={() => setShowPw((p) => !p)} error={errors.password} />
+              : <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1.5">Password</p>
+                  <p className="text-white text-base border-b border-[#2a2a4a] pb-1.5 tracking-widest">••••••••••</p>
+                </div>
+            }
 
             {/* Confirm Password */}
-            <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1.5">Confirm Password</p>
-              {editing
-                ? <>
-                    <div className={`flex items-center border-b transition-colors ${errors.confirmPassword ? 'border-red-500/60' : 'border-[#2a2a4a] focus-within:border-purple-500'}`}>
-                      <input type={showConfirm ? 'text' : 'password'} value={confirmPassword}
-                        onChange={(e) => { setConfirmPassword(e.target.value); setErrors(p => ({ ...p, confirmPassword: '' })); }}
-                        placeholder="Confirm new password"
-                        className="flex-1 bg-transparent text-white text-base pb-1.5 outline-none placeholder-gray-600" />
-                      <button type="button" onClick={() => setShowConfirm(p => !p)}
-                        className="text-gray-500 hover:text-gray-300 bg-transparent border-none cursor-pointer pb-1">
-                        {showConfirm ? <EyeIcon /> : <EyeOffIcon />}
-                      </button>
-                    </div>
-                    {errors.confirmPassword && <p className="mt-1 text-red-400 text-xs">{errors.confirmPassword}</p>}
-                  </>
-                : <p className="text-white text-base border-b border-[#2a2a4a] pb-1.5 tracking-widest">••••••••••</p>
-              }
-            </div>
+            {editing
+              ? <PasswordField label="Confirm Password" value={confirmPassword} show={showConfirm}
+                  onChange={(e) => { setConfirmPassword(e.target.value); clearError('confirmPassword'); }}
+                  onToggle={() => setShowConfirm((p) => !p)} error={errors.confirmPassword} />
+              : <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1.5">Confirm Password</p>
+                  <p className="text-white text-base border-b border-[#2a2a4a] pb-1.5 tracking-widest">••••••••••</p>
+                </div>
+            }
 
             {/* Email */}
             <div>

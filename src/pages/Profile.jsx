@@ -26,7 +26,9 @@ export default function Profile() {
       if (password) payload.newPassword = password;
       if (!Object.keys(payload).length) { toast('Nothing to update'); return; }
       const res = await updateprofile(payload.name, payload.newPassword);
-      setUser((prev) => ({ ...prev, name: payload.name ?? prev.name }));
+      // re-fetch fresh profile data
+      const fresh = await getprofile();
+      setUser(fresh?.data);
       // update localStorage so header reflects new name
       const stored = localStorage.getItem('user');
       if (stored && payload.name) {
