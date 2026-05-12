@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getroihistory } from '../config/apiService';
 import Pagination from '../components/common/Pagination';
@@ -10,14 +10,18 @@ function TradingHistory() {
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage]       = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal]     = useState(0);
 
-  const fetchData = useCallback(async () => {
-    try { const res = await getroihistory(); setData(res.data); }
-    catch { setData(null); }
-    finally { setLoading(false); }
-  }, []);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getroihistory(page, PAGE_SIZE)
+      .then((res) => { if (!cancelled) { setData(res.data); setTotal(res.pagination?.totalDocs ?? res.data?.history?.length ?? 0); setTotalPages(Math.max(1, res.pagination?.totalPages ?? Math.ceil((res.data?.history?.length ?? 0) / PAGE_SIZE))); } })
+      .catch(() => { if (!cancelled) setData(null); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [page]);
 
   const totalGross    = data?.totalGross    ?? 0;
   const totalCutoff   = data?.totalCutoff   ?? 0;
@@ -27,10 +31,8 @@ function TradingHistory() {
   const roiRemaining  = data?.roiRemaining  ?? 0;
   const isCapReached  = data?.isRoiCapReached ?? false;
   const history       = data?.history       ?? [];
-
   const progressPercent = roiCap > 0 ? Math.min(Math.round(((roiCap - roiRemaining) / roiCap) * 100), 100) : 0;
-  const totalPages      = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
-  const paginated       = history.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated       = history;
 
   function renderRows() {
     if (loading) {
@@ -138,7 +140,7 @@ function TradingHistory() {
             </tbody>
           </table>
         </div>
-        <Pagination page={page} totalPages={totalPages} total={history.length} pageSize={PAGE_SIZE} setPage={setPage} />
+        <Pagination page={page} totalPages={totalPages} total={total} pageSize={PAGE_SIZE} setPage={setPage} />
       </div>
     </div>
   );

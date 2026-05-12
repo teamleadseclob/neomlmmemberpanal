@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getreferalhistory } from '../config/apiService';
 import Pagination from '../components/common/Pagination';
@@ -10,21 +10,55 @@ function ReferralCommissionHistory() {
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage]       = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal]     = useState(0);
 
-  const fetchData = useCallback(async () => {
-    try { const res = await getreferalhistory(); setData(res.data); }
-    catch { setData(null); }
-    finally { setLoading(false); }
-  }, []);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getreferalhistory(page, PAGE_SIZE)
+      .then((res) => { if (!cancelled) { setData(res.data); setTotal(res.pagination?.totalDocs ?? res.data?.history?.length ?? 0); setTotalPages(Math.max(1, res.pagination?.totalPages ?? Math.ceil((res.data?.history?.length ?? 0) / PAGE_SIZE))); } })
+      .catch(() => { if (!cancelled) setData(null); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [page]);
 
   const totalGross  = data?.totalGross  ?? 0;
   const totalCutoff = data?.totalCutoff ?? 0;
   const totalNet    = data?.totalNet    ?? 0;
   const history     = data?.history     ?? [];
-  const totalPages  = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
-  const paginated   = history.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated   = history;
+
+  function renderRows() {
+    if (loading) return (
+      <tr><td colSpan={7} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
+    );
+    if (paginated.length === 0) return (
+      <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-500">No commission history found.</td></tr>
+    );
+    return paginated.map((row) => (
+      <tr key={row._id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
+        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+        <td className="px-5 py-4">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#CB3CFF] flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-bold text-white uppercase">{row.fromUserId?.name?.[0] ?? '?'}</span>
+            </div>
+            <span className="text-xs text-white font-semibold capitalize">{row.fromUserId?.name ?? '—'}</span>
+          </div>
+        </td>
+        <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.fromUserId?.userId ?? '—'}</td>
+        <td className="px-5 py-4"><span className="text-xs font-bold text-purple-400">L{row.level}</span></td>
+        <td className="px-5 py-4">
+          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${row.type === 'referral' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30'}`}>
+            {row.type}
+          </span>
+        </td>
+        <td className="px-5 py-4 text-xs text-gray-300">{row.percentage}%</td>
+        <td className="px-5 py-4 text-sm font-bold text-white">${row.amount.toFixed(2)}</td>
+      </tr>
+    ));
+  }
 
   return (
     <div className="max-w-screen mx-auto">
@@ -90,37 +124,10 @@ function ReferralCommissionHistory() {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={7} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
-              ) : paginated.length === 0 ? (
-                <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-500">No commission history found.</td></tr>
-              ) : paginated.map((row) => (
-                <tr key={row._id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
-                  <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#CB3CFF] flex items-center justify-center flex-shrink-0">
-                        <span className="text-[10px] font-bold text-white uppercase">{row.fromUserId?.name?.[0] ?? '?'}</span>
-                      </div>
-                      <span className="text-xs text-white font-semibold capitalize">{row.fromUserId?.name ?? '—'}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.fromUserId?.userId ?? '—'}</td>
-                  <td className="px-5 py-4"><span className="text-xs font-bold text-purple-400">L{row.level}</span></td>
-                  <td className="px-5 py-4">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${row.type === 'referral' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30'}`}>
-                      {row.type}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-xs text-gray-300">{row.percentage}%</td>
-                  <td className="px-5 py-4 text-sm font-bold text-white">${row.amount.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
+            <tbody>{renderRows()}</tbody>
           </table>
         </div>
-        <Pagination page={page} totalPages={totalPages} total={history.length} pageSize={PAGE_SIZE} setPage={setPage} />
+        <Pagination page={page} totalPages={totalPages} total={total} pageSize={PAGE_SIZE} setPage={setPage} />
       </div>
     </div>
   );

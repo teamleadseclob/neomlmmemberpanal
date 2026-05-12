@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import Pagination from '../common/Pagination';
+
+const PAGE_SIZE = 5;
 
 const STATUS_STYLES = {
   open:        'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -9,7 +12,10 @@ const STATUS_STYLES = {
 }
 
 function SupportHistory({ tickets = [], loading = false }) {
-  const isEmpty = tickets.length === 0;
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(tickets.length / PAGE_SIZE));
+  const paginated  = tickets.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const isEmpty = paginated.length === 0;
 
   const content = () => {
     if (loading) return (
@@ -24,7 +30,7 @@ function SupportHistory({ tickets = [], loading = false }) {
       <>
         {/* Mobile: cards */}
         <div className="md:hidden flex flex-col gap-3">
-            {tickets.map((ticket) => (
+        {paginated.map((ticket) => (
               <div key={ticket._id} className="rounded-xl p-4 flex flex-col gap-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-xs font-semibold text-white leading-snug flex-1">{ticket.subject}</p>
@@ -57,7 +63,7 @@ function SupportHistory({ tickets = [], loading = false }) {
                 </tr>
               </thead>
               <tbody>
-                {tickets.map((ticket, idx) => (
+                {paginated.map((ticket) => (
                   <tr key={ticket._id} className="transition-colors hover:bg-white/5" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <td className="px-4 py-4 text-xs text-white/50 font-mono whitespace-nowrap">{ticket.ticketId}</td>
                     <td className="px-4 py-4 text-xs text-white/80">{ticket.subject}</td>
@@ -84,6 +90,9 @@ function SupportHistory({ tickets = [], loading = false }) {
     <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <h3 className="text-base font-bold text-white mb-5">Support History</h3>
       {content()}
+      {!loading && tickets.length > PAGE_SIZE && (
+        <Pagination page={page} totalPages={totalPages} total={tickets.length} pageSize={PAGE_SIZE} setPage={setPage} />
+      )}
     </div>
   );
 }

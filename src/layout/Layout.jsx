@@ -108,6 +108,7 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [swpBalance, setSwpBalance] = useState(null);
+  const [directReferralEarnings, setDirectReferralEarnings] = useState(0);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -116,6 +117,7 @@ export default function Layout() {
       try {
         const res = await getprofile()
         setSwpBalance(res?.data?.swpBalance ?? 0)
+        setDirectReferralEarnings(res?.data?.directReferralEarnings ?? 0)
       } catch {
         setSwpBalance(0)
       }
@@ -226,7 +228,7 @@ export default function Layout() {
 
         <main ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6">
           <div key={useLocation().pathname} className="page-enter">
-            <Outlet context={{ swpBalance }} />
+            <Outlet context={{ swpBalance, directReferralEarnings }} />
           </div>
         </main>
         {/* <Footer /> */}

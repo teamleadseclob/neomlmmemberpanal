@@ -51,8 +51,8 @@ export const getgraph = async (month, year) => {
 
 // ─── Referral Hub ─────────────────────────────────────────────────────────────
 
-export const getreferals = async () => {
-  const response = await axiosConfig.get('/api/users/referrals')
+export const getreferals = async (page = 1, limit = 10) => {
+  const response = await axiosConfig.get(`/api/users/referrals?page=${page}&limit=${limit}`)
   return response.data
 }
 
@@ -115,23 +115,23 @@ export const addinvestments = async (amount) => {
 
 // ─── Trading Capital — Wallet Histories ───────────────────────────────────────
 
-export const getcombinedhistory = async () => {
-  const response = await axiosConfig.get('/api/roi/combined-history')
+export const getcombinedhistory = async (page = 1, limit = 10) => {
+  const response = await axiosConfig.get(`/api/roi/combined-history?page=${page}&limit=${limit}`)
   return response.data
 }
 
-export const getroihistory = async () => {
-  const response = await axiosConfig.get('/api/roi/history')
+export const getroihistory = async (page = 1, limit = 10) => {
+  const response = await axiosConfig.get(`/api/roi/history?page=${page}&limit=${limit}`)
   return response.data
 }
 
-export const getmultylevelhistory = async () => {
-  const response = await axiosConfig.get('/api/multilevel-rewards/history')
+export const getmultylevelhistory = async (page = 1, limit = 10) => {
+  const response = await axiosConfig.get(`/api/multilevel-rewards/history?page=${page}&limit=${limit}`)
   return response.data
 }
 
-export const getreferalhistory = async () => {
-  const response = await axiosConfig.get('/api/swp/commissions')
+export const getreferalhistory = async (page = 1, limit = 10) => {
+  const response = await axiosConfig.get(`/api/swp/commissions?page=${page}&limit=${limit}`)
   return response.data
 }
 

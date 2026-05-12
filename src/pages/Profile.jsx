@@ -15,7 +15,7 @@ export default function Profile() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSave = async ({ fullName, password, confirmPassword }) => {
+  const handleSave = async ({ fullName, password, confirmPassword, gender, country, state, mobile, address, dob }) => {
     if (password && password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -23,13 +23,17 @@ export default function Profile() {
     try {
       const payload = {};
       if (fullName && fullName !== user?.name) payload.name = fullName;
+      if (gender)  payload.gender  = gender;
+      if (country) payload.country = country;
+      if (state)   payload.state   = state;
+      if (mobile)  payload.mobile  = mobile;
+      if (address) payload.address = address;
+      if (dob)     payload.dob     = dob;
       if (password) payload.newPassword = password;
       if (!Object.keys(payload).length) { toast('Nothing to update'); return; }
       const res = await updateprofile(payload.name, payload.newPassword);
-      // re-fetch fresh profile data
       const fresh = await getprofile();
       setUser(fresh?.data);
-      // update localStorage so header reflects new name
       const stored = localStorage.getItem('user');
       if (stored && payload.name) {
         localStorage.setItem('user', JSON.stringify({ ...JSON.parse(stored), name: payload.name }));

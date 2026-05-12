@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getcombinedhistory } from '../config/apiService';
 import Pagination from '../components/common/Pagination';
@@ -10,22 +10,44 @@ function RewardHistory() {
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage]       = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal]     = useState(0);
 
-  const fetchData = useCallback(async () => {
-    try { const res = await getcombinedhistory(); setData(res.data); }
-    catch { setData(null); }
-    finally { setLoading(false); }
-  }, []);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getcombinedhistory(page, PAGE_SIZE)
+      .then((res) => { if (!cancelled) { setData(res.data); setTotal(res.pagination?.totalDocs ?? res.data?.history?.length ?? 0); setTotalPages(Math.max(1, res.pagination?.totalPages ?? Math.ceil((res.data?.history?.length ?? 0) / PAGE_SIZE))); } })
+      .catch(() => { if (!cancelled) setData(null); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [page]);
 
   const summary  = data?.summary ?? { roi: {}, mlr: {} };
   const history  = data?.history ?? [];
   const totalGross  = (summary.roi?.totalGross ?? 0) + (summary.mlr?.totalGross ?? 0);
   const totalCutoff = (summary.roi?.totalCutoff ?? 0) + (summary.mlr?.totalCutoff ?? 0);
   const totalNet    = (summary.roi?.totalNet ?? 0) + (summary.mlr?.totalNet ?? 0);
-  const totalPages  = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
-  const paginated   = history.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated   = history;
+
+  function renderRows() {
+    if (loading) return (
+      <tr><td colSpan={6} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
+    );
+    if (paginated.length === 0) return (
+      <tr><td colSpan={6} className="px-5 py-12 text-center text-sm text-gray-500">No transaction history found.</td></tr>
+    );
+    return paginated.map((row) => (
+      <tr key={row._id ?? row.id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
+        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.date ?? row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+        <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.txnId ?? row._id ?? '—'}</td>
+        <td className="px-5 py-4"><span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/30">{row.type ?? '—'}</span></td>
+        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.gross ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.cutoff ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4 text-sm font-bold text-white">${(row.net ?? 0).toFixed(2)}</td>
+      </tr>
+    ));
+  }
 
   return (
     <div className="max-w-screen mx-auto">
@@ -91,25 +113,10 @@ function RewardHistory() {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={6} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
-              ) : paginated.length === 0 ? (
-                <tr><td colSpan={6} className="px-5 py-12 text-center text-sm text-gray-500">No transaction history found.</td></tr>
-              ) : paginated.map((row) => (
-                <tr key={row._id ?? row.id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
-                  <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.date ?? row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
-                  <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.txnId ?? row._id ?? '—'}</td>
-                  <td className="px-5 py-4"><span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/30">{row.type ?? '—'}</span></td>
-                  <td className="px-5 py-4 text-sm font-semibold text-white">${(row.gross ?? 0).toFixed(2)}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-white">${(row.cutoff ?? 0).toFixed(2)}</td>
-                  <td className="px-5 py-4 text-sm font-bold text-white">${(row.net ?? 0).toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
+            <tbody>{renderRows()}</tbody>
           </table>
         </div>
-        <Pagination page={page} totalPages={totalPages} total={history.length} pageSize={PAGE_SIZE} setPage={setPage} />
+        <Pagination page={page} totalPages={totalPages} total={total} pageSize={PAGE_SIZE} setPage={setPage} />
       </div>
     </div>
   );

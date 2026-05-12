@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import QRCodeGenerator from './Qrcode';
 import { getReferralLink } from '../common/referralLink';
 
-function InviteLab() {
+function InviteLab({ directReferralEarnings }) {
   const [copied, setCopied] = useState(false);
   const referralLink = getReferralLink();
 
@@ -14,7 +15,6 @@ function InviteLab() {
 
   return (
     <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5 md:p-6">
-      {/* Header */}
       <div className="flex items-center gap-2.5 mb-5">
         <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
           <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -25,13 +25,10 @@ function InviteLab() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-5 md:gap-6">
-        {/* Left: Link + Bonuses */}
         <div className="flex-1">
           <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-2.5">
             Your Primary Transmission Link
           </p>
-
-          {/* Link row */}
           <div className="flex items-center gap-2 mb-5">
             <div className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg px-3.5 py-2.5">
               <span className="text-[10px] text-gray-300 font-mono">{referralLink}</span>
@@ -39,24 +36,23 @@ function InviteLab() {
             <button
               type="button"
               onClick={handleCopy}
-              className="px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer
-                         bg-linear-to-r from-[#D946EF] to-[#CB3CFF] text-white
-                         hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200 border-none whitespace-nowrap"
+              className="px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer bg-linear-to-r from-[#D946EF] to-[#CB3CFF] text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200 border-none whitespace-nowrap"
             >
               {copied ? '✓ Copied' : 'Copy Link'}
             </button>
           </div>
 
-          {/* Bonus cards */}
           <div className="flex gap-3">
             <div className="flex-1 rounded-lg border border-[#2a2a4a] bg-[#1a1a2e]/60 px-4 py-3">
               <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Invite Bonus</p>
-              <p className="text-lg font-bold text-white">50 <span className="text-xs text-gray-400 font-medium">USDT</span></p>
+              <p className="text-lg font-bold text-white">
+                {directReferralEarnings} <span className="text-xs text-gray-400 font-medium">USDT</span>
+              </p>
             </div>
             <div className="flex-1 rounded-lg border border-[#2a2a4a] bg-[#1a1a2e]/60 px-4 py-3">
               <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Fee Rebate</p>
               <p className="text-lg font-bold bg-linear-to-r from-[#D946EF] to-[#CB3CFF] bg-clip-text text-transparent">
-                15% <span className="text-xs font-medium">Lifetime</span>
+                10% <span className="text-xs font-medium">Lifetime</span>
               </p>
             </div>
           </div>
@@ -71,5 +67,8 @@ function InviteLab() {
     </div>
   );
 }
+
+InviteLab.propTypes = { directReferralEarnings: PropTypes.number };
+InviteLab.defaultProps = { directReferralEarnings: 0 };
 
 export default InviteLab;
