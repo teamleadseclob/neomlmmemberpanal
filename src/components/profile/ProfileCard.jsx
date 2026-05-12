@@ -44,7 +44,7 @@ export default function ProfileCard({ user, onSave }) {
     gender:          user?.gender      || '',
     country:         user?.country     || '',
     state:           user?.state       || '',
-    mobile:          user?.mobile      || '',
+    mobile:          user?.phoneNumber  || user?.mobile || '',
     address:         user?.address     || '',
     dob:             user?.dob         || '',
     password:        '',
@@ -60,7 +60,7 @@ export default function ProfileCard({ user, onSave }) {
     setForm({
       fullName: user?.name || '', gender: user?.gender || '',
       country: user?.country || '', state: user?.state || '',
-      mobile: user?.mobile || '', address: user?.address || '',
+      mobile: user?.phoneNumber || user?.mobile || '', address: user?.address || '',
       dob: user?.dob || '', password: '', confirmPassword: '',
     });
     setErrors({});

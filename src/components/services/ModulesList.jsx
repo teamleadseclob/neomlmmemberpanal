@@ -2,10 +2,28 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types'
 import axiosConfig from '../../config/axiosConfig'
 
-function AuthMedia({ url, type, alt }) {
-  const [src, setSrc] = useState(null)
+function ModuleMedia({ url, type, alt }) {
+  // YouTube embed
+  const ytMatch = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)
+  if (ytMatch) {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+        className="w-full h-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title={alt}
+      />
+    )
+  }
+
+  const isDirectUrl = url?.startsWith('http') || url?.startsWith('/')
+  const isBlobUrl = url?.startsWith('blob:')
+
+  const [src, setSrc] = useState(isDirectUrl ? url : null)
 
   useEffect(() => {
+    if (isDirectUrl || isBlobUrl) return
     let objectUrl
     axiosConfig.get(url, { responseType: 'blob' })
       .then(res => {
@@ -14,7 +32,7 @@ function AuthMedia({ url, type, alt }) {
       })
       .catch(() => setSrc(null))
     return () => { if (objectUrl) URL.revokeObjectURL(objectUrl) }
-  }, [url])
+  }, [url, isDirectUrl])
 
   if (!src) return (
     <svg className="w-14 h-14 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,7 +45,7 @@ function AuthMedia({ url, type, alt }) {
     : <img src={src} alt={alt} className="w-full h-full object-cover" />
 }
 
-AuthMedia.propTypes = {
+ModuleMedia.propTypes = {
   url: PropTypes.string.isRequired,
   type: PropTypes.string,
   alt: PropTypes.string,
@@ -52,7 +70,7 @@ function ModuleCard({ module }) {
       {/* Media */}
       <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-[#1a1a3e] to-[#0a0920] border border-[#1e1e3a] flex items-center justify-center flex-shrink-0 overflow-hidden">
         {module.mediaUrl
-          ? <AuthMedia url={module.mediaUrl} type={module.mediaType} alt={module.title} />
+          ? <ModuleMedia url={module.mediaUrl} type={module.mediaType} alt={module.title} />
           : (
             <svg className="w-14 h-14 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 21h18M3 3h18" />

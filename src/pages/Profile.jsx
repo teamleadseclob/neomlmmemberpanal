@@ -26,7 +26,7 @@ export default function Profile() {
       if (gender)  payload.gender  = gender;
       if (country) payload.country = country;
       if (state)   payload.state   = state;
-      if (mobile)  payload.mobile  = mobile;
+      if (mobile)  payload.phoneNumber = mobile;
       if (address) payload.address = address;
       if (dob)     payload.dob     = dob;
       if (password) payload.newPassword = password;
