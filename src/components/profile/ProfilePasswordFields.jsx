@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+const autofillStyle = {
+  WebkitBoxShadow: '0 0 0px 1000px transparent inset',
+  WebkitTextFillColor: '#ffffff',
+  caretColor: '#a855f7',
+  transition: 'background-color 5000s ease-in-out 0s',
+  colorScheme: 'dark',
+};
+
 const EyeOffIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17.94 17.94A10 10 0 0 1 12 20C5 20 1 12 1 12a18 18 0 0 1 5.06-5.94M9.9 4.24A9 9 0 0 1 12 4c7 0 11 8 11 8a18 18 0 0 1-2.16 3.19" />
@@ -26,6 +34,7 @@ function PwInput({ label, value, onChange, error }) {
           value={value}
           onChange={onChange}
           placeholder={`Enter ${label.toLowerCase()}`}
+          style={autofillStyle}
           className="flex-1 bg-transparent text-white text-base pb-1.5 outline-none placeholder-gray-600"
         />
         <button

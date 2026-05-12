@@ -31,7 +31,7 @@ export default function Profile() {
       if (dob)     payload.dob     = dob;
       if (password) payload.newPassword = password;
       if (!Object.keys(payload).length) { toast('Nothing to update'); return; }
-      const res = await updateprofile(payload.name, payload.newPassword);
+      const res = await updateprofile(payload);
       const fresh = await getprofile();
       setUser(fresh?.data);
       const stored = localStorage.getItem('user');

@@ -8,8 +8,15 @@ import {
 } from '../components/services';
 import { geteventes } from '../config/apiService';
 
-async function fetchServices() {
-  const res = await geteventes()
+// Maps tab id → API type param
+const TAB_TYPE_MAP = {
+  contest:  'contest',
+  learning: 'learning_package',
+  tools:    'tools',
+}
+
+async function fetchServices(tab) {
+  const res = await geteventes(TAB_TYPE_MAP[tab])
   return res.data ?? []
 }
 
@@ -25,7 +32,7 @@ function Services() {
     const load = async () => {
       setLoading(true)
       try {
-        const data = await fetchServices()
+        const data = await fetchServices(activeTab)
         setModules(data)
         setTotalPages(1)
       } catch {

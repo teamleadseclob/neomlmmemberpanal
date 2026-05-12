@@ -34,8 +34,8 @@ export const getprofile = async () => {
   return response.data
 }
 
-export const updateprofile = async (name,password) => {
-  const response = await axiosConfig.patch(`/api/users/me`, { name, password })
+export const updateprofile = async (payload) => {
+  const response = await axiosConfig.patch(`/api/users/me`, payload)
   return response.data
 }
 
@@ -155,8 +155,8 @@ export const getwithdrawal = async (page = 1, limit = 5, status = 'completed') =
   return response.data
 }
 
-export const geteventes= async () => {
-  const response = await axiosConfig.get('/api/events')
+export const geteventes= async (type) => {
+  const response = await axiosConfig.get(`/api/events?type=${type}`)
   return response.data
 }
 

@@ -2,6 +2,14 @@ import PropTypes from 'prop-types';
 
 const fieldBase = 'w-full bg-transparent border-b text-white text-base pb-1.5 outline-none transition-colors';
 
+const autofillStyle = {
+  WebkitBoxShadow: '0 0 0px 1000px transparent inset',
+  WebkitTextFillColor: '#ffffff',
+  caretColor: '#a855f7',
+  transition: 'background-color 5000s ease-in-out 0s',
+  colorScheme: 'dark',
+};
+
 export default function ProfileField({ label, value, editing, onChange, error, type, options }) {
   const borderClass = error ? 'border-red-500/60' : 'border-[#2a2a4a] focus:border-purple-500';
 
@@ -26,6 +34,7 @@ export default function ProfileField({ label, value, editing, onChange, error, t
           type="date"
           value={value}
           onChange={onChange}
+          style={autofillStyle}
           className={`${fieldBase} ${borderClass} [color-scheme:dark]`}
         />
       );
@@ -35,6 +44,7 @@ export default function ProfileField({ label, value, editing, onChange, error, t
         type={type || 'text'}
         value={value}
         onChange={onChange}
+        style={autofillStyle}
         className={`${fieldBase} ${borderClass}`}
       />
     );
