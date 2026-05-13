@@ -14,7 +14,11 @@ const EditIcon = () => (
   </svg>
 );
 
-const GENDERS  = ['Male', 'Female', 'Other'];
+const GENDERS = [
+  { value: 'male',   label: 'Male' },
+  { value: 'female', label: 'Female' },
+  { value: 'other',  label: 'Other' },
+];
 
 const validatePassword = (pw, cpw) => {
   const e = {};
@@ -111,7 +115,7 @@ export default function ProfileCard({ user, onSave }) {
                 <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-1.5">Gender</p>
                 {editing
                   ? <CustomSelect value={form.gender} onChange={(val) => { setForm((p) => ({ ...p, gender: val })); setErrors((p) => ({ ...p, gender: '' })); }} options={GENDERS} placeholder="Select gender" error={errors.gender} />
-                  : <p className="text-white text-base border-b border-[#2a2a4a] pb-1.5">{form.gender || '—'}</p>
+                  : <p className="text-white text-base border-b border-[#2a2a4a] pb-1.5 capitalize">{form.gender || '—'}</p>
                 }
               </div>
             </div>
