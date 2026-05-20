@@ -20,7 +20,7 @@ function CommunityStats() {
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Total Community</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">
-            {stats ? stats.totalDownline.toLocaleString() : '—'}
+            {stats?.totalDownline?.toLocaleString() ?? '—'}
           </span>
         </div>
       </div>
@@ -30,7 +30,7 @@ function CommunityStats() {
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Direct Referrals</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">
-            {stats ? stats.directReferrals.toLocaleString() : '—'}
+            {stats?.directReferrals?.toLocaleString() ?? '—'}
           </span>
         </div>
       </div>
@@ -39,7 +39,7 @@ function CommunityStats() {
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Team SWP Volume</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">
-            {stats ? stats.teamSwpVolume.toLocaleString() : '—'}
+            {stats?.teamSwpVolume?.toLocaleString() ?? '—'}
           </span>
         </div>
       </div>
@@ -48,7 +48,7 @@ function CommunityStats() {
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Team Investment Volume</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">
-            {stats ? stats.teamInvestmentVolume.toLocaleString() : '—'}
+            {stats?.teamInvestmentVolume?.toLocaleString() ?? '—'}
           </span>
         </div>
       </div>
