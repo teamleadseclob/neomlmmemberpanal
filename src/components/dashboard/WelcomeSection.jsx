@@ -2,11 +2,12 @@ import React from 'react';
 import { Link } from "react-router-dom";
 
 function WelcomeSection() {
+  const name = JSON.parse(localStorage.getItem('user') || '{}')?.name || 'User';
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-          Welcome back, Alex.
+          Welcome back, {name}.
         </h1>
         <p className="text-xs md:text-sm text-gray-400 mt-1 flex items-center gap-1.5 whitespace-nowrap">
           <span className="w-2 h-2 rounded-full bg-[#CB3CFF] inline-block" />{' '}

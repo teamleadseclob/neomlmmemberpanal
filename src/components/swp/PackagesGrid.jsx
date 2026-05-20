@@ -34,7 +34,7 @@ function PackagesGrid({ packages, lastPurchased, swpCap }) {
             <PackageCard
               key={pkg.amount}
               tierLabel={`Tier ${String(i + 1).padStart(2, '0')}`}
-              title={`$${pkg.amount.toLocaleString()} Package`}
+              title={`$${pkg.amount.toLocaleString()}`}
               price={pkg.amount}
               maxLimit={pkg.investmentLimit}
               leverage="10.0x"

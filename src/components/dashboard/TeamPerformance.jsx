@@ -6,13 +6,14 @@ import downlineImg   from '../../assets/dashboard/downline.png'
 import swpImg        from '../../assets/dashboard/swp2.png'
 import tradingImg    from '../../assets/dashboard/trading.png'
 
-function TeamPerformance({ data }) {
+function TeamPerformance({ data, totalInvested }) {
   const items = [
     { img: currentImg,    label: 'CURRENT RANK',    value: data?.currentRank ?? 'No Rank Achieved' },
     { img: affiliatesImg, label: 'TOTAL AFFILIATES', value: data?.totalDirectReferrals ?? 0 },
     { img: downlineImg,   label: 'TOTAL DOWNLINES',  value: data?.totalDownline ?? 0 },
     { img: swpImg,        label: 'SWP PURCHASED',    value: `$${(data?.totalSwpPurchased ?? 0).toLocaleString()}` },
     { img: tradingImg,    label: 'TEAM SWP VOLUME',  value: `$${(data?.totalTeamSwpVolume ?? 0).toLocaleString()}` },
+    { img: tradingImg,    label: 'SWP VOLUME',  value: `$${(totalInvested ?? 0).toLocaleString()}` },
   ]
 
   return (
@@ -42,7 +43,7 @@ function TeamPerformance({ data }) {
   )
 }
 
-TeamPerformance.propTypes = { data: PropTypes.object }
-TeamPerformance.defaultProps = { data: null }
+TeamPerformance.propTypes = { data: PropTypes.object, swpBalance: PropTypes.number }
+TeamPerformance.defaultProps = { data: null, swpBalance: 0 }
 
 export default TeamPerformance
