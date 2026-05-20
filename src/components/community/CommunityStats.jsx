@@ -35,27 +35,23 @@ function CommunityStats() {
         </div>
       </div>
 
-      {/* Recent Activity */}
-      {/* <div className="rounded-xl border border-[#1e1e3a]   p-4 hover:border-purple-600/30 transition-all duration-200">
-        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Recent Activity</p>
-        <div className="flex items-center gap-0">
-          {['#7F25FB', '#D946EF', '#CB3CFF'].map((color, i) => (
-            <div
-              key={`avatar-${color}`}
-              className="w-8 h-8 rounded-full border-2 border-[#0d0b2e] flex items-center justify-center text-[10px] font-bold text-white"
-              style={{ backgroundColor: color, marginLeft: i > 0 ? '-8px' : '0', zIndex: 3 - i }}
-            >
-              {['DA', 'NV', 'AL'][i]}
-            </div>
-          ))}
-          <span
-            className="w-8 h-8 rounded-full border-2 border-[#0d0b2e] bg-[#1a1a3e] flex items-center justify-center text-[10px] font-semibold text-gray-400"
-            style={{ marginLeft: '-8px' }}
-          >
-            +13
+      <div className="rounded-xl p-4 hover:border-purple-600/30 transition-all duration-200" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
+        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Team SWP Volume</p>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold text-white">
+            {stats ? stats.teamSwpVolume.toLocaleString() : '—'}
           </span>
         </div>
-      </div> */}
+      </div>
+
+      <div className="rounded-xl p-4 hover:border-purple-600/30 transition-all duration-200" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
+        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Team Investment Volume</p>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold text-white">
+            {stats ? stats.teamInvestmentVolume.toLocaleString() : '—'}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

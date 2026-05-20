@@ -30,13 +30,13 @@ function InviteLab({ directReferralEarnings }) {
             Your Primary Transmission Link
           </p>
           <div className="flex items-center gap-2 mb-5">
-            <div className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg px-3.5 py-2.5">
+            <div className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg px-3 py-2.5">
               <span className="text-[10px] text-gray-300 font-mono">{referralLink}</span>
             </div>
             <button
               type="button"
               onClick={handleCopy}
-              className="px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer bg-linear-to-r from-[#D946EF] to-[#CB3CFF] text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200 border-none whitespace-nowrap"
+              className="px-4 py-2.5 rounded-lg text-xs font- uppercase tracking-wider cursor-pointer bg-linear-to-r from-[#D946EF] to-[#CB3CFF] text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200 border-none whitespace-nowrap"
             >
               {copied ? '✓ Copied' : 'Copy Link'}
             </button>
