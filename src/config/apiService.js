@@ -177,3 +177,8 @@ export const getticketbyid = async (ticketId) => {
   const response = await axiosConfig.get(`/api/support/tickets/${ticketId}`)
   return response.data
 }
+
+export const getNotifications = async () => {
+  const response = await axiosConfig.get('/api/users/notifications')
+  return response.data
+}

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { getprofile } from '../config/apiService';
+import { getNotifications, getprofile } from '../config/apiService';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import dashboardSelected from '../assets/icons/dashboardselected.png';
@@ -109,8 +109,17 @@ export default function Layout() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [swpBalance, setSwpBalance] = useState(null);
   const [directReferralEarnings, setDirectReferralEarnings] = useState(0);
+  const [notifImage, setNotifImage] = useState(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  const fetchAndShowNotification = async () => {
+    try {
+      const res = await getNotifications();
+      const active = res?.data?.find((n) => n.isEnabled);
+      if (active?.imageUrl) setNotifImage(active.imageUrl);
+    } catch { /* silent */ }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -122,7 +131,21 @@ export default function Layout() {
         setSwpBalance(0)
       }
     }
-    fetchProfile()
+    fetchProfile();
+
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
+    const lastShown = Number(localStorage.getItem('notif_last_shown') || 0);
+    if (Date.now() - lastShown >= SIX_HOURS) {
+      fetchAndShowNotification();
+      localStorage.setItem('notif_last_shown', Date.now());
+    }
+
+    const interval = setInterval(() => {
+      fetchAndShowNotification();
+      localStorage.setItem('notif_last_shown', Date.now());
+    }, SIX_HOURS);
+
+    return () => clearInterval(interval);
   }, [])
 
   const mainRef = useRef(null);
@@ -233,6 +256,23 @@ export default function Layout() {
         </main>
         {/* <Footer /> */}
       </div>
+
+      {/* Notification Image Modal */}
+      {notifImage && (
+        <button
+          type="button"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 w-full h-full border-none cursor-default"
+          onClick={() => setNotifImage(null)}
+          aria-label="Close notification"
+        >
+          <img
+            src={notifImage}
+            alt="Notification"
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </button>
+      )}
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
