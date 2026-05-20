@@ -294,7 +294,7 @@ function RevenueChart() {
       <div className="flex gap-2">
 
         <div className="flex-1 flex flex-col">
-          <div ref={wrapperRef} className="relative flex-1 min-h-50">
+          <div ref={wrapperRef} className="relative flex-1 min-h-40 max-h-80">
             <canvas
               ref={canvasRef}
               className="w-full h-full block cursor-crosshair"
