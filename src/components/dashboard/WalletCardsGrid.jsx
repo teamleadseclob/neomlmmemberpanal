@@ -18,9 +18,10 @@ function WalletCardsGrid({ data }) {
     { iconType: 'wallet',     label: 'Main Wallet',         amount: fmt(data?.walletBalance) },
     { iconType: 'reward',     label: 'Reward Wallet',       amount: fmt(rewardTotal) },
     { iconType: 'profit',     label: 'Trading Profit',      amount: fmt(earnings.roi?.thisMonth) },
-    { iconType: 'multilevel', label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.thisMonth) },
-    { iconType: 'cashback',   label: 'SWP Cashback',        amount: fmt(earnings.commissions?.net) },
-    { iconType: 'total',      label: 'Total Income',        amount: fmt(summary.totalNetEarnings), isHighlighted: true },
+    { iconType: 'multilevel', label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.net) },
+    { iconType: 'cashback',   label: 'Last Month Multilevel Rewards',        amount: fmt(earnings.multiLevelRewards?.thisMonth) },
+    { iconType: 'total',      label: 'Total Income',        amount: fmt(summary?.totalNetEarnings), isHighlighted: true },
+    { iconType: 'cashback',      label: 'Last Month Trading profit',        amount: fmt(earnings.roi?.thisMonth), islastCard: true },
   ]
 
   return (
@@ -32,6 +33,7 @@ function WalletCardsGrid({ data }) {
           label={card.label}
           amount={card.amount}
           isHighlighted={card.isHighlighted}
+          islastCard={card.islastCard}
         />
       ))}
     </div>

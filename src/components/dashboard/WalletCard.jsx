@@ -23,14 +23,14 @@ const BADGE_STYLES = {
   default: 'bg-purple-500/20 text-purple-300',
 }
 
-function WalletCard({ iconType, label, amount, isHighlighted = false }) {
+function WalletCard({ iconType, label, amount, isHighlighted = false,islastCard=false }) {
 
   return (
     <div
       className={`group relative rounded-md p-4 border transition-all duration-200
         ${isHighlighted
           ? 'border-purple-500/40 shadow-lg shadow-purple-500/10'
-          : 'bg-[#181f30ae] border-[#3c3c55] hover:border-purple-500/30'}`}
+          : 'bg-[#181f30ae] border-[#3c3c55] hover:border-purple-500/30'} ${islastCard?'col-span-full':''}`}
       style={isHighlighted ? { background: 'linear-gradient(135deg, rgba(24, 31, 48, 0.2) 0%, rgba(35, 42, 59, 0.2) 50%, rgba(211, 89, 255, 0.12) 100%)' } : {}}
     >
 
