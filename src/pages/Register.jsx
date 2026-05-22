@@ -10,7 +10,7 @@ export default function Register() {
   return (
     <PlexusBackground>
       <div className="absolute top-6 left-8 z-10">
-        <img src={logo} alt="NeoFi" className="h-10 w-auto object-contain" />
+        <img src={logo} alt="NeoFi" className="h-14 w-auto object-contain" />
       </div>
       <div className="w-full min-h-screen flex items-center justify-center px-5 py-20">
         {/* Glass Card */}
