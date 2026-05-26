@@ -13,7 +13,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../context/useAuth';
-import { gettree } from '../../config/apiService';
+import { gettree, getdownlinestats } from '../../config/apiService';
 
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTS
@@ -122,9 +122,86 @@ function EmptyCard() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   NODE TOOLTIP — fetches and displays downline stats
+   ═══════════════════════════════════════════════════════════════ */
+function NodeTooltip({ userId, onClose }) {
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    let cancelled = false
+    getdownlinestats(userId)
+      .then((res) => { if (!cancelled) setStats(res?.data ?? null) })
+      .catch(() => { if (!cancelled) setStats(null) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [userId])
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose() }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [onClose])
+
+  return (
+    <div
+      ref={ref}
+      className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 w-56"
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+      role="tooltip"
+    >
+      <div className="rounded-xl border border-[#2a2a4a] bg-[#0d0b2e] shadow-2xl shadow-black/60 p-3">
+        {loading ? (
+          <div className="flex justify-center py-3">
+            <span className="w-5 h-5 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+          </div>
+        ) : !stats ? (
+          <p className="text-xs text-gray-500 text-center py-2">No data available</p>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-[#2a2a4a]">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0">
+                <span className="text-[9px] font-bold text-white">{stats.name?.[0]?.toUpperCase()}</span>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white uppercase">{stats.name}</p>
+                <p className="text-[9px] text-gray-400 font-mono">{stats.userId}</p>
+              </div>
+              <span className="ml-auto text-[9px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-full">{stats.rank}</span>
+            </div>
+            {[
+              { label: 'Personal SWP',       value: `$${(stats.personalSwp ?? 0).toLocaleString()}` },
+              { label: 'Trading Capital',    value: `$${(stats.tradingCapital ?? 0).toLocaleString()}` },
+              { label: 'Team SWP Volume',    value: `$${(stats.teamSwpVolume ?? 0).toLocaleString()}` },
+              { label: 'Team Trading Cap',   value: `$${(stats.teamTradingCapital ?? 0).toLocaleString()}` },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex items-center justify-between py-1">
+                <span className="text-[10px] text-gray-400">{label}</span>
+                <span className="text-[10px] font-semibold text-white">{value}</span>
+              </div>
+            ))}
+          </>
+        )}
+        {/* Arrow */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-full w-2.5 h-2.5 border-r border-b border-[#2a2a4a] bg-[#0d0b2e] rotate-45 -mt-1.5" />
+      </div>
+    </div>
+  )
+}
+
+NodeTooltip.propTypes = {
+  userId: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+}
+
+/* ═══════════════════════════════════════════════════════════════
    NODE CARD — active user
    ═══════════════════════════════════════════════════════════════ */
 function NodeCard({ node, onClick, isParent = false, size = 'normal' }) {
+  const [showTooltip, setShowTooltip] = useState(false)
+
   if (!node || node.empty) {
     return <EmptyCard />;
   }
@@ -141,27 +218,58 @@ function NodeCard({ node, onClick, isParent = false, size = 'normal' }) {
   const idFontCls = isSmall ? 'text-[8px]' : 'text-[10px]';
 
   return (
-    <button
-      type="button"
-      onClick={canDrill ? onClick : undefined}
-      className={`flex items-center gap-2.5 rounded-lg border whitespace-nowrap text-left ${cardCls} ${drillCls}`}
-      title={canDrill ? `View ${node.name}'s network` : undefined}
-    >
-      <div className={`${getAvatarSize(isParent, isSmall)} rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0`}>
-        <span className={`${getAvatarFont(isParent, isSmall)} font-bold text-white`}>
-          {node.name ? node.name.charAt(0).toUpperCase() : 'N'}
-        </span>
+    <div className="relative">
+      <div className={`flex items-center gap-2.5 rounded-lg border whitespace-nowrap ${cardCls} ${drillCls}`}>
+        {/* Avatar */}
+        <button
+          type="button"
+          onClick={canDrill ? onClick : undefined}
+          className="flex items-center gap-2.5 bg-transparent border-none p-0 cursor-inherit"
+          title={canDrill ? `View ${node.name}'s network` : undefined}
+        >
+          <div className={`${getAvatarSize(isParent, isSmall)} rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0`}>
+            <span className={`${getAvatarFont(isParent, isSmall)} font-bold text-white`}>
+              {node.name ? node.name.charAt(0).toUpperCase() : 'N'}
+            </span>
+          </div>
+          <div className="min-w-0">
+            <p className={`${getNameFont(isParent, isSmall)} font-semibold text-white truncate uppercase`}>{node.name}</p>
+            <p className={`${idFontCls} text-gray-400 font-mono truncate`}>{node.userId}</p>
+          </div>
+        </button>
+
+        {/* Eye button */}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setShowTooltip((v) => !v); }}
+          className={`flex-shrink-0 ${isSmall ? 'w-4 h-4' : 'w-5 h-5'} flex items-center justify-center text-gray-500 hover:text-purple-400 transition-colors bg-transparent border-none cursor-pointer`}
+          aria-label="View stats"
+        >
+          <svg width={isSmall ? 12 : 14} height={isSmall ? 12 : 14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
+
+        {/* Drill chevron */}
+        {canDrill && (
+          <button
+            type="button"
+            onClick={onClick}
+            className="flex-shrink-0 bg-transparent border-none cursor-pointer p-0"
+          >
+            <svg className={`${chevronCls} text-purple-400`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        )}
       </div>
-      <div className="min-w-0">
-        <p className={`${getNameFont(isParent, isSmall)} font-semibold text-white truncate uppercase`}>{node.name}</p>
-        <p className={`${idFontCls} text-gray-400 font-mono truncate`}>{node.userId}</p>
-      </div>
-      {canDrill && (
-        <svg className={`${chevronCls} text-purple-400 flex-shrink-0 ml-1`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-        </svg>
+
+      {/* Tooltip */}
+      {showTooltip && node.userId && (
+        <NodeTooltip userId={node.userId} onClose={() => setShowTooltip(false)} />
       )}
-    </button>
+    </div>
   );
 }
 

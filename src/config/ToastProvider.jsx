@@ -21,7 +21,7 @@ export default function ToastProvider() {
     <Toaster
       position="top-right"
       gutter={8}
-      containerStyle={{ top: 20, right: 20 }}
+      containerStyle={{ top: 20, right: 20, zIndex: 99999 }}
       toastOptions={{
         duration: 3500,
 

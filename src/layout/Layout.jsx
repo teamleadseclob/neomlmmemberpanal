@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { getNotifications, getprofile } from '../config/apiService';
+import { getNotifications } from '../config/apiService';
+import axiosConfig from '../config/axiosConfig';
+import WalletButton from '../components/wallet/WalletButton';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import dashboardSelected from '../assets/icons/dashboardselected.png';
@@ -23,18 +25,20 @@ import serviceSelected from '../assets/icons/serviceseleted.png';
 import supportIcon from '../assets/icons/supprt.png';
 import supportSelected from '../assets/icons/supportseleted.png';
 import logoutIcon from '../assets/icons/logout.png';
-
+import logo from '../assets/logo.svg';
+import liveselected from '../assets/icons/marketelected.png';
+import live from '../assets/icons/market.png';
 const NAV_ITEMS = [
   { icon: dashboardIcon, iconSelected: dashboardSelected, label: 'Dashboard',       path: '/' },
   { icon: referalIcon,   iconSelected: referalSelected,   label: 'Referral Hub',    path: '/referral-links' },
-  { icon: communityIcon, iconSelected: communitySelected, label: 'Community',        path: '/community' },
-  { icon: purchaseIcon,  iconSelected: purchaseSelected,  label: 'SWP Purchase',     path: '/swp-purchase' },
-  { icon: capitalIcon,   iconSelected: capitalSelected,   label: 'Trading Capital',  path: '/trading-capital' },
-  { icon: rankIcon,      iconSelected: rankSelected,      label: 'Rank Report',      path: '/rank-report' },
-  { icon: payoutIcon,    iconSelected: payoutSelected,    label: 'Payout',           path: '/payout' },
-  { icon: serviceIcon,   iconSelected: serviceSelected,   label: 'Services',         path: '/services' },
-  // { icon: reportIcon,    iconSelected: reportSelected,    label: 'Reports',          path: '/reports' },
-  { icon: supportIcon,   iconSelected: supportSelected,   label: 'Support',          path: '/support' },
+  { icon: communityIcon, iconSelected: communitySelected, label: 'Community',       path: '/community' },
+  { icon: purchaseIcon,  iconSelected: purchaseSelected,  label: 'SWP Purchase',    path: '/swp-purchase' },
+  { icon: capitalIcon,   iconSelected: capitalSelected,   label: 'Trading Capital', path: '/trading-capital' },
+  { icon: rankIcon,      iconSelected: rankSelected,      label: 'Rank Report',     path: '/rank-report' },
+  { icon: payoutIcon,    iconSelected: payoutSelected,    label: 'Payout',          path: '/payout' },
+  { icon: serviceIcon,   iconSelected: serviceSelected,   label: 'Services',        path: '/services' },
+  { icon: supportIcon,   iconSelected: supportSelected,   label: 'Support',         path: '/support' },
+  { icon: live,          iconSelected: liveselected,      label: 'Live Markets',            path: '/markets' },
 ];
 
 SidebarNavItem.propTypes = {
@@ -92,7 +96,7 @@ function HeaderActions() {
       <div className="flex items-center gap-2 pl-2 border-l border-[#1e1e3a]">
         <div className="text-right hidden sm:block">
           <p className="text-sm font-semibold leading-tight capitalize text-white">{user?.name || 'Hello'}</p>
-          <p className="text-[10px] text-purple-400 tracking-widest">{user?.email}</p>
+          <p className="text-[10px] text-purple-400 tracking-widest">Verified</p>
         </div>
         <Link to="/profile">
           <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg capitalize bg-purple-700 flex items-center justify-center text-md font-bold flex-shrink-0 text-white hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer">
@@ -107,46 +111,27 @@ function HeaderActions() {
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [swpBalance, setSwpBalance] = useState(null);
-  const [directReferralEarnings, setDirectReferralEarnings] = useState(0);
   const [notifImage, setNotifImage] = useState(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const fetchAndShowNotification = async () => {
-    try {
-      const res = await getNotifications();
-      const active = res?.data?.find((n) => n.isEnabled);
-      if (active?.imageUrl) setNotifImage(active.imageUrl);
-    } catch { /* silent */ }
-  };
-
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await getprofile()
-        setSwpBalance(res?.data?.swpBalance ?? 0)
-        setDirectReferralEarnings(res?.data?.directReferralEarnings ?? 0)
-      } catch {
-        setSwpBalance(0)
-      }
-    }
-    fetchProfile();
-
-    const SIX_HOURS = 6 * 60 * 60 * 1000;
-    const lastShown = Number(localStorage.getItem('notif_last_shown') || 0);
-    if (Date.now() - lastShown >= SIX_HOURS) {
-      fetchAndShowNotification();
-      localStorage.setItem('notif_last_shown', Date.now());
-    }
-
-    const interval = setInterval(() => {
-      fetchAndShowNotification();
-      localStorage.setItem('notif_last_shown', Date.now());
-    }, SIX_HOURS);
-
-    return () => clearInterval(interval);
-  }, [])
+    let cancelled = false;
+    getNotifications()
+      .then(async (res) => {
+        if (cancelled) return;
+        const active = (res?.data ?? []).find((n) => n.isEnabled);
+        if (!active?.imageUrl) return;
+        try {
+          const imgRes = await axiosConfig.get(active.imageUrl, { responseType: 'blob' });
+          if (!cancelled) setNotifImage(URL.createObjectURL(imgRes.data));
+        } catch {
+          if (!cancelled) setNotifImage(active.imageUrl);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   const mainRef = useRef(null);
   const location = useLocation();
@@ -171,7 +156,7 @@ export default function Layout() {
       {sidebarOpen && (
         <button
           type="button"
-          className="fixed inset-0 bg-black/60 z-20 md:hidden w-full h-full border-none cursor-default"
+          className="fixed inset-0 bg-black/60 z-10 md:hidden w-full h-full border-none cursor-default"
           onClick={handleNavigate}
           aria-label="Close sidebar"
         />
@@ -189,12 +174,7 @@ export default function Layout() {
       >
         {/* Brand */}
         <div className="px-4 pb-5 whitespace-nowrap">
-          <p
-            className="font-bold bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] bg-clip-text text-transparent"
-            style={{ fontFamily: 'Space Grotesk', fontSize: '24px', fontWeight: 700, lineHeight: '32px', letterSpacing: '-1.2px' }}
-          >
-            NEOFI
-          </p>
+          <img src={logo} alt="" className="w-18 object-contain flex-shrink-0" draggable="false" />
           <p className="text-[10px] text-gray-500 tracking-widest lg:block hidden">FINANCIAL OBSERVATORY</p>
         </div>
 
@@ -225,53 +205,63 @@ export default function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Header */}
-        <header className="h-14 flex-shrink-0 border-b border-[#1e1e3a] flex items-center justify-between px-4 md:px-6 gap-3">
-          {/* Hamburger + Brand (mobile) */}
-          <div className="flex items-center gap-3 md:hidden">
-            <button
-              type="button"
-              className="text-gray-400 hover:text-white flex-shrink-0 bg-transparent border-none cursor-pointer"
-              onClick={() => setSidebarOpen((prev) => !prev)}
-              aria-label="Toggle sidebar"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <p
-              className="font-bold bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] bg-clip-text text-transparent"
-              style={{ fontFamily: 'Space Grotesk', fontSize: '20px', fontWeight: 700, letterSpacing: '-1px' }}
-            >
-              NEOFI
-            </p>
-          </div>
-          <div className="hidden md:block" />
+        <header className="h-14 flex-shrink-0 border-b border-[#1e1e3a] flex items-center justify-end px-4 md:px-6 gap-3">
+          <button
+            type="button"
+            className="md:hidden text-gray-400 hover:text-white flex-shrink-0 bg-transparent border-none cursor-pointer"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            aria-label="Toggle sidebar"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <WalletButton />
           <HeaderActions />
         </header>
 
         <main ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6">
           <div key={useLocation().pathname} className="page-enter">
-            <Outlet context={{ swpBalance, directReferralEarnings }} />
+            <Outlet />
           </div>
         </main>
-        {/* <Footer /> */}
       </div>
 
       {/* Notification Image Modal */}
       {notifImage && (
-        <button
-          type="button"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 w-full h-full border-none cursor-default"
-          onClick={() => setNotifImage(null)}
-          aria-label="Close notification"
-        >
-          <img
-            src={notifImage}
-            alt="Notification"
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()}
+        <>
+          <div
+            className="fixed inset-0 z-[99999]"
+            style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+            onClick={() => { URL.revokeObjectURL(notifImage); setNotifImage(null); }}
+            aria-hidden="true"
           />
-        </button>
+          <dialog
+            open
+            className="fixed inset-0 z-[100000] m-auto w-full max-w-sm lg:max-w-2xl bg-transparent border-none p-0 shadow-none"
+            onClose={() => { URL.revokeObjectURL(notifImage); setNotifImage(null); }}
+            aria-label="Notification"
+          >
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { URL.revokeObjectURL(notifImage); setNotifImage(null); }}
+                className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full bg-[#1e1e3a] border border-[#2a2a4a] flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer"
+                aria-label="Close notification"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <img
+                src={notifImage}
+                alt="Notification"
+                crossOrigin="anonymous"
+                className="w-full rounded-2xl object-contain shadow-2xl"
+              />
+            </div>
+          </dialog>
+        </>
       )}
 
       {/* Logout Confirmation Modal */}

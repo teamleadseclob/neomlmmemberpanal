@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ProfileProvider } from './context/ProfileContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import SwpGuard from './components/auth/SwpGuard';
 import Layout from './layout/Layout';
@@ -25,6 +26,7 @@ const OtpVerify           = lazy(() => import('./pages/OtpVerify'))
 const NotFound            = lazy(() => import('./pages/NotFound'))
 const TermsAndConditions  = lazy(() => import('./pages/TermsAndConditions'))
 const Profile             = lazy(() => import('./pages/Profile'))
+const Markets             = lazy(() => import('./pages/Markets'))
 
 function PageLoader() {
   return (
@@ -37,6 +39,7 @@ function PageLoader() {
 function App() {
   return (
     <AuthProvider>
+      <ProfileProvider>
       <BrowserRouter>
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -68,6 +71,7 @@ function App() {
                 {/* <Route path="reports"                     element={<PlaceholderPage title="Reports" />} /> */}
                 <Route path="support"                     element={<Support />} />
                 <Route path="profile"                     element={<Profile />} />
+                <Route path="markets"                     element={<Markets />} />
               </Route>
               <Route path="swp-purchase" element={<SwpPurchase />} />
             </Route>
@@ -76,6 +80,7 @@ function App() {
           </Routes>
         </Suspense>
       </BrowserRouter>
+      </ProfileProvider>
     </AuthProvider>
   );
 }

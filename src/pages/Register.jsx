@@ -2,7 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom'
 import PlexusBackground from './bg'
 import RegisterForm from '../components/auth/register/RegisterForm'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.svg'
 
 export default function Register() {
   const [searchParams] = useSearchParams()

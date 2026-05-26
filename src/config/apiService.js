@@ -67,6 +67,7 @@ export const sendreferallink = async (email, referralLink) => {
 
   return response.data
 }
+
 // ─── Community ────────────────────────────────────────────────────────────────
 
 export const gettree = async (userId) => {
@@ -76,6 +77,11 @@ export const gettree = async (userId) => {
 
 export const getnetworkstats = async (userId) => {
   const response = await axiosConfig.get(`/api/network/stats/${userId}`)
+  return response.data
+}
+
+export const getdownlinestats = async (userId) => {
+  const response = await axiosConfig.get(`/api/network/team-member/${userId}`)
   return response.data
 }
 
@@ -91,8 +97,9 @@ export const getswphistory = async () => {
   return response.data
 }
 
-export const purchaseswp = async (amount) => {
-  const response = await axiosConfig.post(`/api/swp/purchase`, { amount })
+
+export const purchaseswp = async (amount, walletAddress, txHash, paymentMethod = 'wallet') => {
+  const response = await axiosConfig.post(`/api/swp/purchase`, { amount, walletAddress, txHash, paymentMethod })
   return response.data
 }
 
@@ -108,8 +115,8 @@ export const getbalence = async () => {
   return response.data
 }
 
-export const addinvestments = async (amount) => {
-  const response = await axiosConfig.post(`/api/investment`, { amount })
+export const addinvestments = async (amount, walletAddress, txHash, paymentMethod = 'wallet') => {
+  const response = await axiosConfig.post(`/api/investment`, { amount, walletAddress, txHash, paymentMethod })
   return response.data
 }
 
@@ -144,8 +151,8 @@ export const getrankstatus = async () => {
 
 // ─── Payout ───────────────────────────────────────────────────────────────────
 
-export const withdraw = async (amount) => {
-  const response = await axiosConfig.post('/api/withdrawal', { amount })
+export const withdraw = async (amount,walletAddress) => {
+  const response = await axiosConfig.post('/api/withdrawal', { amount,walletAddress })
   return response.data
 }
 

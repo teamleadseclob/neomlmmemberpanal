@@ -13,7 +13,7 @@ function TeamPerformance({ data, totalInvested }) {
     { img: downlineImg,   label: 'TOTAL DOWNLINES',  value: data?.totalDownline ?? 0 },
     { img: swpImg,        label: 'SWP PURCHASED',    value: `$${(data?.totalSwpPurchased ?? 0).toLocaleString()}` },
     { img: tradingImg,    label: 'TEAM SWP VOLUME',  value: `$${(data?.totalTeamSwpVolume ?? 0).toLocaleString()}` },
-    { img: tradingImg,    label: 'TOTAL INVESTED',  value: `$${(totalInvested ?? 0).toLocaleString()}` },
+    { img: tradingImg,    label: 'TRADING CAPITAL',  value: `$${(totalInvested ?? 0).toLocaleString()}` },
   ]
 
   return (

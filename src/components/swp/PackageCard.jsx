@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
-import { purchaseswp } from '../../config/apiService'
+import { purchaseswp, getprofile } from '../../config/apiService'
+import { useWeb3Payment } from '../wallet/useWeb3Payment'
+import PaymentMethodModal from '../common/PaymentMethodModal'
 
 const TIER_ICONS = {
   bolt: (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>),
@@ -26,7 +28,7 @@ const BUTTON_LABELS = {
 
 const SPINNER = <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
 
-function SelectTierButton({ loading, onClick }) {
+function SelectTierButton({ loading, onClick, countdown, processing }) {
   const [hovered, setHovered] = useState(false)
   return (
     <div className="flex justify-center">
@@ -54,7 +56,13 @@ function SelectTierButton({ loading, onClick }) {
           position: 'relative',
         }}
       >
-        {loading ? SPINNER : <SelectTierLabel hovered={hovered} />}
+        {loading
+          ? <span className="inline-flex items-center gap-1.5">
+              <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              {processing ? 'Confirming...' : `Processing (${countdown}s)`}
+            </span>
+          : <SelectTierLabel hovered={hovered} />
+        }
       </button>
     </div>
   )
@@ -83,19 +91,23 @@ function SelectTierLabel({ hovered }) {
   )
 }
 
-function StaticButton({ btnType, loading, onClick }) {
+function StaticButton({ btnType, loading, onClick, SPINNER }) {
+  const [hovered, setHovered] = useState(false)
   return (
     <div className="flex justify-center">
       <button
         type="button"
         onClick={onClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         disabled={loading}
         style={{
-          background: 'transparent',
-          border: '1px solid rgba(139,92,246,0.5)',
-          borderRadius: '8px',
-          width: '50%',
-          color: 'rgb(192,132,252)',
+          background: hovered ? 'linear-gradient(to right, #7F25FB, #CB3CFF)' : 'transparent',
+          border: hovered ? '1px solid transparent' : '1px solid rgba(139,92,246,0.5)',
+          borderRadius: hovered ? '4px' : '8px',
+          width: hovered ? '100%' : '50%',
+          color: hovered ? '#fff' : 'rgb(192,132,252)',
+          boxShadow: hovered ? '0 8px 24px rgba(127,37,251,0.35)' : 'none',
           transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
           padding: '10px 0',
           fontSize: '12px',
@@ -103,22 +115,6 @@ function StaticButton({ btnType, loading, onClick }) {
           letterSpacing: '0.05em',
           cursor: loading ? 'not-allowed' : 'pointer',
           opacity: loading ? 0.6 : 1,
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(to right, #7F25FB, #CB3CFF)';
-          e.currentTarget.style.border = '1px solid transparent';
-          e.currentTarget.style.borderRadius = '4px';
-          e.currentTarget.style.width = '100%';
-          e.currentTarget.style.color = '#fff';
-          e.currentTarget.style.boxShadow = '0 8px 24px rgba(127,37,251,0.35)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'transparent';
-          e.currentTarget.style.border = '1px solid rgba(139,92,246,0.5)';
-          e.currentTarget.style.borderRadius = '8px';
-          e.currentTarget.style.width = '50%';
-          e.currentTarget.style.color = 'rgb(192,132,252)';
-          e.currentTarget.style.boxShadow = 'none';
         }}
       >
         {loading ? SPINNER : BUTTON_LABELS[btnType]}
@@ -128,19 +124,32 @@ function StaticButton({ btnType, loading, onClick }) {
 }
 
 function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge }) {
-  const [loading, setLoading] = useState(false)
+  const [showPayModal, setShowPayModal] = useState(false)
+  const [systemBalance, setSystemBalance] = useState(0)
 
-  const handlePurchase = async () => {
-    setLoading(true)
+  useEffect(() => {
+    getprofile().then((res) => setSystemBalance(res?.data?.walletBalance ?? 0)).catch(() => {})
+  }, [])
+
+  const { handlePay, payLoading, processing, countdown } = useWeb3Payment(
+    price,
+    ({ walletAddress, txHash }) => purchaseswp(price, walletAddress, txHash, 'web3'),
+    () => toast.success(`${title} purchased successfully!`)
+  )
+  const loading = payLoading || processing
+  const SPINNER = <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+
+  const handleSystemPay = async () => {
+    setShowPayModal(false)
     try {
-      await purchaseswp(price)
+      await purchaseswp(price, undefined, undefined, 'wallet')
       toast.success(`${title} purchased successfully!`)
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Purchase failed. Please try again.')
-    } finally {
-      setLoading(false)
+      toast.error(err?.response?.data?.message || 'Purchase failed')
     }
   }
+
+  const handleOpenPayModal = () => setShowPayModal(true)
 
   return (
     <div className="relative rounded-xl p-5 flex flex-col hover:border-purple-500/30 transition-all duration-200" style={{ background: '#181F3066', border: '1px solid #EEB1FF1A' }}>
@@ -177,9 +186,19 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
       </div>
 
       {btnType === 'select'
-        ? <SelectTierButton loading={loading} onClick={handlePurchase} />
-        : <StaticButton btnType={btnType} loading={loading} onClick={handlePurchase} />
+        ? <SelectTierButton loading={loading} onClick={handleOpenPayModal} countdown={countdown} processing={processing} />
+        : <StaticButton btnType={btnType} loading={loading} onClick={handleOpenPayModal} SPINNER={SPINNER} />
       }
+
+      {showPayModal && (
+        <PaymentMethodModal
+          amount={price}
+          systemBalance={systemBalance}
+          onSelectSystem={handleSystemPay}
+          onSelectCrypto={() => { setShowPayModal(false); handlePay() }}
+          onClose={() => setShowPayModal(false)}
+        />
+      )}
     </div>
   )
 }
@@ -187,6 +206,8 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
 SelectTierButton.propTypes = {
   loading: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+  countdown: PropTypes.number.isRequired,
+  processing: PropTypes.bool.isRequired,
 }
 
 SelectTierLabel.propTypes = {
@@ -197,6 +218,7 @@ StaticButton.propTypes = {
   btnType: PropTypes.oneOf(['repurchase']).isRequired,
   loading: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+  SPINNER: PropTypes.node.isRequired,
 }
 
 PackageCard.propTypes = {

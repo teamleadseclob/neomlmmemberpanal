@@ -36,7 +36,7 @@ export default function LoginForm() {
       toast.success(`Welcome back, ${res?.data?.user?.name}!`)
       navigate('/', { replace: true })
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Invalid credentials')
+      toast.error(err?.response?.data?.message || 'server error, please try again later')
     } finally {
       setLoading(false)
     }

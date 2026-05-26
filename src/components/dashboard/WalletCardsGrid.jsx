@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 import WalletCard from './WalletCard'
+import SplitWalletCard from './SplitWalletCard'
 
 function WalletCardsGrid({ data }) {
   const fmt = (val) => `$${(val ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
@@ -15,27 +16,65 @@ function WalletCardsGrid({ data }) {
     (earnings.rankBonus?.net ?? 0)
 
   const WALLET_DATA = [
-    { iconType: 'wallet',     label: 'Main Wallet',         amount: fmt(data?.walletBalance) },
-    { iconType: 'reward',     label: 'Reward Wallet',       amount: fmt(rewardTotal) },
-    { iconType: 'profit',     label: 'Trading Profit',      amount: fmt(earnings.roi?.thisMonth) },
-    { iconType: 'multilevel', label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.net) },
-    { iconType: 'cashback',   label: 'Last Month Multilevel Rewards',        amount: fmt(earnings.multiLevelRewards?.thisMonth) },
-    { iconType: 'total',      label: 'Total Income',        amount: fmt(summary?.totalNetEarnings), isHighlighted: true },
-    { iconType: 'cashback',      label: 'Last Month Trading profit',        amount: fmt(earnings.roi?.thisMonth), islastCard: true },
+    { iconType: 'wallet',      label: 'Main Wallet',         amount: fmt(data?.walletBalance) },
+    { iconType: 'cashback',    label: 'Last Earned Multilevel Rewards',        amount: fmt(earnings.multiLevelRewards?.thisMonth),iconType2: 'cashback',      label2: 'Last Earned Trading profit',        amount2: fmt(earnings.roi?.thisMonth),  },
+    { iconType: 'profit',      label: 'Trading Profit',      amount: fmt(earnings.roi?.thisMonth) },
+    { iconType: 'multilevel',  label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.net) },
+    { iconType: 'reward',      label: 'Reward Wallet',       amount: fmt(rewardTotal) },
+    { iconType: 'total',       label: 'Total Income',        amount: fmt(summary?.totalNetEarnings) },
   ]
 
+  const ROW1 = WALLET_DATA.slice(0, 3)
+  const ROW2 = WALLET_DATA.slice(3)
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      {WALLET_DATA.map((card) => (
-        <WalletCard
-          key={card.label}
-          iconType={card.iconType}
-          label={card.label}
-          amount={card.amount}
-          isHighlighted={card.isHighlighted}
-          islastCard={card.islastCard}
-        />
-      ))}
+    <div className="flex flex-col gap-4 mb-6">
+      {/* Mobile: 1col | Tablet: single 2-col grid for all 6 | Desktop: split into 2 rows */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:hidden gap-4">
+        {WALLET_DATA.map((card) => (
+          card.iconType2
+            ? <SplitWalletCard
+                key={card.label}
+                iconType={card.iconType}   label={card.label}   amount={card.amount}
+                iconType2={card.iconType2} label2={card.label2} amount2={card.amount2}
+              />
+            : <WalletCard
+                key={card.label}
+                iconType={card.iconType}
+                label={card.label}
+                amount={card.amount}
+              />
+        ))}
+      </div>
+
+      {/* Desktop only */}
+      <div className="hidden lg:grid lg:grid-cols-4 gap-4">
+        {ROW1.map((card) => (
+          card.iconType2
+            ? <SplitWalletCard
+                key={card.label}
+                className="lg:col-span-2"
+                iconType={card.iconType}   label={card.label}   amount={card.amount}
+                iconType2={card.iconType2} label2={card.label2} amount2={card.amount2}
+              />
+            : <WalletCard
+                key={card.label}
+                iconType={card.iconType}
+                label={card.label}
+                amount={card.amount}
+              />
+        ))}
+      </div>
+      <div className="hidden lg:grid lg:grid-cols-3 gap-4">
+        {ROW2.map((card) => (
+          <WalletCard
+            key={card.label}
+            iconType={card.iconType}
+            label={card.label}
+            amount={card.amount}
+          />
+        ))}
+      </div>
     </div>
   )
 }

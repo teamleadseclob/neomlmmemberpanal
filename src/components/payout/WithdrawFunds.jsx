@@ -1,18 +1,27 @@
-import { useState } from 'react';
+import { useState,useMemo  } from 'react';
 import PropTypes from 'prop-types';
 import toast from 'react-hot-toast';
 import { MdOutlineMoneyOff, MdOutlineAccountBalanceWallet, MdWarningAmber } from 'react-icons/md';
 import { withdraw } from '../../config/apiService';
+import { getSignupAddress } from '../wallet/useWeb3Payment';
+import { useAccount } from 'wagmi';
 
 export default function WithdrawFunds({ maxAmount, onSuccess }) {
   const [amount,  setAmount]  = useState('');
   const [loading, setLoading] = useState(false);
+  const { address, isConnected } = useAccount()
+
 
   const handleSetMax = () => setAmount(maxAmount.toFixed(2));
 
+  const walletAddress = useMemo(() => getSignupAddress(address), [address]);
+
   const handleSubmit = async () => {
     const parsed = Number.parseFloat(amount);
-
+    if(!isConnected){
+      toast.error('Please connect your wallet first');
+      return;
+    }
     if (!parsed || parsed <= 0) {
       toast.error('Please enter a valid amount.');
       return;
@@ -24,7 +33,7 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
 
     setLoading(true);
     try {
-      await withdraw(parsed);
+      await withdraw(parsed,walletAddress||'0xA33888fC1B280CA64BCb344eF435B18bE105AEb1');
       toast.success('Withdrawal request submitted successfully!');
       setAmount('');
       onSuccess?.();

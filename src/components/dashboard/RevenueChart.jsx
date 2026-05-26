@@ -4,6 +4,18 @@ import { getgraph } from '../../config/apiService';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const PAD    = { left: 0, right: 10, top: 10, bottom: 5 };
 
+function getDynamicYLabels(dataPoints) {
+  const values = dataPoints.map((d) => d.value).filter((v) => Number.isFinite(v) && v >= 0)
+  const maxVal = values.length > 0 ? Math.max(...values) * 1.1 : 1
+  const safeMax = maxVal > 0 ? maxVal : 1
+  const step = safeMax / 6
+  return Array.from({ length: 7 }, (_, i) => {
+    const v = step * i
+    if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`
+    if (v >= 1000)    return `${(v / 1000).toFixed(0)}K`
+    return `${Math.round(v)}`
+  })
+}
 
 function getPoints(canvas, dataPoints) {
   const rect   = canvas.getBoundingClientRect()
@@ -118,7 +130,6 @@ function xLabels(days) {
     const d = i + 1;
     const isLast     = d === days;
     const isMultOf5  = d % 5 === 0;
-    // hide the multOf5 label if last day is within 2 days of it
     if (isMultOf5 && !isLast && days - d < 3) return '';
     return (d === 1 || isMultOf5 || isLast) ? String(d) : '';
   });
@@ -140,11 +151,9 @@ function RevenueChart() {
   const [totalRevenue,  setTotalRevenue]  = useState(0);
   const [loading,       setLoading]       = useState(false);
 
-  /* fetch from API when month changes */
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    /* API uses 1-indexed month */
     getgraph(selectedMonth + 1, selectedYear)
       .then((res) => {
         if (cancelled) return;
@@ -160,13 +169,11 @@ function RevenueChart() {
 
   dataRef.current = dataPoints;
 
-
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (canvas) drawChart(canvas, dataRef.current, progressRef.current, hoverIdxRef.current);
   }, []);
 
-  /* re-animate when data changes */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || dataPoints.length === 0) return;
@@ -190,7 +197,6 @@ function RevenueChart() {
     return () => cancelAnimationFrame(rafId);
   }, [dataPoints]);
 
-  /* resize */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -236,7 +242,6 @@ function RevenueChart() {
 
   return (
     <div className="rounded-xl border border-[#1e1e3a] p-5 mb-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
           <h3 className="text-sm text-gray-400">Monthly Revenue</h3>
@@ -249,7 +254,6 @@ function RevenueChart() {
             <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" />{' '}Revenue
           </span>
 
-          {/* Month dropdown */}
           <div className="relative">
             <button
               type="button"
@@ -290,9 +294,7 @@ function RevenueChart() {
         </div>
       </div>
 
-      {/* Chart */}
       <div className="flex gap-2">
-
         <div className="flex-1 flex flex-col">
           <div ref={wrapperRef} className="relative flex-1 min-h-40 max-h-80">
             <canvas
@@ -328,7 +330,7 @@ function RevenueChart() {
               const pct = (i / Math.max(dataPoints.length - 1, 1)) * 100;
               return (
                 <span
-                  key={`day-${i}`}
+                  key={`day-${l}-${i}`}
                   className="absolute text-[10px] text-gray-600 -translate-x-1/2"
                   style={{ left: `${pct}%` }}
                 >

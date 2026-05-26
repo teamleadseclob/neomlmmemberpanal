@@ -36,7 +36,7 @@ function CommunityStats() {
       </div>
 
       <div className="rounded-xl p-4 hover:border-purple-600/30 transition-all duration-200" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
-        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Team SWP Volume</p>
+        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Total SWP Package</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">
             {stats?.teamSwpVolume?.toLocaleString() ?? '—'}
@@ -45,7 +45,7 @@ function CommunityStats() {
       </div>
 
       <div className="rounded-xl p-4 hover:border-purple-600/30 transition-all duration-200" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
-        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Team Investment Volume</p>
+        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium mb-2">Total Investment</p>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-bold text-white">
             {stats?.teamInvestmentVolume?.toLocaleString() ?? '—'}

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 export default function PendingRequests({ requests }) {
   return (
-    <div className="rounded-xl p-5 md:p-6 flex flex-col h-full" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
+    <div className="rounded-xl p-4  md:p-4 flex flex-col max-h-[230px]" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
       <p className="text-[10px] text-gray-500 uppercase tracking-[3px] font-semibold mb-5">
         Pending Requests
       </p>

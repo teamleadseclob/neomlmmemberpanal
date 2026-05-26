@@ -1,14 +1,13 @@
-import React from 'react';
 import { Navigate, Outlet, useOutletContext } from 'react-router-dom'
+import { useProfile } from '../../context/ProfileContext'
 
 export default function SwpGuard() {
   const ctx = useOutletContext()
-  const swpBalance = ctx?.swpBalance
+  const { profile, loading } = useProfile()
 
-  // Still loading — wait before redirecting
-  if (swpBalance === null || swpBalance === undefined) return null
+  if (loading) return null
 
-  if (swpBalance === 0) {
+  if (!profile?.swpBalance) {
     return <Navigate to="/swp-purchase" replace />
   }
 
