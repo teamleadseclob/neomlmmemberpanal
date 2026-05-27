@@ -36,15 +36,17 @@ export default function SplitWalletCard({ iconType, label, amount, iconType2, la
           {ICON_MAP[iconType]}
         </div>
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label}</p>
-        <AnimatedAmount value={parseAmount(amount)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent" />
+        <AnimatedAmount value={parseAmount(amount)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#36ff6f] to-[#25fb3e] bg-clip-text text-transparent" />
       </div>
+
       <div className="w-px my-4 bg-[#3c3c55] mr-2" aria-hidden="true" />
+
       {/* Right half */}
       <div className="relative flex-1 p-4" style={{ zIndex: 1 }}>
         <div className="w-10 h-10 rounded-lg bg-[#1a1a3e00] flex items-center justify-center mb-3">
         </div>
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label2}</p>
-        <AnimatedAmount value={parseAmount(amount2)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent" />
+        <AnimatedAmount value={parseAmount(amount2)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#3cffa1] to-[#53fb25] bg-clip-text text-transparent" />
       </div>
 
     </div>
@@ -59,4 +61,8 @@ SplitWalletCard.propTypes = {
   label2:    PropTypes.string.isRequired,
   amount2:   PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   className: PropTypes.string,
+}
+
+SplitWalletCard.defaultProps = {
+  className: '',
 }

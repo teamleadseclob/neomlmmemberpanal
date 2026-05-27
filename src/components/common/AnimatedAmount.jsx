@@ -43,17 +43,20 @@ export default function AnimatedAmount({ value, className, large, duration, pref
   const dollars  = Math.floor(animated);
   const cents    = ((animated % 1) * 100).toFixed(0).padStart(2, '0');
 
-  // Check if gradient classes are applied so we can propagate to children
+  // Extract gradient classes from className to apply to child spans
   const hasGradient = className?.includes('bg-clip-text')
+  const gradientClasses = hasGradient
+    ? className.split(' ').filter((c) => c.startsWith('from-') || c.startsWith('to-') || c === 'bg-gradient-to-r' || c === 'bg-gradient-to-br' || c === 'bg-clip-text' || c === 'text-transparent').join(' ')
+    : ''
 
   return (
     <p className={className} style={style}>
-      <span className={hasGradient ? 'bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent' : ''}>
+      <span className={gradientClasses}>
         {prefix}{dollars.toLocaleString()}.
       </span>
       {large
         ? <span className="text-2xl md:text-3xl text-gray-400 font-semibold ml-0.5">{cents}</span>
-        : <span className={hasGradient ? 'bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent' : ''}>{cents}</span>
+        : <span className={gradientClasses}>{cents}</span>
       }
     </p>
   );
