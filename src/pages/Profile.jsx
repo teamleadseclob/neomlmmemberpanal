@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { getprofile, updateprofile } from '../config/apiService';
 import ProfileCard from '../components/profile/ProfileCard';
 import InviteBanner from '../components/trading/InviteBanner';
+import KYCForm from '../components/kyc/KYCForm';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -72,6 +73,9 @@ export default function Profile() {
 
       {/* Profile form card */}
       {user && <ProfileCard user={user} onSave={handleSave} />}
+
+      {/* KYC */}
+      <KYCForm />
 
       {/* Network banner */}
       <InviteBanner />

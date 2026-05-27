@@ -42,7 +42,7 @@ export default function PaymentMethodModal({ amount, systemBalance, onSelectSyst
                 <img src={transactionsIcon} alt="system wallet" className="w-10 h-10 object-contain" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white">System Wallet</p>
+                <p className="text-sm font-semibold text-white">Main Wallet</p>
                 <p className="text-xs text-gray-400">
                   Balance: <span className="text-green-400">
                     ${systemBalance?.toLocaleString('en-US', { minimumFractionDigits: 2 })}

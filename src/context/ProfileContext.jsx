@@ -29,6 +29,7 @@ export function ProfileProvider({ children }) {
   // re-runs whenever token changes (login/logout)
   useEffect(() => {
     if (token) {
+      setLoading(true)
       refreshProfile()
     } else {
       setProfile(null)

@@ -43,8 +43,8 @@ function CapitalOverview({data, onRefresh}) {
           {/* Progress bar */}
           <div className="w-full h-2 bg-[#1a1a3e] rounded-full overflow-hidden mb-6">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] transition-all duration-700"
-              style={{ width: `${percentage}%` }}
+              className="h-full rounded-full transition-all duration-700"
+              style={{ width: `${percentage}%`, background: 'linear-gradient(128.49deg, #CB3CFF 19.86%, #7F25FB 68.34%)' }}
             />
           </div>
 

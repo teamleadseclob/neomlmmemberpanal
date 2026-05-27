@@ -21,7 +21,7 @@ function WelcomeSection() {
                    hover:from-[#6B1FD4] hover:to-[#B835E0]
                    transition-all duration-200 shadow-lg shadow-purple-500/20
                    whitespace-nowrap text-center align-middle"
-        style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: '13px', lineHeight: '24px', letterSpacing: '0px' }}
+        style={{fontWeight: 700, fontSize: '13px', lineHeight: '24px', letterSpacing: '0px' }}
       >
         <Link to="/trading-capital" className="flex items-center gap-2">
         Quick Deposit

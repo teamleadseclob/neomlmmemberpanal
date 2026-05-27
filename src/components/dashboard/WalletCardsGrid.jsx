@@ -36,11 +36,11 @@ function WalletCardsGrid({ data }) {
             ? <SplitWalletCard
                 key={card.label}
                 iconType={card.iconType}   label={card.label}   amount={card.amount}
-                iconType2={card.iconType2} label2={card.label2} amount2={card.amount2}
+                iconType2={card?.iconType2} label2={card.label2} amount2={card.amount2}
               />
             : <WalletCard
                 key={card.label}
-                iconType={card.iconType}
+                iconType={card?.iconType}
                 label={card.label}
                 amount={card.amount}
               />
@@ -48,12 +48,12 @@ function WalletCardsGrid({ data }) {
       </div>
 
       {/* Desktop only */}
-      <div className="hidden lg:grid lg:grid-cols-4 gap-4">
+      <div className="hidden lg:grid lg:grid-cols-3 gap-4">
         {ROW1.map((card) => (
           card.iconType2
             ? <SplitWalletCard
                 key={card.label}
-                className="lg:col-span-2"
+                className=""
                 iconType={card.iconType}   label={card.label}   amount={card.amount}
                 iconType2={card.iconType2} label2={card.label2} amount2={card.amount2}
               />

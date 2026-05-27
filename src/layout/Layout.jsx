@@ -38,7 +38,7 @@ const NAV_ITEMS = [
   { icon: payoutIcon,    iconSelected: payoutSelected,    label: 'Payout',          path: '/payout' },
   { icon: serviceIcon,   iconSelected: serviceSelected,   label: 'Services',        path: '/services' },
   { icon: supportIcon,   iconSelected: supportSelected,   label: 'Support',         path: '/support' },
-  { icon: live,          iconSelected: liveselected,      label: 'Live Markets',            path: '/markets' },
+  { icon: live,          iconSelected: liveselected,      label: 'Trading Partner',            path: '/markets' },
 ];
 
 SidebarNavItem.propTypes = {

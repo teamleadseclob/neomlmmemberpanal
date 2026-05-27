@@ -30,8 +30,8 @@ function WalletCard({ iconType, label, amount, islastCard = false }) {
           {ICON_MAP[iconType]}
         </div>
         <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label}</p>
-        <p className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent">
-          <AnimatedAmount value={typeof amount === 'number' ? amount : Number.parseFloat(String(amount).replaceAll(/[^0-9.]/g, '')) || 0} className="" />
+        <p className="text-3xl font-bold mt-0.5">
+          <AnimatedAmount value={typeof amount === 'number' ? amount : Number.parseFloat(String(amount).replaceAll(/[^0-9.]/g, '')) || 0} className="bg-gradient-to-r from-[#CB3CFF] to-[#7F25FB] bg-clip-text text-transparent text-3xl font-bold" />
         </p>
       </div>
     </div>

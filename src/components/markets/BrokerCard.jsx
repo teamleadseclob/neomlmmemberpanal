@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 import bg from '../../assets/market/bg.png'
+import { interest } from '../../config/apiService'
 import fca from '../../assets/market/fca.png'
 import forex from '../../assets/market/forex.png'
 import mt from '../../assets/market/mt.png'
@@ -17,7 +20,21 @@ const PlatformIcon = () => (
   <img src={mt} alt="mt" className="w-4 h-4 object-contain" />
 )
 
-export default function BrokerCard({ name, logo, description, regulation, markets, platform, openAccountUrl, copyTradingUrl }) {
+export default function BrokerCard({ name, logo, description, regulation, markets, platform, openAccountUrl, copyTradingUrl, marketTitle }) {
+  const [copying, setCopying] = useState(false)
+
+  const handleCopyTrading = async () => {
+    setCopying(true)
+    try {
+      if (marketTitle) await interest(marketTitle)
+      toast.success('Interest registered successfully!')
+    } catch (err) {
+      const msg = err?.response?.data?.message
+      if (msg) toast.error(msg)
+    } finally {
+      setCopying(false)
+    }
+  }
   return (
     <div className="relative overflow-hidden transition-all duration-200 hover:border-purple-500/30 flex flex-col">
 
@@ -28,9 +45,9 @@ export default function BrokerCard({ name, logo, description, regulation, market
       <div className="relative flex flex-col p-6 flex-1">
 
         {/* Logo area */}
-        <div className="h-36 flex items-center rounded-lg bg-white justify-center p-4">
+        <div className="h-36 flex items-center rounded-lg  justify-center p-4">
           {logo
-            ? <img src={logo} alt={name} className="max-h-16 max-w-[75%] object-contain" />
+            ? <img src={logo} alt={name} className="max-h-16 max-w-[300px] object-contain" />
             : <span className="text-2xl font-black text-white tracking-widest">{name}</span>
           }
         </div>
@@ -65,14 +82,14 @@ export default function BrokerCard({ name, logo, description, regulation, market
               Open Account
             </a>
             {copyTradingUrl && (
-              <a
-                href={copyTradingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 rounded-full border border-white/20 text-white text-xs font-bold uppercase tracking-widest text-center hover:bg-white/5 transition-colors"
+              <button
+                type="button"
+                onClick={handleCopyTrading}
+                disabled={copying}
+                className="w-full py-3 rounded-full border border-white/20 text-white text-xs font-bold uppercase tracking-widest text-center hover:bg-white/5 transition-colors cursor-pointer bg-transparent disabled:opacity-60"
               >
-                Copy Trading
-              </a>
+                {copying ? 'Please wait...' : 'Copy Trading'}
+              </button>
             )}
           </div>
         </div>
@@ -91,9 +108,11 @@ BrokerCard.propTypes = {
   platform:       PropTypes.string.isRequired,
   openAccountUrl: PropTypes.string.isRequired,
   copyTradingUrl: PropTypes.string,
+  marketTitle:    PropTypes.string,
 }
 
 BrokerCard.defaultProps = {
   logo:           null,
   copyTradingUrl: null,
+  marketTitle:    null,
 }

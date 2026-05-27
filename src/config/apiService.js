@@ -189,3 +189,29 @@ export const getNotifications = async () => {
   const response = await axiosConfig.get('/api/users/notifications')
   return response.data
 }
+
+// ─── Kyc ──────────────────────────────────────────────────────────
+
+export const uploadImage = async (body) => {
+  const response = await axiosConfig.post('/api/kyc/upload', body)
+  return response.data
+}
+
+export const submitKYC = async (body) => {
+  const response = await axiosConfig.post('/api/kyc/submit', body)
+  return response.data
+}
+
+export const kycStatus = async () => {
+  const response = await axiosConfig.get('/api/kyc/status')
+  return response.data
+}
+
+export const interest = async (marketTitle) => {
+  const response = await axiosConfig.post('/api/market/interest', { marketTitle })
+  return response.data
+}
+
+
+
+
