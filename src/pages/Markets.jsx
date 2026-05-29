@@ -16,7 +16,7 @@ const BROKERS = [
     platform:       'MT5',
     openAccountUrl: 'https://one.exnessonelink.com/a/35033uq308',
     copyTradingUrl: 'https://one.exnessonelink.com/a/35033uq308',
-    marketTitle:    'Forex Trading',
+    marketTitle:    'EXNESS',
   },
   {
     name:           'FUSION',
@@ -27,7 +27,7 @@ const BROKERS = [
     platform:       'MT4 / cTrader',
     openAccountUrl: 'https://fusionmarkets.com/?refcode=109999',
     copyTradingUrl: 'https://fusionmarkets.com/?refcode=109999',
-    marketTitle:    'Forex Trading',
+    marketTitle:    'FUSION',
   },
   {
     name:           'XM',

@@ -97,7 +97,7 @@ function WalletItem({ wallet }) {
             <button
               type="button"
               onClick={() => navigate(wallet.historyRoute)}
-              className="md:hidden flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border border-purple-500/30 text-purple-400 bg-purple-500/10 cursor-pointer"
+              className="lg:hidden flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border border-purple-500/30 text-purple-400 bg-purple-500/10 cursor-pointer"
             >
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -151,7 +151,7 @@ function WalletItem({ wallet }) {
 
       {/* Hover: View History */}
       {wallet.hasViewHistory && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#0a0920]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+        <div className="hidden lg:flex absolute inset-0 items-center justify-center bg-[#0a0920]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
           <button
             type="button"
             onClick={() => navigate(wallet.historyRoute)}
