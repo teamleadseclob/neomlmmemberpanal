@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { getNotifications } from '../config/apiService';
+import { getNotifications, getnotificationcount } from '../config/apiService';
 import axiosConfig from '../config/axiosConfig';
 import WalletButton from '../components/wallet/WalletButton';
+import NotificationPanel from '../components/common/NotificationPanel';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import dashboardSelected from '../assets/icons/dashboardselected.png';
@@ -89,10 +90,33 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
   );
 }
 
-function HeaderActions() {
+function HeaderActions({ unreadCount, onCountChange }) {
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const [showPanel, setShowPanel] = useState(false);
+  const bellRef = useRef(null);
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
+      {/* Notification Bell */}
+      <div className="relative" ref={bellRef}>
+        <button
+          type="button"
+          onClick={() => setShowPanel((p) => !p)}
+          className="relative w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors bg-transparent border-none cursor-pointer"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-purple-600 text-[9px] font-bold text-white flex items-center justify-center">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </button>
+        {showPanel && (
+          <NotificationPanel onClose={() => setShowPanel(false)} onCountChange={onCountChange} />
+        )}
+      </div>
+
       <div className="flex items-center gap-2 pl-2 border-l border-[#1e1e3a]">
         <div className="text-right hidden sm:block">
           <p className="text-sm font-semibold leading-tight capitalize text-white">{user?.name || 'Hello'}</p>
@@ -108,15 +132,22 @@ function HeaderActions() {
   );
 }
 
+HeaderActions.propTypes = {
+  unreadCount: PropTypes.number.isRequired,
+  onCountChange: PropTypes.func.isRequired,
+}
+
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [notifImage, setNotifImage] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     let cancelled = false;
+    // fetch image notification
     getNotifications()
       .then(async (res) => {
         if (cancelled) return;
@@ -129,6 +160,10 @@ export default function Layout() {
           if (!cancelled) setNotifImage(active.imageUrl);
         }
       })
+      .catch(() => {});
+    // fetch unread count
+    getnotificationcount()
+      .then((res) => { if (!cancelled) setUnreadCount(res?.data?.unreadCount ?? 0) })
       .catch(() => {});
     return () => { cancelled = true; };
   }, []);
@@ -217,7 +252,7 @@ export default function Layout() {
             </svg>
           </button>
           <WalletButton />
-          <HeaderActions />
+          <HeaderActions unreadCount={unreadCount} onCountChange={setUnreadCount} />
         </header>
 
         <main ref={mainRef} className="flex-1 overflow-y-auto p-4 md:p-6">

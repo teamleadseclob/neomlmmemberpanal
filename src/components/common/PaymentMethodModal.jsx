@@ -3,16 +3,20 @@ import PropTypes from 'prop-types'
 import transactionsIcon from '../../assets/dashboard/transactions.png'
 import tradingIcon from '../../assets/dashboard/trading.png'
 
+const isTestMode = import.meta.env.VITE_TEST_MODE === 'true'
+
 export default function PaymentMethodModal({ amount, systemBalance, onSelectSystem, onSelectCrypto, onClose }) {
   return createPortal(
     <div
       className="fixed inset-0 z-[99999] flex items-center justify-center px-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}
+      role="presentation"
       onClick={onClose}
     >
       <div
         className="relative w-full max-w-sm rounded-2xl bg-[#0d0d1f] border border-[#1e1e3a] p-6"
         style={{ boxShadow: '0 16px 48px rgba(0,0,0,0.6)' }}
+        role="presentation"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -67,7 +71,9 @@ export default function PaymentMethodModal({ amount, systemBalance, onSelectSyst
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white">Crypto Wallet</p>
-                <p className="text-xs text-gray-400">Pay with USDT on BSC</p>
+                <p className="text-xs text-gray-400">
+                  {isTestMode ? <span className="text-yellow-400">Test mode — no wallet required</span> : 'Pay with USDT on BSC'}
+                </p>
               </div>
               <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />

@@ -49,6 +49,33 @@ export const getgraph = async (month, year) => {
   return response.data
 }
 
+export const getrewardwallet = async () => {
+  const response = await axiosConfig.get(`/api/users/reward-wallet`)
+  return response.data
+}
+
+// ─── layout ─────────────────────────────────────────────────────────────
+
+export const getnotification = async () => {
+  const response = await axiosConfig.get(`/api/users/notifications/earnings`)
+  return response.data
+}
+
+export const getnotificationcount = async () => {
+  const response = await axiosConfig.get(`/api/users/notifications/earnings/unread-count`)
+  return response.data
+}
+
+export const readallnotification = async () => {
+  const response = await axiosConfig.patch(`/api/users/notifications/earnings/read-all`)
+  return response.data
+}
+
+export const readnotification = async (id) => {
+  const response = await axiosConfig.patch(`/api/users/notifications/earnings/${id}/read `)
+  return response.data
+}
+
 // ─── Referral Hub ─────────────────────────────────────────────────────────────
 
 export const getreferals = async (page = 1, limit = 10) => {
@@ -99,7 +126,7 @@ export const getswphistory = async () => {
 
 
 export const purchaseswp = async (amount, walletAddress, txHash, paymentMethod = 'wallet') => {
-  const response = await axiosConfig.post(`/api/swp/purchase`, { amount, walletAddress, txHash, paymentMethod })
+  const response = await axiosConfig.post(`/api/swp/purchase`, { amount, walletAddress, transactionHash:txHash, paymentMethod })
   return response.data
 }
 
@@ -116,7 +143,7 @@ export const getbalence = async () => {
 }
 
 export const addinvestments = async (amount, walletAddress, txHash, paymentMethod = 'wallet') => {
-  const response = await axiosConfig.post(`/api/investment`, { amount, walletAddress, txHash, paymentMethod })
+  const response = await axiosConfig.post(`/api/investment`, { amount, walletAddress, transactionHash:txHash, paymentMethod })
   return response.data
 }
 

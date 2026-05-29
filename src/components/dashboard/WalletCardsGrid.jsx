@@ -3,17 +3,18 @@ import PropTypes from 'prop-types'
 import WalletCard from './WalletCard'
 import SplitWalletCard from './SplitWalletCard'
 
-function WalletCardsGrid({ data }) {
+function WalletCardsGrid({ data, rewardWallet }) {
   const fmt = (val) => `$${(val ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
 
   const earnings = data?.earnings?.breakdown ?? {}
   const summary  = data?.earnings?.summary ?? {}
 
-  const rewardTotal =
+  const rewardTotal = rewardWallet?.totalRewardWallet ?? (
     (earnings.roi?.net ?? 0) +
     (earnings.multiLevelRewards?.net ?? 0) +
     (earnings.rankRewards?.net ?? 0) +
     (earnings.rankBonus?.net ?? 0)
+  )
 
   const WALLET_DATA = [
     { iconType: 'wallet',      label: 'Main Wallet',         amount: fmt(data?.walletBalance) },
@@ -81,10 +82,12 @@ function WalletCardsGrid({ data }) {
 
 WalletCardsGrid.propTypes = {
   data: PropTypes.object,
+  rewardWallet: PropTypes.object,
 }
 
 WalletCardsGrid.defaultProps = {
   data: null,
+  rewardWallet: null,
 }
 
 export default WalletCardsGrid

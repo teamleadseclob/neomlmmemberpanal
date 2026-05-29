@@ -16,7 +16,7 @@ function AddInvestmentModal({ onClose, onSuccess }) {
 
   const backdropRef = useRef(null)
   const panelRef    = useRef(null)
-  const parsed      = parseFloat(amount)
+  const parsed = Number.parseFloat(amount)
 
   useEffect(() => {
     getprofile().then((res) => setSystemBalance(res?.data?.walletBalance ?? 0)).catch(() => {})
@@ -119,7 +119,7 @@ function AddInvestmentModal({ onClose, onSuccess }) {
                 </div>
                 <h2 className="text-xl font-bold text-white mb-2">Investment Successful!</h2>
                 <p className="text-sm text-gray-400 mb-7">
-                  <span className="text-white font-semibold">${parseFloat(amount).toLocaleString()} USDT</span> has been added to your trading capital.
+                  <span className="text-white font-semibold">${Number.parseFloat(amount).toLocaleString()} USDT</span> has been added to your trading capital.
                 </p>
                 <div className="w-full border border-[#2a2a4a] rounded-xl bg-[#0f0f1e] px-4 py-3 mb-6">
                   <div className="flex items-center justify-between mb-2">
@@ -135,7 +135,7 @@ function AddInvestmentModal({ onClose, onSuccess }) {
                       </div>
                       <div className="text-left">
                         <p className="text-xs font-semibold text-white">Trading Capital</p>
-                        <p className="text-[10px] text-gray-500">+${parseFloat(amount).toLocaleString()} USDT</p>
+                        <p className="text-[10px] text-gray-500">+${Number.parseFloat(amount).toLocaleString()} USDT</p>
                       </div>
                     </div>
                     <span className="text-[10px] font-bold text-teal-400 bg-teal-500/10 border border-teal-500/30 px-2.5 py-1 rounded-full uppercase tracking-wider">Confirmed</span>
@@ -183,7 +183,7 @@ function AddInvestmentModal({ onClose, onSuccess }) {
                   {QUICK_AMOUNTS.map((q) => (
                     <button key={q} type="button" onClick={() => { setAmount(String(q)); setError(''); }}
                       className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 cursor-pointer
-                        ${parseFloat(amount) === q ? 'border-purple-500 bg-purple-500/20 text-purple-300' : 'border-[#2a2a4a] bg-[#0f0f1e] text-gray-400 hover:border-purple-500/50 hover:text-gray-200'}`}>
+                        ${Number.parseFloat(amount) === q ? 'border-purple-500 bg-purple-500/20 text-purple-300' : 'border-[#2a2a4a] bg-[#0f0f1e] text-gray-400 hover:border-purple-500/50 hover:text-gray-200'}`}>
                       ${q.toLocaleString()}
                     </button>
                   ))}

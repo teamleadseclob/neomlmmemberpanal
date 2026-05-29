@@ -62,7 +62,30 @@ export function useWeb3Payment(amount, apiCall, onSuccess = () => {}) {
     return () => clearInterval(t)
   }, [payLoading, countdown])
 
+  const isTestMode = import.meta.env.VITE_TEST_MODE === 'true'
+
   const handlePay = async () => {
+    if (isTestMode) {
+      setPayLoading(true)
+      setCountdown(10)
+      try {
+        const dummyWallet = '0xTEST000000000000000000000000000000000000'
+        const dummyTxHash = `0xtest_${Date.now()}_${Math.random().toString(36).slice(2)}`
+        toast.loading('Test mode: simulating payment...')
+        const res = await apiCall({ walletAddress: dummyWallet, txHash: dummyTxHash })
+        toast.dismiss()
+        toast.success(res?.message || 'Test payment successful!')
+        setProcessing(true)
+        onSuccess(res)
+      } catch (err) {
+        toast.dismiss()
+        toast.error(err?.response?.data?.message || 'Test payment failed')
+      } finally {
+        setPayLoading(false)
+        setProcessing(false)
+      }
+      return
+    }
     if (!isConnected) { toast.error('Please connect your wallet first'); return }
     if (!walletClient) {
       toast.loading('Waiting for wallet...')
@@ -136,7 +159,10 @@ export function useWeb3Payment(amount, apiCall, onSuccess = () => {}) {
 
       if (isRejected) { toast.error('Transaction cancelled'); return }
 
+      const isMissingRevert = err?.message?.toLowerCase().includes('missing revert data') ||
+        err?.code === 'CALL_EXCEPTION'
       toast.error(
+        isMissingRevert ? 'Transaction failed. Check your balance or network.' :
         err?.reason ||
         err?.shortMessage ||
         err?.response?.data?.message ||
