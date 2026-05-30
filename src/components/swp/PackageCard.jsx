@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import { purchaseswp, getprofile } from '../../config/apiService'
 import { useWeb3Payment } from '../wallet/useWeb3Payment'
 import PaymentMethodModal from '../common/PaymentMethodModal'
+import { useProfile } from '../../context/ProfileContext'
 
 const TIER_ICONS = {
   bolt: (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>),
@@ -126,6 +127,7 @@ function StaticButton({ btnType, loading, onClick, SPINNER }) {
 function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge }) {
   const [showPayModal, setShowPayModal] = useState(false)
   const [systemBalance, setSystemBalance] = useState(0)
+  const { refreshProfile } = useProfile()
 
   useEffect(() => {
     getprofile().then((res) => setSystemBalance(res?.data?.walletBalance ?? 0)).catch(() => {})
@@ -134,7 +136,10 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
   const { handlePay, payLoading, processing, countdown } = useWeb3Payment(
     price,
     ({ walletAddress, txHash }) => purchaseswp(price, walletAddress, txHash, 'web3'),
-    () => toast.success(`${title} purchased successfully!`)
+    () => {
+      toast.success(`${title} purchased successfully!`)
+      refreshProfile()
+    }
   )
   const loading = payLoading || processing
   const SPINNER = <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -144,6 +149,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
     try {
       await purchaseswp(price, undefined, undefined, 'wallet')
       toast.success(`${title} purchased successfully!`)
+      refreshProfile()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Purchase failed')
     }
