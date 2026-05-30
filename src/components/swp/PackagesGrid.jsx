@@ -16,7 +16,7 @@ function getBtnType(amount, lastPurchased) {
   return 'select'
 }
 
-function PackagesGrid({ packages, lastPurchased, swpCap }) {
+function PackagesGrid({ packages, lastPurchased, swpCap, onPurchaseSuccess }) {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-5">
@@ -41,6 +41,7 @@ function PackagesGrid({ packages, lastPurchased, swpCap }) {
               icon={meta.icon}
               badge={meta.badge}
               btnType={getBtnType(pkg.amount, lastPurchased)}
+              onPurchaseSuccess={onPurchaseSuccess}
             />
           )
         })}
@@ -56,12 +57,14 @@ PackagesGrid.propTypes = {
   })),
   lastPurchased: PropTypes.number,
   swpCap: PropTypes.number,
+  onPurchaseSuccess: PropTypes.func,
 }
 
 PackagesGrid.defaultProps = {
   packages: [],
   lastPurchased: null,
   swpCap: 0,
+  onPurchaseSuccess: () => {},
 }
 
 export default PackagesGrid

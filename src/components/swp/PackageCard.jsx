@@ -124,7 +124,7 @@ function StaticButton({ btnType, loading, onClick, SPINNER }) {
   )
 }
 
-function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge }) {
+function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge, onPurchaseSuccess }) {
   const [showPayModal, setShowPayModal] = useState(false)
   const [systemBalance, setSystemBalance] = useState(0)
   const [currentSwpBalance, setCurrentSwpBalance] = useState(0)
@@ -147,6 +147,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
     () => {
       toast.success(`${title} ${isUpgrade ? 'upgraded' : 'purchased'} successfully!`)
       refreshProfile()
+      onPurchaseSuccess?.()
     }
   )
   const loading = payLoading || processing
@@ -158,6 +159,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
       await purchaseswp(upgradeAmount, undefined, undefined, 'wallet')
       toast.success(`${title} ${isUpgrade ? 'upgraded' : 'purchased'} successfully!`)
       refreshProfile()
+      onPurchaseSuccess?.()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Purchase failed')
     }
@@ -256,8 +258,12 @@ PackageCard.propTypes = {
   icon: PropTypes.string.isRequired,
   btnType: PropTypes.oneOf(['repurchase', 'select']).isRequired,
   badge: PropTypes.string,
+  onPurchaseSuccess: PropTypes.func,
 }
 
-PackageCard.defaultProps = { badge: undefined }
+PackageCard.defaultProps = { 
+  badge: undefined,
+  onPurchaseSuccess: () => {},
+}
 
 export default PackageCard

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getswpplan } from '../config/apiService'
 import {
   SwpHeader,
@@ -12,17 +12,18 @@ import {
 function SwpPurchase() {
   const [swpData, setSwpData] = useState(null)
 
-  useEffect(() => {
-    const fetchSwp = async () => {
-      try {
-        const res = await getswpplan()
-        setSwpData(res.data)
-      } catch {
-        setSwpData(null)
-      }
+  const fetchSwp = useCallback(async () => {
+    try {
+      const res = await getswpplan()
+      setSwpData(res.data)
+    } catch {
+      setSwpData(null)
     }
-    fetchSwp()
   }, [])
+
+  useEffect(() => {
+    fetchSwp()
+  }, [fetchSwp])
 
   return (
     <div className="max-w-screen mx-auto">
@@ -41,6 +42,7 @@ function SwpPurchase() {
         packages={swpData?.packages ?? []}
         lastPurchased={swpData?.lastPurchased ?? null}
         swpCap={swpData?.swpCap ?? 0}
+        onPurchaseSuccess={fetchSwp}
       />
 
       <CustomCapacity />
