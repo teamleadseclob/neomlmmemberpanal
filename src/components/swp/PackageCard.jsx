@@ -127,17 +127,25 @@ function StaticButton({ btnType, loading, onClick, SPINNER }) {
 function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge }) {
   const [showPayModal, setShowPayModal] = useState(false)
   const [systemBalance, setSystemBalance] = useState(0)
-  const { refreshProfile } = useProfile()
+  const [currentSwpBalance, setCurrentSwpBalance] = useState(0)
+  const { refreshProfile, profile } = useProfile()
 
   useEffect(() => {
-    getprofile().then((res) => setSystemBalance(res?.data?.walletBalance ?? 0)).catch(() => {})
+    getprofile().then((res) => {
+      setSystemBalance(res?.data?.walletBalance ?? 0)
+      setCurrentSwpBalance(res?.data?.swpBalance ?? 0)
+    }).catch(() => {})
   }, [])
 
+  // Calculate upgrade amount: if user has existing SWP, only charge the difference
+  const upgradeAmount = Math.max(0, price - currentSwpBalance)
+  const isUpgrade = currentSwpBalance > 0 && currentSwpBalance < price
+
   const { handlePay, payLoading, processing, countdown } = useWeb3Payment(
-    price,
-    ({ walletAddress, txHash }) => purchaseswp(price, walletAddress, txHash, 'web3'),
+    upgradeAmount,
+    ({ walletAddress, txHash }) => purchaseswp(upgradeAmount, walletAddress, txHash, 'web3'),
     () => {
-      toast.success(`${title} purchased successfully!`)
+      toast.success(`${title} ${isUpgrade ? 'upgraded' : 'purchased'} successfully!`)
       refreshProfile()
     }
   )
@@ -147,15 +155,21 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
   const handleSystemPay = async () => {
     setShowPayModal(false)
     try {
-      await purchaseswp(price, undefined, undefined, 'wallet')
-      toast.success(`${title} purchased successfully!`)
+      await purchaseswp(upgradeAmount, undefined, undefined, 'wallet')
+      toast.success(`${title} ${isUpgrade ? 'upgraded' : 'purchased'} successfully!`)
       refreshProfile()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Purchase failed')
     }
   }
 
-  const handleOpenPayModal = () => setShowPayModal(true)
+  const handleOpenPayModal = () => {
+    if (currentSwpBalance >= price) {
+      toast.error('You already own this package or higher')
+      return
+    }
+    setShowPayModal(true)
+  }
 
   return (
     <div className="relative rounded-xl p-5 flex flex-col hover:border-purple-500/30 transition-all duration-200" style={{ background: '#181F3066', border: '1px solid #EEB1FF1A' }}>
@@ -181,6 +195,12 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
           <span className="text-xs text-gray-500">Price</span>
           <span className="text-sm font-semibold text-white">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
         </div>
+        {isUpgrade && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500">Upgrade Cost</span>
+            <span className="text-sm font-semibold text-green-400">${upgradeAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">Max Limit</span>
           <span className="text-sm font-semibold text-purple-400">${maxLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
@@ -198,7 +218,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
 
       {showPayModal && (
         <PaymentMethodModal
-          amount={price}
+          amount={upgradeAmount}
           systemBalance={systemBalance}
           onSelectSystem={handleSystemPay}
           onSelectCrypto={() => { setShowPayModal(false); handlePay() }}
