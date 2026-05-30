@@ -41,10 +41,10 @@ function RewardHistory() {
 
   function renderRows() {
     if (loading) return (
-      <tr><td colSpan={3} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
+      <tr><td colSpan={4} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
     );
     if (data.length === 0) return (
-      <tr><td colSpan={3} className="px-5 py-12 text-center text-sm text-gray-500">No reward history found.</td></tr>
+      <tr><td colSpan={4} className="px-5 py-12 text-center text-sm text-gray-500">No reward history found.</td></tr>
     );
     return data.map((row, idx) => (
       <tr key={row._id ?? idx} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
@@ -54,6 +54,7 @@ function RewardHistory() {
             {row.type?.replace(/_/g, ' ') ?? '—'}
           </span>
         </td>
+        <td className="px-5 py-4 text-sm font-bold text-green-400">${row.amount?.toFixed(2) ?? '0.00'}</td>
         <td className="px-5 py-4 text-sm text-gray-300">{row.detail ?? '—'}</td>
       </tr>
     ));
@@ -100,7 +101,7 @@ function RewardHistory() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-[#1e1e3a] bg-[#0f0f1e]">
-                {['Date', 'Type', 'Detail'].map((h) => (
+                {['Date', 'Type', 'Amount', 'Detail'].map((h) => (
                   <th key={h} className="px-5 py-4 text-[10px] text-gray-500 uppercase tracking-widest font-semibold whitespace-nowrap">{h}</th>
                 ))}
               </tr>
