@@ -149,8 +149,8 @@ export const addinvestments = async (amount, walletAddress, txHash, paymentMetho
 
 // ─── Trading Capital — Wallet Histories ───────────────────────────────────────
 
-export const getcombinedhistory = async (page = 1, limit = 10) => {
-  const response = await axiosConfig.get(`/api/roi/combined-history?page=${page}&limit=${limit}`)
+export const getcombinedhistory = async (layered_rewards ,page = 1, limit = 10) => {
+  const response = await axiosConfig.get(`/api/users/reward-wallet/history?type=${layered_rewards}&page=${page}&limit=${limit}`)
   return response.data
 }
 

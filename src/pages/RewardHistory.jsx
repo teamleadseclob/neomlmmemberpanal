@@ -5,46 +5,56 @@ import Pagination from '../components/common/Pagination';
 
 const PAGE_SIZE = 10;
 
+const FILTER_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'referral_income', label: 'Referral Income' },
+  { value: 'layered_rewards', label: 'Layered Rewards' },
+  { value: 'rank_income', label: 'Rank Income' },
+  { value: 'royalty_rewards', label: 'Royalty Rewards' },
+  { value: 'special_rewards', label: 'Special Rewards' },
+];
+
 function RewardHistory() {
   const navigate = useNavigate();
-  const [data, setData]       = useState(null);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage]       = useState(1);
+  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal]     = useState(0);
+  const [total, setTotal] = useState(0);
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    getcombinedhistory(page, PAGE_SIZE)
-      .then((res) => { if (!cancelled) { setData(res.data); setTotal(res.pagination?.totalDocs ?? res.data?.history?.length ?? 0); setTotalPages(Math.max(1, res.pagination?.totalPages ?? Math.ceil((res.data?.history?.length ?? 0) / PAGE_SIZE))); } })
-      .catch(() => { if (!cancelled) setData(null); })
+    getcombinedhistory(filter, page, PAGE_SIZE)
+      .then((res) => {
+        if (!cancelled) {
+          setData(res.data ?? []);
+          setTotal(res.pagination?.totalDocs ?? 0);
+          setTotalPages(res.pagination?.totalPages ?? 1);
+        }
+      })
+      .catch(() => { if (!cancelled) setData([]); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [page]);
-
-  const summary  = data?.summary ?? { roi: {}, mlr: {} };
-  const history  = data?.history ?? [];
-  const totalGross  = (summary.roi?.totalGross ?? 0) + (summary.mlr?.totalGross ?? 0);
-  const totalCutoff = (summary.roi?.totalCutoff ?? 0) + (summary.mlr?.totalCutoff ?? 0);
-  const totalNet    = (summary.roi?.totalNet ?? 0) + (summary.mlr?.totalNet ?? 0);
-  const paginated   = history;
+  }, [page, filter]);
 
   function renderRows() {
     if (loading) return (
-      <tr><td colSpan={6} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
+      <tr><td colSpan={3} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
     );
-    if (paginated.length === 0) return (
-      <tr><td colSpan={6} className="px-5 py-12 text-center text-sm text-gray-500">No transaction history found.</td></tr>
+    if (data.length === 0) return (
+      <tr><td colSpan={3} className="px-5 py-12 text-center text-sm text-gray-500">No reward history found.</td></tr>
     );
-    return paginated.map((row) => (
-      <tr key={row._id ?? row.id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
-        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.date ?? row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
-        <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.txnId ?? row._id ?? '—'}</td>
-        <td className="px-5 py-4"><span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/30">{row.type ?? '—'}</span></td>
-        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.gross ?? 0).toFixed(2)}</td>
-        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.cutoff ?? 0).toFixed(2)}</td>
-        <td className="px-5 py-4 text-sm font-bold text-white">${(row.net ?? 0).toFixed(2)}</td>
+    return data.map((row, idx) => (
+      <tr key={row._id ?? idx} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
+        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+        <td className="px-5 py-4">
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/30">
+            {row.type?.replace(/_/g, ' ') ?? '—'}
+          </span>
+        </td>
+        <td className="px-5 py-4 text-sm text-gray-300">{row.detail ?? '—'}</td>
       </tr>
     ));
   }
@@ -61,7 +71,7 @@ function RewardHistory() {
           </button>
           <div>
             <p className="text-[10px] text-purple-400 uppercase tracking-[3px] font-semibold mb-1">Wallet Management</p>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Reward Wallet Total</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Reward Wallet History</h1>
           </div>
         </div>
         <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#1e1e3a] flex-shrink-0">
@@ -72,35 +82,17 @@ function RewardHistory() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-[#1e1e3a] p-5 md:p-6 mb-8">
-        <div className="flex items-center gap-2.5 mb-6">
-          <div className="w-9 h-9 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
-            <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-            </svg>
-          </div>
-          <h3 className="text-base font-bold text-white">Total Reward Wallet</h3>
-          <span className="ml-auto text-xs text-gray-500">{data?.totalEntries ?? 0} entries</span>
-        </div>
-        <div className="flex items-end justify-between mb-2">
-          <p className="text-xs text-gray-400">Total Gross</p>
-          <p className="text-2xl md:text-3xl font-bold text-white">${totalGross.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-        </div>
-        <div className="w-full h-2 bg-[#1a1a3e] rounded-full overflow-hidden mb-6">
-          <div className="h-full rounded-full bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF]" style={{ width: totalGross > 0 ? '100%' : '0%' }} />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[{ label: 'ROI Gross', value: summary.roi?.totalGross ?? 0 }, { label: 'MLR Gross', value: summary.mlr?.totalGross ?? 0 }, { label: 'Total Cutoff', value: totalCutoff }, { label: 'Net Credited', value: totalNet }].map((item) => (
-            <div key={item.label} className="rounded-xl border border-[#1e1e3a] p-4">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">{item.label}</p>
-              <p className="text-xl md:text-2xl font-bold text-white">${item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-white">Transaction History</h2>
+        <h2 className="text-lg font-bold text-white">Reward History</h2>
+        <select
+          value={filter}
+          onChange={(e) => { setFilter(e.target.value); setPage(1); }}
+          className="px-4 py-2 rounded-lg border border-[#1e1e3a] bg-[#0d0d1f] text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors cursor-pointer"
+        >
+          {FILTER_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
       </div>
 
       <div className="rounded-xl border border-[#1e1e3a] overflow-hidden">
@@ -108,7 +100,7 @@ function RewardHistory() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-[#1e1e3a] bg-[#0f0f1e]">
-                {['Date / Time', 'Transaction ID', 'Type', 'Gross', 'Cutoff', 'Net Credited'].map((h) => (
+                {['Date', 'Type', 'Detail'].map((h) => (
                   <th key={h} className="px-5 py-4 text-[10px] text-gray-500 uppercase tracking-widest font-semibold whitespace-nowrap">{h}</th>
                 ))}
               </tr>

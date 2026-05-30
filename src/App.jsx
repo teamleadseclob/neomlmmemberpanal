@@ -14,7 +14,6 @@ const TradingCapital = lazy(() => import('./pages/TradingCapital'))
 const RewardHistory  = lazy(() => import('./pages/RewardHistory'))
 const TradingHistory    = lazy(() => import('./pages/TradingHistory'))
 const MultilevelHistory         = lazy(() => import('./pages/MultilevelHistory'))
-const ReferralCommissionHistory = lazy(() => import('./pages/ReferralCommissionHistory'))
 const RankReport     = lazy(() => import('./pages/RankReport'))
 const Payout         = lazy(() => import('./pages/Payout'))
 const Support        = lazy(() => import('./pages/Support'))
@@ -64,7 +63,6 @@ function App() {
                 <Route path="trading-capital/reward-history"  element={<RewardHistory />} />
                 <Route path="trading-capital/trading-history"    element={<TradingHistory />} />
                 <Route path="trading-capital/multilevel-history"       element={<MultilevelHistory />} />
-                <Route path="trading-capital/referral-commission-history" element={<ReferralCommissionHistory />} />
                 <Route path="rank-report"                 element={<RankReport />} />
                 <Route path="payout"                      element={<Payout />} />
                 <Route path="services"                    element={<Services />} />
