@@ -144,7 +144,6 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
     }
   )
   const loading = payLoading || processing
-  const SPINNER = <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
 
   const handleSystemPay = async () => {
     setShowPayModal(false)
