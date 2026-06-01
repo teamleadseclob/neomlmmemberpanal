@@ -24,21 +24,22 @@ const TIER_ICONS = {
 }
 
 const BUTTON_LABELS = {
-  repurchase: '',
+  repurchase: 'Repurchase',
 }
 
 const SPINNER = <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
 
-function SelectTierButton({ loading, onClick, countdown, processing }) {
+function SelectTierButton({ loading, onClick, countdown, processing, disabled }) {
   const [hovered, setHovered] = useState(false)
+  const isDisabled = loading || disabled
   return (
     <div className="flex justify-center">
       <button
         type="button"
-        onClick={onClick}
-        onMouseEnter={() => setHovered(true)}
+        onClick={disabled ? undefined : onClick}
+        onMouseEnter={() => !disabled && setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        disabled={loading}
+        disabled={isDisabled}
         style={{
           background: hovered ? 'linear-gradient(to right, #7F25FB, #CB3CFF)' : 'transparent',
           border: hovered ? '1px solid transparent' : '1px solid rgba(139,92,246,0.5)',
@@ -51,8 +52,8 @@ function SelectTierButton({ loading, onClick, countdown, processing }) {
           fontSize: '12px',
           fontWeight: 600,
           letterSpacing: '0.05em',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.6 : 1,
+          cursor: isDisabled ? 'not-allowed' : 'pointer',
+          opacity: isDisabled ? 0.3 : 1,
           overflow: 'hidden',
           position: 'relative',
         }}
@@ -124,11 +125,13 @@ function StaticButton({ btnType, loading, onClick, SPINNER }) {
   )
 }
 
-function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge, onPurchaseSuccess }) {
+function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, badge, isRoiLimitReached, onPurchaseSuccess }) {
   const [showPayModal, setShowPayModal] = useState(false)
   const { refreshProfile, profile } = useProfile()
   const systemBalance = profile?.walletBalance ?? 0
   const currentSwpBalance = profile?.swpBalance ?? 0
+
+  const isRepurchase = isRoiLimitReached && price <= currentSwpBalance
 
   // Calculate upgrade amount: if user has existing SWP, only charge the difference
   const upgradeAmount = Math.max(0, price - currentSwpBalance)
@@ -158,7 +161,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
   }
 
   const handleOpenPayModal = () => {
-    if (currentSwpBalance >= price) {
+    if (!isRoiLimitReached && currentSwpBalance >= price) {
       toast.error('You already own this package or higher')
       return
     }
@@ -205,7 +208,10 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
         </div>
       </div>
 
-      <SelectTierButton loading={loading} onClick={handleOpenPayModal} countdown={countdown} processing={processing} />
+      {isRepurchase
+        ? <StaticButton btnType="repurchase" loading={loading} onClick={handleOpenPayModal} SPINNER={SPINNER} />
+        : <SelectTierButton loading={loading} onClick={handleOpenPayModal} countdown={countdown} processing={processing} disabled={!isRoiLimitReached && price <= currentSwpBalance} />
+      }
 
       {showPayModal && (
         <PaymentMethodModal
@@ -225,6 +231,7 @@ SelectTierButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   countdown: PropTypes.number.isRequired,
   processing: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
 }
 
 SelectTierLabel.propTypes = {
@@ -245,13 +252,14 @@ PackageCard.propTypes = {
   maxLimit: PropTypes.number.isRequired,
   leverage: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
-  btnType: PropTypes.oneOf(['repurchase', 'select']).isRequired,
+  isRoiLimitReached: PropTypes.bool,
   badge: PropTypes.string,
   onPurchaseSuccess: PropTypes.func,
 }
 
 PackageCard.defaultProps = { 
   badge: undefined,
+  isRoiLimitReached: false,
   onPurchaseSuccess: () => {},
 }
 

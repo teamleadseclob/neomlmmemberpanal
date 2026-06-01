@@ -42,6 +42,7 @@ function SwpPurchase() {
         packages={swpData?.packages ?? []}
         lastPurchased={swpData?.lastPurchased ?? null}
         swpCap={swpData?.swpCap ?? 0}
+        isRoiLimitReached={swpData?.isRoiLimitReached ?? false}
         onPurchaseSuccess={fetchSwp}
       />
 
