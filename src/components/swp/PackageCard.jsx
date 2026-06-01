@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
-import { purchaseswp, getprofile } from '../../config/apiService'
+import { purchaseswp } from '../../config/apiService'
 import { useWeb3Payment } from '../wallet/useWeb3Payment'
 import PaymentMethodModal from '../common/PaymentMethodModal'
 import { useProfile } from '../../context/ProfileContext'
@@ -24,7 +24,7 @@ const TIER_ICONS = {
 }
 
 const BUTTON_LABELS = {
-  repurchase: 'Repurchase',
+  repurchase: '',
 }
 
 const SPINNER = <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -126,16 +126,9 @@ function StaticButton({ btnType, loading, onClick, SPINNER }) {
 
 function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnType, badge, onPurchaseSuccess }) {
   const [showPayModal, setShowPayModal] = useState(false)
-  const [systemBalance, setSystemBalance] = useState(0)
-  const [currentSwpBalance, setCurrentSwpBalance] = useState(0)
   const { refreshProfile, profile } = useProfile()
-
-  useEffect(() => {
-    getprofile().then((res) => {
-      setSystemBalance(res?.data?.walletBalance ?? 0)
-      setCurrentSwpBalance(res?.data?.swpBalance ?? 0)
-    }).catch(() => {})
-  }, [])
+  const systemBalance = profile?.walletBalance ?? 0
+  const currentSwpBalance = profile?.swpBalance ?? 0
 
   // Calculate upgrade amount: if user has existing SWP, only charge the difference
   const upgradeAmount = Math.max(0, price - currentSwpBalance)
@@ -213,10 +206,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, btnTyp
         </div>
       </div>
 
-      {btnType === 'select'
-        ? <SelectTierButton loading={loading} onClick={handleOpenPayModal} countdown={countdown} processing={processing} />
-        : <StaticButton btnType={btnType} loading={loading} onClick={handleOpenPayModal} SPINNER={SPINNER} />
-      }
+      <SelectTierButton loading={loading} onClick={handleOpenPayModal} countdown={countdown} processing={processing} />
 
       {showPayModal && (
         <PaymentMethodModal
