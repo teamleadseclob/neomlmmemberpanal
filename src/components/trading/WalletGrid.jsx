@@ -140,9 +140,7 @@ WalletItem.propTypes = {
     hasWithdraw:    PropTypes.bool,
     hasViewHistory: PropTypes.bool,
     historyRoute:   PropTypes.string,
-    cutOff:         PropTypes.number,
-    walletAmount:   PropTypes.number,
-    thisMonth:      PropTypes.number,
+    lastEarned:     PropTypes.number,
     icon:           PropTypes.node.isRequired,
   }).isRequired,
 };
