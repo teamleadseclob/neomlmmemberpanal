@@ -142,23 +142,26 @@ export default function OtpVerify() {
 
             {/* OTP boxes */}
             <div className="flex justify-center gap-3" onPaste={handlePaste}>
-              {otp.map((digit, idx) => (
-                <input
-                  key={`otp-${idx}`}
-                  ref={(el) => (inputs.current[idx] = el)}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(e.target.value, idx)}
-                  onKeyDown={(e) => handleKeyDown(e, idx)}
-                  className={`w-11 h-14 rounded-xl text-center text-white text-xl font-bold outline-none transition-all duration-200 border ${
-                    digit
-                      ? 'border-purple-500/70 bg-purple-500/15 shadow-[0_0_12px_rgba(147,51,234,0.25)]'
-                      : 'border-white/10 bg-white/5'
-                  } focus:border-purple-400/80 focus:bg-purple-500/10 focus:shadow-[0_0_16px_rgba(147,51,234,0.3)]`}
-                />
-              ))}
+              {otp.map((digit, idx) => {
+                const digitKey = `otp-input-${email}-${idx}`
+                return (
+                  <input
+                    key={digitKey}
+                    ref={(el) => (inputs.current[idx] = el)}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleChange(e.target.value, idx)}
+                    onKeyDown={(e) => handleKeyDown(e, idx)}
+                    className={`w-11 h-14 rounded-xl text-center text-white text-xl font-bold outline-none transition-all duration-200 border ${
+                      digit
+                        ? 'border-purple-500/70 bg-purple-500/15 shadow-[0_0_12px_rgba(147,51,234,0.25)]'
+                        : 'border-white/10 bg-white/5'
+                    } focus:border-purple-400/80 focus:bg-purple-500/10 focus:shadow-[0_0_16px_rgba(147,51,234,0.3)]`}
+                  />
+                )
+              })}
             </div>
 
             <button
@@ -192,10 +195,11 @@ export default function OtpVerify() {
                   if (resending) return (
                     <span className="inline-flex items-center gap-1.5">
                       <span className="w-3.5 h-3.5 border-[2px] border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-                      Sending...
+                      {' Sending...'}
                     </span>
                   )
-                  return countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'
+                  if (countdown > 0) return <span>{`Resend OTP in ${countdown}s`}</span>
+                  return <span>Resend OTP</span>
                 })()}
               </button>
             </div>

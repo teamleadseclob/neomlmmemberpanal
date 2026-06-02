@@ -41,6 +41,7 @@ function PackagesGrid({ packages, lastPurchased, swpCap, isRoiLimitReached, onPu
               icon={meta.icon}
               badge={meta.badge}
               isRoiLimitReached={isRoiLimitReached}
+              swpCap={swpCap}
               onPurchaseSuccess={onPurchaseSuccess}
             />
           )

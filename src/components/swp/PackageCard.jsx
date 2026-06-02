@@ -72,16 +72,18 @@ function SelectTierButton({ loading, onClick, countdown, processing, disabled })
 
 function SelectTierLabel({ hovered }) {
   return (
-    <span style={{ position: 'relative', display: 'inline-block', height: '16px', overflow: 'hidden', verticalAlign: 'middle' }}>
+    <span style={{ position: 'relative', display: 'inline-block', height: '18px', overflow: 'hidden', verticalAlign: 'middle', minWidth: '60px' }}>
       <span style={{
         display: 'block',
+        lineHeight: '18px',
         transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s',
         transform: hovered ? 'translateY(-100%)' : 'translateY(0)',
         opacity: hovered ? 0 : 1,
         whiteSpace: 'nowrap',
-      }}>Select Tier</span>
+      }}>Upgrade</span>
       <span style={{
         display: 'block',
+        lineHeight: '18px',
         position: 'absolute',
         top: 0, left: 0, right: 0,
         transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s',
@@ -125,34 +127,34 @@ function StaticButton({ btnType, loading, onClick, SPINNER }) {
   )
 }
 
-function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, badge, isRoiLimitReached, onPurchaseSuccess }) {
+function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, badge, isRoiLimitReached, swpCap, onPurchaseSuccess }) {
   const [showPayModal, setShowPayModal] = useState(false)
   const { refreshProfile, profile } = useProfile()
   const systemBalance = profile?.walletBalance ?? 0
   const currentSwpBalance = profile?.swpBalance ?? 0
 
-  const isRepurchase = isRoiLimitReached && price <= currentSwpBalance
+  const isMaxReached = currentSwpBalance >= swpCap
+  const showRepurchase = !isMaxReached && isRoiLimitReached && price <= currentSwpBalance
+  const payAmount = showRepurchase ? price : Math.max(0, price - currentSwpBalance)
+  const isUpgrade = !showRepurchase && currentSwpBalance > 0 && currentSwpBalance < price
 
-  // Calculate upgrade amount: if user has existing SWP, only charge the difference
-  const upgradeAmount = Math.max(0, price - currentSwpBalance)
-  const isUpgrade = currentSwpBalance > 0 && currentSwpBalance < price
+  let action = 'purchased'
+  if (showRepurchase) action = 'repurchased'
+  else if (isUpgrade) action = 'upgraded'
+  const successMessage = `${title} ${action} successfully!`
 
   const { handlePay, payLoading, processing, countdown } = useWeb3Payment(
-    upgradeAmount,
-    ({ walletAddress, txHash }) => purchaseswp(upgradeAmount, walletAddress, txHash, 'web3'),
-    () => {
-      toast.success(`${title} ${isUpgrade ? 'upgraded' : 'purchased'} successfully!`)
-      refreshProfile()
-      onPurchaseSuccess?.()
-    }
+    payAmount,
+    ({ walletAddress, txHash }) => purchaseswp(payAmount, walletAddress, txHash, 'web3'),
+    () => { toast.success(successMessage); refreshProfile(); onPurchaseSuccess?.() }
   )
   const loading = payLoading || processing
 
   const handleSystemPay = async () => {
     setShowPayModal(false)
     try {
-      await purchaseswp(upgradeAmount, undefined, undefined, 'wallet')
-      toast.success(`${title} ${isUpgrade ? 'upgraded' : 'purchased'} successfully!`)
+      await purchaseswp(payAmount, undefined, undefined, 'wallet')
+      toast.success(successMessage)
       refreshProfile()
       onPurchaseSuccess?.()
     } catch (err) {
@@ -161,7 +163,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, badge,
   }
 
   const handleOpenPayModal = () => {
-    if (!isRoiLimitReached && currentSwpBalance >= price) {
+    if (!showRepurchase && price <= currentSwpBalance) {
       toast.error('You already own this package or higher')
       return
     }
@@ -195,7 +197,7 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, badge,
         {isUpgrade && (
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">Upgrade Cost</span>
-            <span className="text-sm font-semibold text-green-400">${upgradeAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            <span className="text-sm font-semibold text-green-400">${payAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
           </div>
         )}
         <div className="flex items-center justify-between">
@@ -208,14 +210,15 @@ function PackageCard({ tierLabel, title, price, maxLimit, leverage, icon, badge,
         </div>
       </div>
 
-      {isRepurchase
-        ? <StaticButton btnType="repurchase" loading={loading} onClick={handleOpenPayModal} SPINNER={SPINNER} />
-        : <SelectTierButton loading={loading} onClick={handleOpenPayModal} countdown={countdown} processing={processing} disabled={!isRoiLimitReached && price <= currentSwpBalance} />
-      }
+      {(() => {
+        if (isMaxReached) return <SelectTierButton loading={false} onClick={() => {}} countdown={0} processing={false} disabled />
+        if (showRepurchase) return <StaticButton btnType="repurchase" loading={loading} onClick={handleOpenPayModal} SPINNER={SPINNER} />
+        return <SelectTierButton loading={loading} onClick={handleOpenPayModal} countdown={countdown} processing={processing} disabled={price <= currentSwpBalance} />
+      })()}
 
       {showPayModal && (
         <PaymentMethodModal
-          amount={upgradeAmount}
+          amount={payAmount}
           systemBalance={systemBalance}
           onSelectSystem={handleSystemPay}
           onSelectCrypto={() => { setShowPayModal(false); handlePay() }}
@@ -253,6 +256,7 @@ PackageCard.propTypes = {
   leverage: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
   isRoiLimitReached: PropTypes.bool,
+  swpCap: PropTypes.number,
   badge: PropTypes.string,
   onPurchaseSuccess: PropTypes.func,
 }
@@ -260,6 +264,7 @@ PackageCard.propTypes = {
 PackageCard.defaultProps = { 
   badge: undefined,
   isRoiLimitReached: false,
+  swpCap: 1000,
   onPurchaseSuccess: () => {},
 }
 

@@ -4,12 +4,6 @@ import PropTypes from 'prop-types'
 function TreeControls({ activeTab, onTabChange }) {
   const tabs = ['Sponsor Tree', 'Referrals'];
 
-  const legendItems = [
-    { color: 'bg-green-500', label: 'Active Nodes' },
-    { color: 'bg-blue-500', label: 'New Clusters' },
-    { color: 'border-2 border-gray-500 bg-transparent', label: 'Open Slots' },
-  ];
-
   return (
     <div className="flex items-center justify-end gap-4 mb-6">
       {/* Tab bar */}

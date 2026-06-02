@@ -9,7 +9,7 @@ export const projectId = '6e2a0b3bfca4d9509beb19d48f85941f'
 const metadata = {
   name: 'NeoFi',
   description: 'NeoFi Financial Observatory',
-  url: typeof globalThis.window !== 'undefined' ? globalThis.window.location.origin : 'https://neo-fi.com',
+  url: window !== undefined ? window.location.origin : 'https://neo-fi.com',
   icons: ['https://neo-fi.com/logo.png'],
 }
 

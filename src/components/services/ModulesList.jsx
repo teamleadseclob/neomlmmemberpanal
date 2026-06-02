@@ -3,8 +3,23 @@ import PropTypes from 'prop-types'
 import axiosConfig from '../../config/axiosConfig'
 
 function ModuleMedia({ url, type, alt }) {
-  // YouTube embed
   const ytMatch = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)
+  const isDirectUrl = url?.startsWith('http') || url?.startsWith('/')
+  const isBlobUrl = url?.startsWith('blob:')
+  const [src, setSrc] = useState(isDirectUrl ? url : null)
+
+  useEffect(() => {
+    if (ytMatch || isDirectUrl || isBlobUrl) return
+    let objectUrl
+    axiosConfig.get(url, { responseType: 'blob' })
+      .then(res => {
+        objectUrl = URL.createObjectURL(res.data)
+        setSrc(objectUrl)
+      })
+      .catch(() => setSrc(null))
+    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl) }
+  }, [url, isDirectUrl, isBlobUrl, ytMatch])
+
   if (ytMatch) {
     return (
       <iframe
@@ -16,23 +31,6 @@ function ModuleMedia({ url, type, alt }) {
       />
     )
   }
-
-  const isDirectUrl = url?.startsWith('http') || url?.startsWith('/')
-  const isBlobUrl = url?.startsWith('blob:')
-
-  const [src, setSrc] = useState(isDirectUrl ? url : null)
-
-  useEffect(() => {
-    if (isDirectUrl || isBlobUrl) return
-    let objectUrl
-    axiosConfig.get(url, { responseType: 'blob' })
-      .then(res => {
-        objectUrl = URL.createObjectURL(res.data)
-        setSrc(objectUrl)
-      })
-      .catch(() => setSrc(null))
-    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl) }
-  }, [url, isDirectUrl])
 
   if (!src) return (
     <svg className="w-14 h-14 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

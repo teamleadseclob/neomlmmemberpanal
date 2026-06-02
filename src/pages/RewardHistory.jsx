@@ -40,24 +40,24 @@ function RewardHistory() {
   }, [page, filter]);
 
   function renderRows() {
-    if (loading) return (
-      <tr><td colSpan={4} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
-    );
-    if (data.length === 0) return (
-      <tr><td colSpan={4} className="px-5 py-12 text-center text-sm text-gray-500">No reward history found.</td></tr>
-    );
+    if (loading) return [
+      <tr key="loading"><td colSpan={4} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
+    ]
+    if (data.length === 0) return [
+      <tr key="empty"><td colSpan={4} className="px-5 py-12 text-center text-sm text-gray-500">No reward history found.</td></tr>
+    ]
     return data.map((row, idx) => (
       <tr key={row._id ?? idx} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
         <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
         <td className="px-5 py-4">
           <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/30">
-            {row.type?.replace(/_/g, ' ') ?? '—'}
+            {row.type?.replaceAll('_', ' ') ?? '—'}
           </span>
         </td>
         <td className="px-5 py-4 text-sm font-bold text-green-400">${row.amount?.toFixed(2) ?? '0.00'}</td>
         <td className="px-5 py-4 text-sm text-gray-300">{row.detail ?? '—'}</td>
       </tr>
-    ));
+    ))
   }
 
   return (

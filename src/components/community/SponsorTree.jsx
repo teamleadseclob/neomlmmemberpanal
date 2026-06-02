@@ -148,42 +148,44 @@ function NodeTooltip({ userId, onClose }) {
     <div
       ref={ref}
       className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 w-56"
-      onClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => e.stopPropagation()}
       role="tooltip"
     >
       <div className="rounded-xl border border-[#2a2a4a] bg-[#0d0b2e] shadow-2xl shadow-black/60 p-3">
-        {loading ? (
-          <div className="flex justify-center py-3">
-            <span className="w-5 h-5 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
-          </div>
-        ) : !stats ? (
-          <p className="text-xs text-gray-500 text-center py-2">No data available</p>
-        ) : (
-          <>
-            <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-[#2a2a4a]">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0">
-                <span className="text-[9px] font-bold text-white">{stats.name?.[0]?.toUpperCase()}</span>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-white uppercase">{stats.name}</p>
-                <p className="text-[9px] text-gray-400 font-mono">{stats.userId}</p>
-              </div>
-              <span className="ml-auto text-[9px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-full">{stats.rank}</span>
+        {(() => {
+          if (loading) return (
+            <div className="flex justify-center py-3">
+              <span className="w-5 h-5 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
             </div>
-            {[
-              { label: 'Personal SWP',       value: `$${(stats.personalSwp ?? 0).toLocaleString()}` },
-              { label: 'Trading Capital',    value: `$${(stats.tradingCapital ?? 0).toLocaleString()}` },
-              { label: 'Team SWP Volume',    value: `$${(stats.teamSwpVolume ?? 0).toLocaleString()}` },
-              { label: 'Team Trading Cap',   value: `$${(stats.teamTradingCapital ?? 0).toLocaleString()}` },
-            ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between py-1">
-                <span className="text-[10px] text-gray-400">{label}</span>
-                <span className="text-[10px] font-semibold text-white">{value}</span>
+          )
+          if (!stats) return (
+            <p className="text-xs text-gray-500 text-center py-2">No data available</p>
+          )
+          return (
+            <>
+              <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-[#2a2a4a]">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0">
+                  <span className="text-[9px] font-bold text-white">{stats.name?.[0]?.toUpperCase()}</span>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white uppercase">{stats.name}</p>
+                  <p className="text-[9px] text-gray-400 font-mono">{stats.userId}</p>
+                </div>
+                <span className="ml-auto text-[9px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-full">{stats.rank}</span>
               </div>
-            ))}
-          </>
-        )}
+              {[
+                { label: 'Personal SWP',     value: `$${(stats.personalSwp ?? 0).toLocaleString()}` },
+                { label: 'Trading Capital',  value: `$${(stats.tradingCapital ?? 0).toLocaleString()}` },
+                { label: 'Team SWP Volume',  value: `$${(stats.teamSwpVolume ?? 0).toLocaleString()}` },
+                { label: 'Team Trading Cap', value: `$${(stats.teamTradingCapital ?? 0).toLocaleString()}` },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex items-center justify-between py-1">
+                  <span className="text-[10px] text-gray-400">{label}</span>
+                  <span className="text-[10px] font-semibold text-white">{value}</span>
+                </div>
+              ))}
+            </>
+          )
+        })()}
         {/* Arrow */}
         <div className="absolute left-1/2 -translate-x-1/2 top-full w-2.5 h-2.5 border-r border-b border-[#2a2a4a] bg-[#0d0b2e] rotate-45 -mt-1.5" />
       </div>

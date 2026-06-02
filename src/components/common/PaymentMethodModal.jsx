@@ -43,7 +43,7 @@ export default function PaymentMethodModal({ amount, systemBalance, onSelectSyst
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-                <img src={transactionsIcon} alt="system wallet" className="w-10 h-10 object-contain" />
+                <img src={transactionsIcon} alt="system wallet icon" className="w-10 h-10 object-contain" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white">Main Wallet</p>
@@ -67,7 +67,7 @@ export default function PaymentMethodModal({ amount, systemBalance, onSelectSyst
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-                <img src={tradingIcon} alt="crypto wallet" className="w-10 h-10 object-contain" />
+                <img src={tradingIcon} alt="crypto wallet icon" className="w-10 h-10 object-contain" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white">Crypto Wallet</p>

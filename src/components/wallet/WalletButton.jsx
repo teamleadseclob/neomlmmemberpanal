@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 export default function WalletButton() {
   const { address, isConnected } = useAccount()
-  const { disconnect }           = useDisconnect()
+  const { disconnectAsync }      = useDisconnect()
   const { open }                 = useWeb3Modal()
 
   const handleConnect = useCallback(async () => {
@@ -13,7 +13,9 @@ export default function WalletButton() {
   }, [open])
 
   const handleOpen       = useCallback(() => open(), [open])
-  const handleDisconnect = useCallback(() => disconnect(), [disconnect])
+  const handleDisconnect = useCallback(async () => {
+    try { await disconnectAsync() } catch {}
+  }, [disconnectAsync])
 
   if (!isConnected) {
     return (
