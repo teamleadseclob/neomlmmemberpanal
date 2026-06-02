@@ -42,7 +42,10 @@ function TradingHistory() {
     }
     return data.map((row) => (
       <tr key={row._id} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
-        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">
+          {new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+          <span className="block text-[10px] text-gray-500">{new Date(row.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+        </td>
         <td className="px-5 py-4 text-sm font-semibold text-white">${row.totalInvestedAmount.toLocaleString()}</td>
         <td className="px-5 py-4 text-xs text-purple-400 font-bold">{row.roiPercentage}%</td>
         <td className="px-5 py-4 text-xs text-gray-300">{row.daysCalculated}</td>

@@ -87,6 +87,7 @@ function ReferralsTable() {
                   {/* Joined */}
                   <td className="px-5 py-4 text-xs text-gray-400 whitespace-nowrap">
                     {new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                    <span className="block text-[10px] text-gray-500">{new Date(r.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                   </td>
                 </tr>
               ))

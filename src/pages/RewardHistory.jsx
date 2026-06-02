@@ -48,7 +48,10 @@ function RewardHistory() {
     ]
     return data.map((row, idx) => (
       <tr key={row._id ?? idx} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
-        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">{new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</td>
+        <td className="px-5 py-4 text-xs text-gray-300 whitespace-nowrap">
+            {new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+            <span className="block text-[10px] text-gray-500">{new Date(row.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+          </td>
         <td className="px-5 py-4">
           <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/30">
             {row.type?.replaceAll('_', ' ') ?? '—'}

@@ -58,26 +58,6 @@ function buildWallets(data) {
       historyRoute:   '/trading-capital/multilevel-history',
       icon:           <img src={multiImg} alt="multilevel" className="w-5 h-5 object-contain" />,
     },
-    {
-      id:             'multilevel-thismonth',
-      label:          'Monthly MLR Reward',
-      amount:         breakdown?.multiLevelRewards?.thisMonth ?? 0,
-      cutOff:         breakdown?.multiLevelRewards?.cutoff ?? 0,
-      walletAmount:   breakdown?.multiLevelRewards?.net ?? 0,
-      hasViewHistory: true,
-      historyRoute:   '/trading-capital/multilevel-history',
-      icon:           <img src={multiImg} alt="multilevel" className="w-5 h-5 object-contain" />,
-    },
-    {
-      id:           'total',
-      label:        'Total Income',
-      amount:       summary?.totalGrossEarnings ?? 0,
-      cutOff:       summary?.totalCutoffDeducted ?? 0,
-      walletAmount: summary?.totalNetEarnings ?? 0,
-      badge:        { text: 'NOTICE', type: 'notice' },
-      notice:       '5% admin charge on transfers',
-      icon:         <img src={incomeImg} alt="total" className="w-5 h-5 object-contain" />,
-    },
   ];
 }
 
@@ -215,7 +195,7 @@ function WalletGrid() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {wallets.map((wallet) => (
           <WalletItem key={wallet.id} wallet={wallet} />
         ))}
