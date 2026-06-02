@@ -41,10 +41,10 @@ function RewardHistory() {
 
   function renderRows() {
     if (loading) return [
-      <tr key="loading"><td colSpan={4} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
+      <tr key="loading"><td colSpan={5} className="px-5 py-12 text-center"><div className="w-7 h-7 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" /></td></tr>
     ]
     if (data.length === 0) return [
-      <tr key="empty"><td colSpan={4} className="px-5 py-12 text-center text-sm text-gray-500">No reward history found.</td></tr>
+      <tr key="empty"><td colSpan={5} className="px-5 py-12 text-center text-sm text-gray-500">No reward history found.</td></tr>
     ]
     return data.map((row, idx) => (
       <tr key={row._id ?? idx} className="border-b border-[#1e1e3a] last:border-b-0 hover:bg-[#1a1a3e]/40 transition-colors">
@@ -52,13 +52,26 @@ function RewardHistory() {
             {new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
             <span className="block text-[10px] text-gray-500">{new Date(row.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
           </td>
-        <td className="px-5 py-4">
+        <td className="px-5 py-4 whitespace-nowrap">
           <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/30">
             {row.type?.replaceAll('_', ' ') ?? '—'}
           </span>
         </td>
-        <td className="px-5 py-4 text-sm font-bold text-green-400">${row.amount?.toFixed(2) ?? '0.00'}</td>
-        <td className="px-5 py-4 text-sm text-gray-300">{row.detail ?? '—'}</td>
+        <td className="px-5 py-4 text-sm font-bold text-green-400 whitespace-nowrap">${row.amount?.toFixed(2) ?? '0.00'}</td>
+        <td className="px-5 py-4 whitespace-nowrap">
+          {row.fromUser ? (
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#CB3CFF] flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] font-bold text-white uppercase">{row.fromUser.name?.[0] ?? '?'}</span>
+              </div>
+              <div>
+                <p className="text-xs text-white font-semibold capitalize">{row.fromUser.name}</p>
+                <p className="text-[10px] text-gray-500 font-mono">{row.fromUser.userId}</p>
+              </div>
+            </div>
+          ) : <span className="text-xs text-gray-500">—</span>}
+        </td>
+        <td className="px-5 py-4 text-sm text-gray-300 whitespace-nowrap">{row.detail ?? '—'}</td>
       </tr>
     ))
   }
@@ -104,7 +117,7 @@ function RewardHistory() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-[#1e1e3a] bg-[#0f0f1e]">
-                {['Date', 'Type', 'Amount', 'Detail'].map((h) => (
+                {['Date', 'Type', 'Amount', 'From User', 'Detail'].map((h) => (
                   <th key={h} className="px-5 py-4 text-[10px] text-gray-500 uppercase tracking-widest font-semibold whitespace-nowrap">{h}</th>
                 ))}
               </tr>

@@ -16,7 +16,7 @@ const BADGE_STYLES = {
 
 function buildWallets(data) {
   const breakdown = data?.earnings?.breakdown;
-  const summary   = data?.earnings?.summary;
+  const rewardwallet = data?.rewardWallet
   return [
     {
       id:          'main',
@@ -29,9 +29,7 @@ function buildWallets(data) {
     {
       id:             'reward',
       label:          'Reward Wallet Total',
-      amount:         summary?.totalGrossEarnings ?? 0,
-      cutOff:         summary?.totalCutoffDeducted ?? 0,
-      walletAmount:   summary?.totalNetEarnings ?? 0,
+      amount:         rewardwallet?.lastEarned?.amount ?? 0,
       hasViewHistory: true,
       historyRoute:   '/trading-capital/reward-history',
       icon:           <img src={rewardImg} alt="reward" className="w-5 h-5 object-contain" />,
@@ -39,10 +37,7 @@ function buildWallets(data) {
     {
       id:             'profit',
       label:          'Trading Profit',
-      amount:         breakdown?.roi?.gross ?? 0,
-      cutOff:         breakdown?.roi?.cutoff ?? 0,
-      walletAmount:   breakdown?.roi?.net ?? 0,
-      thisMonth:      breakdown?.roi?.thisMonth ?? 0,
+      amount:         breakdown?.roi?.lastEarned?.amount ?? 0,
       hasViewHistory: true,
       historyRoute:   '/trading-capital/trading-history',
       icon:           <img src={profitImg} alt="profit" className="w-5 h-5 object-contain" />,
@@ -50,10 +45,7 @@ function buildWallets(data) {
     {
       id:             'multilevel',
       label:          'Multilevel Rewards',
-      amount:         breakdown?.multiLevelRewards?.gross ?? 0,
-      cutOff:         breakdown?.multiLevelRewards?.cutoff ?? 0,
-      walletAmount:   breakdown?.multiLevelRewards?.net ?? 0,
-      thisMonth:      breakdown?.multiLevelRewards?.thisMonth ?? 0,
+      amount:         breakdown?.multiLevelRewards?.lastEarned?.amount ?? 0,
       hasViewHistory: true,
       historyRoute:   '/trading-capital/multilevel-history',
       icon:           <img src={multiImg} alt="multilevel" className="w-5 h-5 object-contain" />,
@@ -109,23 +101,11 @@ function WalletItem({ wallet }) {
 
 
 
-      {/* Cut off / Wallet Amount */}
-      {!wallet.hasWithdraw && wallet.cutOff !== undefined && (
-        <div className="flex items-center justify-between pt-2 border-t border-[#1e1e3a]">
-          <div>
-            <p className="text-[10px] text-gray-500 mb-0.5">Cut off</p>
-            <AnimatedAmount value={wallet.cutOff} className="text-sm font-semibold text-white" />
-          </div>
-          {wallet.thisMonth !== undefined && (
-            <div className="text-center">
-              <p className="text-[10px] text-gray-500 mb-0.5">This Month</p>
-              <AnimatedAmount value={wallet.thisMonth} className="text-sm font-semibold text-green-400" />
-            </div>
-          )}
-          <div className="text-right">
-            <p className="text-[10px] text-gray-500 mb-0.5">Wallet Amount</p>
-            <AnimatedAmount value={wallet.walletAmount} className="text-sm font-semibold text-white" />
-          </div>
+      {/* Last Earned */}
+      {!wallet.hasWithdraw && wallet.lastEarned !== undefined && (
+        <div className="pt-2 border-t border-[#1e1e3a]">
+          <p className="text-[10px] text-gray-500 mb-0.5">Last Earned</p>
+          <AnimatedAmount value={wallet.lastEarned} className="text-sm font-semibold text-white" />
         </div>
       )}
 

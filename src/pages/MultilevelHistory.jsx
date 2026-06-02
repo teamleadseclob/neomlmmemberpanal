@@ -17,16 +17,16 @@ function MultilevelHistory() {
     let cancelled = false;
     setLoading(true);
     getmultylevelhistory(page, PAGE_SIZE)
-      .then((res) => { if (!cancelled) { setData(res.data); setTotal(res.pagination?.totalDocs ?? res.data?.history?.length ?? 0); setTotalPages(Math.max(1, res.pagination?.totalPages ?? Math.ceil((res.data?.history?.length ?? 0) / PAGE_SIZE))); } })
+      .then((res) => { if (!cancelled) { setData(res.data ?? []); setTotal(res.pagination?.totalDocs ?? 0); setTotalPages(Math.max(1, res.pagination?.totalPages ?? 1)); } })
       .catch(() => { if (!cancelled) setData(null); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [page]);
 
-  const totalGross  = data?.totalGross  ?? 0;
-  const totalCutoff = data?.totalCutoff ?? 0;
-  const totalNet    = data?.totalNet    ?? 0;
-  const history     = data?.history     ?? [];
+  const history     = data ?? [];
+  const totalGross  = history.reduce((s, r) => s + (r.grossAmount ?? 0), 0);
+  const totalCutoff = history.reduce((s, r) => s + (r.cutoffAmount ?? 0), 0);
+  const totalNet    = history.reduce((s, r) => s + (r.netAmount ?? 0), 0);
   const paginated   = history;
 
   function renderRows() {
@@ -42,11 +42,21 @@ function MultilevelHistory() {
           {new Date(row.date ?? row.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
           <span className="block text-[10px] text-gray-500">{new Date(row.date ?? row.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
         </td>
-        <td className="px-5 py-4 text-xs text-gray-400 font-mono">{row.txnId ?? row._id ?? '—'}</td>
+        <td className="px-5 py-4">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#CB3CFF] flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-bold text-white uppercase">{row.fromUserId?.name?.[0] ?? '?'}</span>
+            </div>
+            <div>
+              <p className="text-xs text-white font-semibold ">{row.fromUserId?.userId ?? '—'}</p>
+              <p className="text-[10px] text-gray-500 font-mono">{row.fromUserId?.name ?? '—'}</p>
+            </div>
+          </div>
+        </td>
         <td className="px-5 py-4 text-xs text-purple-400 font-semibold">L{row.level ?? '—'}</td>
-        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.gross ?? 0).toFixed(2)}</td>
-        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.cutoff ?? 0).toFixed(2)}</td>
-        <td className="px-5 py-4 text-sm font-bold text-white">${(row.net ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.grossAmount ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4 text-sm font-semibold text-white">${(row.cutoffAmount ?? 0).toFixed(2)}</td>
+        <td className="px-5 py-4 text-sm font-bold text-white">${(row.netAmount ?? 0).toFixed(2)}</td>
         <td className="px-5 py-4"><span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-green-500/15 text-green-400 border-green-500/30">{row.status ?? 'Success'}</span></td>
       </tr>
     ));
@@ -83,7 +93,7 @@ function MultilevelHistory() {
             </svg>
           </div>
           <h3 className="text-base font-bold text-white">Multilevel Rewards</h3>
-          <span className="ml-auto text-xs text-gray-500">{data?.totalEntries ?? 0} entries</span>
+          <span className="ml-auto text-xs text-gray-500">{total} entries</span>
         </div>
         <div className="flex items-end justify-between mb-2">
           <p className="text-xs text-gray-400">Total Gross Earned</p>
@@ -111,7 +121,7 @@ function MultilevelHistory() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-[#1e1e3a] bg-[#0f0f1e]">
-                {['Date / Time', 'Transaction ID', 'Level', 'Gross', 'Cutoff', 'Net Credited', 'Status'].map((h) => (
+                {['Date / Time', 'From User', 'Level', 'Gross', 'Cutoff', 'Net Credited', 'Status'].map((h) => (
                   <th key={h} className="px-5 py-4 text-[10px] text-gray-500 uppercase tracking-widest font-semibold whitespace-nowrap">{h}</th>
                 ))}
               </tr>
