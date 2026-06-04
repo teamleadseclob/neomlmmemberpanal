@@ -27,7 +27,7 @@ function RankReport() {
   return (
     <div className="max-w-screen mx-auto">
       <RankHeader />
-      <TopStatsRow currentRank={rankData?.currentRank} />
+      <TopStatsRow currentRank={rankData?.currentRank} nextRank={nextRank} />
       <TierBenefitsBanner nextRank={nextRank} />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">

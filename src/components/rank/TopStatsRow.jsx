@@ -3,9 +3,18 @@ import rankImg      from '../../assets/rank/rank.png';
 import globalImg    from '../../assets/rank/global.png';
 import communityImg from '../../assets/rank/communityseleted.png';
 
-function CurrentAchievement({ currentRank }) {
-  const label    = currentRank ?? 'No Rank';
-  const progress = 72;
+function CurrentAchievement({ currentRank, nextRank }) {
+  const label = currentRank ?? 'No Rank';
+
+  const criteria = nextRank ? Object.values(nextRank.criteria) : []
+  const progress = criteria.length
+    ? Math.min(100, Math.floor(Math.min(...criteria.map(c => (c.current / c.required) * 100))))
+    : 100
+
+  const unmetCriteria = criteria.filter(c => !c.met)
+  const hint = unmetCriteria.length
+    ? `${unmetCriteria.length} criteria pending to reach ${nextRank.name}`
+    : nextRank ? `All criteria met for ${nextRank.name}!` : 'You have reached the highest rank!'
 
   return (
     <div className="rounded-xl p-5 h-full flex flex-col" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
@@ -36,15 +45,15 @@ function CurrentAchievement({ currentRank }) {
           />
         </div>
         <p className="text-[11px] text-gray-500">
-          <span className="text-gray-400">⊕</span> Complete 2 more direct referrals to qualify.
+          <span className="text-gray-400">⊕</span> {hint}
         </p>
       </div>
     </div>
   );
 }
 
-CurrentAchievement.propTypes  = { currentRank: PropTypes.string };
-CurrentAchievement.defaultProps = { currentRank: null };
+CurrentAchievement.propTypes  = { currentRank: PropTypes.string, nextRank: PropTypes.object };
+CurrentAchievement.defaultProps = { currentRank: null, nextRank: null };
 
 function TotalTeamSize() {
   return (
@@ -79,17 +88,17 @@ function GlobalRanking() {
   );
 }
 
-function TopStatsRow({ currentRank }) {
+function TopStatsRow({ currentRank, nextRank }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <CurrentAchievement currentRank={currentRank} />
+      <CurrentAchievement currentRank={currentRank} nextRank={nextRank} />
       {/* <TotalTeamSize /> */}
       {/* <GlobalRanking /> */}
     </div>
   );
 }
 
-TopStatsRow.propTypes  = { currentRank: PropTypes.string };
-TopStatsRow.defaultProps = { currentRank: null };
+TopStatsRow.propTypes  = { currentRank: PropTypes.string, nextRank: PropTypes.object };
+TopStatsRow.defaultProps = { currentRank: null, nextRank: null };
 
 export default TopStatsRow;
