@@ -168,6 +168,10 @@ export const getreferalhistory = async (page = 1, limit = 10) => {
   const response = await axiosConfig.get(`/api/swp/commissions?page=${page}&limit=${limit}`)
   return response.data
 }
+export const getpoolfundhistory = async (page = 1, limit = 10) => {
+  const response = await axiosConfig.get(`/api/users/reward-wallet/pool-fund?page=${page}&limit=${limit}`)
+  return response.data
+}
 
 // ─── Rank Report ──────────────────────────────────────────────────────────────
 
