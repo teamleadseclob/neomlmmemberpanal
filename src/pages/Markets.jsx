@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import BrokerCard from '../components/markets/BrokerCard'
 import MarketInviteBanner from '../components/markets/MarketInviteBanner'
 import { useProfile } from '../context/ProfileContext'
@@ -5,6 +6,7 @@ import exnessLogo  from '../assets/market/exness.png'
 import fusionLogo  from '../assets/market/fusion.png'
 import xmLogo      from '../assets/market/xm.png'
 import centuryLogo from '../assets/market/century.png'
+import { geturl } from '../config/apiService'
 
 const BROKERS = [
   {
@@ -53,6 +55,11 @@ const BROKERS = [
 
 export default function Markets() {
   const { profile } = useProfile()
+  const [interests, setInterests] = useState([])
+
+  useEffect(() => {
+    geturl().then(res => setInterests(res.data || [])).catch(() => {})
+  }, [])
 
   return (
     <div className="max-w-screen mx-auto">
@@ -77,9 +84,17 @@ export default function Markets() {
 
       {/* Broker cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        {BROKERS.map((broker) => (
-          <BrokerCard key={broker.name} {...broker} />
-        ))}
+        {BROKERS.map((broker) => {
+          const match = interests.find(i => i.marketTitle === broker.marketTitle)
+          return (
+            <BrokerCard
+              key={broker.name}
+              {...broker}
+              copyTradingUrl={match?.url || broker.copyTradingUrl}
+              interestStatus={match?.status}
+            />
+          )
+        })}
       </div>
 
       {/* Invite banner */}

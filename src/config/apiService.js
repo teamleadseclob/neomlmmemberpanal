@@ -39,6 +39,15 @@ export const updateprofile = async (payload) => {
   return response.data
 }
 
+export const uploadAvatar = async (file) => {
+  const formData = new FormData()
+  formData.append('profileImage', file)
+  const response = await axiosConfig.post('/api/users/me/avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return response.data
+}
+
 export const getrewardlimit = async () => {
   const response = await axiosConfig.get(`/api/users/me/earning-limits`)
   return response.data
@@ -243,6 +252,10 @@ export const interest = async (marketTitle) => {
   return response.data
 }
 
+export const geturl = async () => {
+  const response = await axiosConfig.get(`/api/market/interests`)
+  return response.data
+}
 
 
 

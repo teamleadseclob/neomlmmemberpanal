@@ -42,6 +42,13 @@ export default function ProfileCard({ user, onSave }) {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+
+  const handleFileSelect = (file) => {
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
 
   const [form, setForm] = useState({
     fullName:        user?.name        || '',
@@ -68,6 +75,8 @@ export default function ProfileCard({ user, onSave }) {
       dob: user?.dob || '', password: '', confirmPassword: '',
     });
     setErrors({});
+    setAvatarFile(null);
+    setAvatarPreview(null);
     setEditing(false);
   };
 
@@ -80,10 +89,12 @@ export default function ProfileCard({ user, onSave }) {
 
   const handleConfirm = async () => {
     setLoading(true);
-    await onSave(form);
+    await onSave(form, avatarFile);
     setLoading(false);
     setShowModal(false);
     setEditing(false);
+    setAvatarFile(null);
+    setAvatarPreview(null);
     setForm((p) => ({ ...p, password: '', confirmPassword: '' }));
   };
 
@@ -92,7 +103,7 @@ export default function ProfileCard({ user, onSave }) {
       <div className="rounded-2xl border border-[#1e1e3a] bg-[#0d0d1f] p-6 md:p-8">
         <div className="flex flex-col sm:flex-row gap-8">
 
-          <ProfileAvatar name={user?.name} />
+          <ProfileAvatar name={user?.name} imageUrl={user?.profileImage} previewUrl={avatarPreview} editing={editing} onFileSelect={handleFileSelect} />
 
           <div className="flex-1 flex flex-col gap-5">
 

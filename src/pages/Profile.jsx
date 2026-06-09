@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { getprofile, updateprofile } from '../config/apiService';
+import { getprofile, updateprofile, uploadAvatar } from '../config/apiService';
 import ProfileCard from '../components/profile/ProfileCard';
 import InviteBanner from '../components/trading/InviteBanner';
 import KYCForm from '../components/kyc/KYCForm';
@@ -16,14 +16,14 @@ export default function Profile() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSave = async ({ fullName, password, confirmPassword, gender, country, state, mobile, address, dob }) => {
+  const handleSave = async ({ fullName, password, confirmPassword, gender, country, state, mobile, address, dob }, avatarFile) => {
     if (password && password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
     try {
       const payload = {};
-      if (fullName && fullName !== user?.name) payload.name = fullName;
+      if (fullName) payload.name = fullName;
       if (gender)  payload.gender  = gender;
       if (country) payload.country = country;
       if (state)   payload.state   = state;
@@ -31,6 +31,13 @@ export default function Profile() {
       if (address) payload.address = address;
       if (dob)     payload.dob     = dob;
       if (password) payload.newPassword = password;
+
+      // Upload avatar first if a file was selected
+      if (avatarFile) {
+        const avatarRes = await uploadAvatar(avatarFile);
+        payload.profileImage = avatarRes.data.url;
+      }
+
       if (!Object.keys(payload).length) { toast('Nothing to update'); return; }
       const res = await updateprofile(payload);
       const fresh = await getprofile();
@@ -72,7 +79,7 @@ export default function Profile() {
       </div>
 
       {/* Profile form card */}
-      {user && <ProfileCard user={user} onSave={handleSave} />}
+      {user && <ProfileCard key={user?.profileImage || 'no-avatar'} user={user} onSave={handleSave} />}
 
       {/* KYC */}
       <KYCForm />
