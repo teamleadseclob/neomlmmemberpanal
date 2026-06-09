@@ -39,14 +39,12 @@ export default function SplitWalletCard({ iconType, label, amount, iconType2, la
         <AnimatedAmount value={parseAmount(amount)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#36ff6f] to-[#25fb3e] bg-clip-text text-transparent" />
       </div>
 
-      <div className="w-px my-4 bg-[#3c3c55] mr-2" aria-hidden="true" />
-
       {/* Right half */}
-      <div className="relative flex-1 p-4" style={{ zIndex: 1 }}>
-        <div className="w-10 h-10 rounded-lg bg-[#1a1a3e00] flex items-center justify-center mb-3">
+      <div className="relative flex-1 p-4 text-right" style={{ zIndex: 1 }}>
+        <div className="w-10 h-10 rounded-lg bg-[#1a1a3e00] flex items-center justify-center mb-3 ml-auto">
         </div>
-        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label2}</p>
-        <AnimatedAmount value={parseAmount(amount2)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#3cffa1] to-[#53fb25] bg-clip-text text-transparent" />
+        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium max-w-[120px] ml-auto">{label2}</p>
+        <AnimatedAmount value={parseAmount(amount2)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#3cffa1] to-[#53fb25] bg-clip-text text-transparent ml-auto" />
       </div>
 
     </div>
