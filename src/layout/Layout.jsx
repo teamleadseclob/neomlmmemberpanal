@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { getNotifications, getnotificationcount } from '../config/apiService';
+import { getNotifications, getnotificationcount, getprofile } from '../config/apiService';
 import axiosConfig from '../config/axiosConfig';
 import WalletButton from '../components/wallet/WalletButton';
 import NotificationPanel from '../components/common/NotificationPanel';
@@ -93,7 +93,15 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
 function HeaderActions({ unreadCount, onCountChange }) {
   const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
   const [showPanel, setShowPanel] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
   const bellRef = useRef(null);
+
+  useEffect(() => {
+    getprofile()
+      .then((res) => { if (res?.data?.profileImage) setProfileImage(res.data.profileImage); })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
       {/* Notification Bell */}
@@ -123,9 +131,13 @@ function HeaderActions({ unreadCount, onCountChange }) {
           <p className="text-[10px] text-purple-400 tracking-widest">Verified</p>
         </div>
         <Link to="/profile">
-          <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg capitalize bg-purple-700 flex items-center justify-center text-md font-bold flex-shrink-0 text-white hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer">
-            {user?.name ? user.name[0] : 'H'}
-          </div>
+          {profileImage ? (
+            <img src={profileImage} alt="Profile" crossOrigin="anonymous" className="w-8 h-8 md:w-9 md:h-9 rounded-lg object-cover  flex-shrink-0 hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer" />
+          ) : (
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg capitalize bg-purple-700 flex items-center justify-center text-md font-bold flex-shrink-0 text-white hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer">
+              {user?.name ? user.name[0] : 'H'}
+            </div>
+          )}
         </Link>
       </div>
     </div>
