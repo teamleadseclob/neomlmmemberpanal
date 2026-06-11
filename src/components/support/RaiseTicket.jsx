@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import toast from 'react-hot-toast';
-import { createticket } from '../../config/apiService';
+import { createticket, uploadFile } from '../../config/apiService';
 
 const CATEGORIES = ['Account Issues', 'SWP & Investment', 'Commission & Rewards', 'Withdrawal', 'Technical Issue', 'Other']
 const PRIORITIES = ['low', 'high']
@@ -64,7 +64,10 @@ function RaiseTicket({ onSuccess, prefill }) {
   const [priority, setPriority] = useState('low')
   const [subject, setSubject]   = useState('')
   const [message, setMessage]   = useState('')
+  const [image, setImage]           = useState(null)
+  const [imageUrl, setImageUrl]     = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const fileRef = useRef(null)
   const cardRef = useRef(null)
 
   useEffect(() => {
@@ -75,6 +78,21 @@ function RaiseTicket({ onSuccess, prefill }) {
     cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [prefill])
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    setImage(file)
+    try {
+      const res = await uploadFile(file)
+      setImageUrl(res.data.url)
+      toast.success('Image uploaded successfully!')
+    } catch {
+      toast.error('Image upload failed.')
+      setImage(null)
+      setImageUrl('')
+    }
+  }
+
   const handleSubmit = async () => {
     if (!subject.trim() || !message.trim()) {
       toast.error('Subject and message are required.')
@@ -82,12 +100,14 @@ function RaiseTicket({ onSuccess, prefill }) {
     }
     setSubmitting(true)
     try {
-      await createticket({ category, fields: [], priority, subject, message })
+      await createticket({ category, fields: [], priority, subject, message, ...(imageUrl && { image: imageUrl }) })
       toast.success('Ticket submitted successfully!')
       setSubject('')
       setMessage('')
       setCategory(CATEGORIES[0])
       setPriority('low')
+      setImage(null)
+      setImageUrl('')
       onSuccess?.()
     } catch {
       toast.error('Failed to submit ticket. Please try again.')
@@ -174,14 +194,16 @@ function RaiseTicket({ onSuccess, prefill }) {
 
       {/* Footer: Attachment + Submit */}
       <div className="flex items-center justify-between">
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
         <button
           type="button"
+          onClick={() => fileRef.current?.click()}
           className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors cursor-pointer bg-transparent border-none"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
           </svg>
-          Add Attachment
+          {image ? image.name : 'Add Attachment'}
         </button>
         <button
           type="button"

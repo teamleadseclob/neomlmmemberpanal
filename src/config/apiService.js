@@ -220,6 +220,15 @@ export const gettickets = async (page = 1, limit = 10, status = '') => {
   return response.data
 }
 
+export const uploadFile = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  const response = await axiosConfig.post('/api/users/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return response.data
+}
+
 export const getticketbyid = async (ticketId) => {
   const response = await axiosConfig.get(`/api/support/tickets/${ticketId}`)
   return response.data
@@ -256,6 +265,8 @@ export const geturl = async () => {
   const response = await axiosConfig.get(`/api/market/interests`)
   return response.data
 }
+
+
 
 
 
