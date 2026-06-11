@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 function AcceleratorCard() {
   return (
     <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5 flex flex-col items-center text-center">
@@ -17,17 +18,17 @@ function AcceleratorCard() {
 
       <h3 className="text-base font-bold text-white mb-1.5">Accelerator Active</h3>
       <p className="text-xs text-gray-400 leading-relaxed mb-4">
-        Your capital is currently earning at an optimized rate of 1.2% daily.
+        You are currently positioned to earn an estimated 6%–12% monthly trading profit.
       </p>
 
-      <button
-        type="button"
+      <Link
+        to="/swp-purchase"
         className="px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer
                    border border-purple-500 text-purple-400
                    hover:bg-purple-500/10 transition-colors duration-200"
       >
         Upgrade Package
-      </button>
+      </Link>
     </div>
   );
 }
