@@ -15,9 +15,9 @@ function TierBenefitsBanner({ nextRank }) {
           <img src={diamondImg} alt="diamond" className="w-5 h-5 object-contain" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-white">{name} Tier Benefits</h3>
+          <h3 className="text-sm font-bold text-white">Your Next rank Awaits</h3>
           <p className="text-xs text-gray-400">
-            Unlock 2% higher daily SWP payouts and priority support.
+            Build Your Community With SWP Packages and Unlock Bigger Benefits
           </p>
         </div>
       </div>
@@ -26,7 +26,7 @@ function TierBenefitsBanner({ nextRank }) {
         onClick={handleViewAllTiers}
         className="px-5 py-2 rounded-lg text-xs font-semibold tracking-wide border border-[#1e1e3a] bg-transparent text-white hover:bg-[#1a1a3e] transition-colors duration-200 cursor-pointer flex-shrink-0"
       >
-        View All Tiers
+        View Rank criteria
       </button>
     </div>
   );
