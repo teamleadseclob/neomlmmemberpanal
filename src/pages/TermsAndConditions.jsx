@@ -187,14 +187,14 @@ export default function TermsAndConditions() {
                   <p className="text-white/80 text-base font-semibold">NEOFI Support</p>
                   <p className="text-white/50 text-sm">
                     Email:{' '}
-                    <a href="mailto:support@neo-fi.com" className="text-purple-400 hover:text-purple-300 transition-colors">
-                      support@neo-fi.com
+                    <a href="mailto:info@neofiacademy.com" className="text-purple-400 hover:text-purple-300 transition-colors">
+                      info@neofiacademy.com
                     </a>
                   </p>
                   <p className="text-white/50 text-sm">
                     Website:{' '}
-                    <a href="https://www.neo-fi.com" target="_blank" rel="noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors">
-                      www.neo-fi.com
+                    <a href="https://neofiacademy.com/" target="_blank" rel="noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors">
+                      neofiacademy.com
                     </a>
                   </p>
                 </div>
