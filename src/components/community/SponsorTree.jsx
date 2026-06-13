@@ -1,16 +1,14 @@
 /**
- * SponsorTree – 3-level paginated tree with infinite children.
+ * SponsorTree – Full tree on one scrollable page.
  *
- * • Shows current parent + its direct children + each child's children (grandchildren).
- * • Clicking an active child "drills down" (makes it the new parent).
- * • Breadcrumb trail lets you navigate back up.
- * • Children scroll horizontally with ←/→ buttons.
- * • Dynamic SVG connector paths fan out from parent center to each child
- *   with rounded corners and V-shaped arrowheads (matching Bottom.svg style).
- * • Fetches data from the gettree API endpoint.
+ * • Logged-in user is ALWAYS the root at top.
+ * • Clicking any user fetches their children from API and shows below them.
+ * • Click again to collapse.
+ * • Scrollable horizontally and vertically.
+ * • SVG connector paths with rounded corners and V-shaped arrowheads.
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../context/useAuth';
 import { gettree, getdownlinestats } from '../../config/apiService';
@@ -18,31 +16,25 @@ import { gettree, getdownlinestats } from '../../config/apiService';
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTS
    ═══════════════════════════════════════════════════════════════ */
-const COL_W    = 200;   // column width per child
-const CONN_H   = 90;    // connector SVG height
-const TURN_Y   = 28;    // y-position of the horizontal turn
-const RADIUS   = 14;    // corner radius (rounded bends)
-const STROKE_W = 1.85;  // stroke width (matches Bottom.svg)
-const TIP_W    = 7;     // arrowhead half-width
-const TIP_H    = 7.5;   // arrowhead height
+const COL_W = 150;
+const CONN_H = 40;
+const TURN_Y = 14;
+const RADIUS = 12;
+const STROKE_W = 1.5;
+const TIP_W = 6;
+const TIP_H = 6.5;
 
 /* ═══════════════════════════════════════════════════════════════
    SVG PATH BUILDERS
-   (match Bottom.svg: gradient #CB3CFF→#7F25FB, rounded turns, V-tip)
    ═══════════════════════════════════════════════════════════════ */
-
-/** L-shaped path from parent center → horizontal → down to child */
-function buildConnPath(childIdx, childCount) {
-  const contentW = childCount * COL_W;
-  const cx = contentW / 2;                       // parent center X
-  const childX = childIdx * COL_W + COL_W / 2;   // child center X
+function buildConnPath(childIdx, childCount, colW) {
+  const contentW = childCount * colW;
+  const cx = contentW / 2;
+  const childX = childIdx * colW + colW / 2;
   const dx = childX - cx;
   const absDx = Math.abs(dx);
 
-  // Straight-down when child is directly below parent
-  if (absDx < 1) {
-    return `M ${cx} 0 L ${cx} ${CONN_H - TIP_H - 1}`;
-  }
+  if (absDx < 1) return `M ${cx} 0 L ${cx} ${CONN_H - TIP_H - 1}`;
 
   const dir = dx > 0 ? 1 : -1;
   const r = Math.min(RADIUS, absDx / 2);
@@ -57,217 +49,142 @@ function buildConnPath(childIdx, childCount) {
   ].join(' ');
 }
 
-/** V-shaped arrowhead pointing down */
-function buildArrowTip(childIdx, ) {
-  const x = childIdx * COL_W + COL_W / 2;
+function buildArrowTip(childIdx, colW) {
+  const x = childIdx * colW + colW / 2;
   const y = CONN_H;
   return `M ${x - TIP_W} ${y - TIP_H} L ${x} ${y} L ${x + TIP_W} ${y - TIP_H}`;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   STYLE HELPERS — eliminates nested ternaries in JSX
+   NODE TOOLTIP
    ═══════════════════════════════════════════════════════════════ */
+function NodeTooltip({ userId, onClose }) {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const ref = useRef(null);
 
-/** Returns size class for the avatar circle */
-function getAvatarSize(isParent, isSmall) {
-  if (isParent) return 'w-10 h-10';
-  if (isSmall) return 'w-6 h-6';
-  return 'w-8 h-8';
-}
+  useEffect(() => {
+    let cancelled = false;
+    getdownlinestats(userId)
+      .then((res) => { if (!cancelled) setStats(res?.data ?? null); })
+      .catch(() => { if (!cancelled) setStats(null); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [userId]);
 
-/** Returns font-size class for the avatar letter */
-function getAvatarFont(isParent, isSmall) {
-  if (isParent) return 'text-sm';
-  if (isSmall) return 'text-[9px]';
-  return 'text-[11px]';
-}
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose]);
 
-/** Returns font-size class for the node name */
-function getNameFont(isParent, isSmall) {
-  if (isParent) return 'text-sm';
-  if (isSmall) return 'text-[10px]';
-  return 'text-xs';
-}
-
-/** Returns padding/border classes for the node card wrapper */
-function getCardStyle(isParent, isSmall) {
-  if (isParent) {
-    return 'px-5 py-3 border-purple-500/60 bg-gradient-to-br from-[#1a0a3e] to-[#0d0b2e] shadow-lg shadow-purple-500/15';
-  }
-  if (isSmall) {
-    return 'px-2.5 py-2 border-purple-500/25 bg-[#0d0b2e]/80 shadow-sm shadow-purple-500/5';
-  }
-  return 'px-3.5 py-2.5 border-purple-500/40 bg-[#0d0b2e] shadow-md shadow-purple-500/5';
-}
-
-/** Stable key for a node — avoids array-index-only keys */
-function nodeKey(node, fallbackIndex) {
-  return node?.userId || node?._id || `slot-${fallbackIndex}`;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   EMPTY CARD — shown for vacant slots
-   ═══════════════════════════════════════════════════════════════ */
-function EmptyCard() {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-[#2a2a4a] bg-[#0a0820]/80 whitespace-nowrap">
-      <div className="w-7 h-7 rounded-full bg-[#1a1a3e] flex items-center justify-center flex-shrink-0">
-        <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-        </svg>
+    <div ref={ref} className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 w-52" role="tooltip">
+      <div className="rounded-xl border border-[#2a2a4a] bg-[#0d0b2e] shadow-2xl shadow-black/60 p-3">
+        {loading ? (
+          <div className="flex justify-center py-3">
+            <span className="w-5 h-5 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+          </div>
+        ) : !stats ? (
+          <p className="text-xs text-gray-500 text-center py-2">No data available</p>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[#2a2a4a]">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0">
+                <span className="text-[9px] font-bold text-white">{stats.name?.[0]?.toUpperCase()}</span>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white uppercase">{stats.name}</p>
+                <p className="text-[9px] text-gray-400 font-mono">{stats.userId}</p>
+              </div>
+              <span className="ml-auto text-[9px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-full">{stats.rank}</span>
+            </div>
+            {[
+              { label: 'Personal SWP', value: `$${(stats.personalSwp ?? 0).toLocaleString()}` },
+              { label: 'Trading Capital', value: `$${(stats.tradingCapital ?? 0).toLocaleString()}` },
+              { label: 'Team SWP Volume', value: `$${(stats.teamSwpVolume ?? 0).toLocaleString()}` },
+              { label: 'Team Trading Cap', value: `$${(stats.teamTradingCapital ?? 0).toLocaleString()}` },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex items-center justify-between py-0.5">
+                <span className="text-[10px] text-gray-400">{label}</span>
+                <span className="text-[10px] font-semibold text-white">{value}</span>
+              </div>
+            ))}
+          </>
+        )}
+        <div className="absolute left-1/2 -translate-x-1/2 top-full w-2.5 h-2.5 border-r border-b border-[#2a2a4a] bg-[#0d0b2e] rotate-45 -mt-1.5" />
       </div>
-      <span className="text-xs text-gray-500 font-medium">No User</span>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   NODE TOOLTIP — fetches and displays downline stats
-   ═══════════════════════════════════════════════════════════════ */
-function NodeTooltip({ userId, onClose }) {
-  const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const ref = useRef(null)
-
-  useEffect(() => {
-    let cancelled = false
-    getdownlinestats(userId)
-      .then((res) => { if (!cancelled) setStats(res?.data ?? null) })
-      .catch(() => { if (!cancelled) setStats(null) })
-      .finally(() => { if (!cancelled) setLoading(false) })
-    return () => { cancelled = true }
-  }, [userId])
-
-  useEffect(() => {
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose() }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [onClose])
-
-  return (
-    <div
-      ref={ref}
-      className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 w-56"
-      role="tooltip"
-    >
-      <div className="rounded-xl border border-[#2a2a4a] bg-[#0d0b2e] shadow-2xl shadow-black/60 p-3">
-        {(() => {
-          if (loading) return (
-            <div className="flex justify-center py-3">
-              <span className="w-5 h-5 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
-            </div>
-          )
-          if (!stats) return (
-            <p className="text-xs text-gray-500 text-center py-2">No data available</p>
-          )
-          return (
-            <>
-              <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-[#2a2a4a]">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0">
-                  <span className="text-[9px] font-bold text-white">{stats.name?.[0]?.toUpperCase()}</span>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-white uppercase">{stats.name}</p>
-                  <p className="text-[9px] text-gray-400 font-mono">{stats.userId}</p>
-                </div>
-                <span className="ml-auto text-[9px] font-bold text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-full">{stats.rank}</span>
-              </div>
-              {[
-                { label: 'Personal SWP',     value: `$${(stats.personalSwp ?? 0).toLocaleString()}` },
-                { label: 'Trading Capital',  value: `$${(stats.tradingCapital ?? 0).toLocaleString()}` },
-                { label: 'Team SWP Volume',  value: `$${(stats.teamSwpVolume ?? 0).toLocaleString()}` },
-                { label: 'Team Trading Cap', value: `$${(stats.teamTradingCapital ?? 0).toLocaleString()}` },
-              ].map(({ label, value }) => (
-                <div key={label} className="flex items-center justify-between py-1">
-                  <span className="text-[10px] text-gray-400">{label}</span>
-                  <span className="text-[10px] font-semibold text-white">{value}</span>
-                </div>
-              ))}
-            </>
-          )
-        })()}
-        {/* Arrow */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-full w-2.5 h-2.5 border-r border-b border-[#2a2a4a] bg-[#0d0b2e] rotate-45 -mt-1.5" />
-      </div>
-    </div>
-  )
-}
-
-NodeTooltip.propTypes = {
-  userId: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
-}
+NodeTooltip.propTypes = { userId: PropTypes.string.isRequired, onClose: PropTypes.func.isRequired };
 
 /* ═══════════════════════════════════════════════════════════════
-   NODE CARD — active user
+   NODE CARD
    ═══════════════════════════════════════════════════════════════ */
-function NodeCard({ node, onClick, isParent = false, size = 'normal' }) {
-  const [showTooltip, setShowTooltip] = useState(false)
+function NodeCard({ node, isRoot = false, level = 0, isExpanded = false, onToggle }) {
+  const [showTooltip, setShowTooltip] = useState(false);
 
   if (!node || node.empty) {
-    return <EmptyCard />;
+    return (
+      <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg border border-dashed border-[#2a2a4a] bg-[#0a0820]/80 whitespace-nowrap">
+        <div className="w-5 h-5 rounded-full bg-[#1a1a3e] flex items-center justify-center">
+          <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
+        </div>
+        <span className="text-[10px] text-gray-500">No User</span>
+      </div>
+    );
   }
 
-  const hasChildren = node.children && node.children.length > 0;
-  const canDrill = !isParent && hasChildren;
-  const isSmall = size === 'small';
-
-  const cardCls = getCardStyle(isParent, isSmall);
-  const drillCls = canDrill
-    ? 'cursor-pointer hover:border-purple-400 hover:shadow-purple-500/20 hover:scale-[1.03] transition-all duration-200'
-    : 'cursor-default';
-  const chevronCls = isSmall ? 'w-3 h-3' : 'w-3.5 h-3.5';
-  const idFontCls = isSmall ? 'text-[8px]' : 'text-[10px]';
+  const sizes = isRoot
+    ? { avatar: 'w-7 h-7', avatarFont: 'text-xs', nameFont: 'text-[11px]', idFont: 'text-[8px]', card: 'px-2.5 py-1.5 border-purple-500/60 bg-gradient-to-br from-[#1a0a3e] to-[#0d0b2e] shadow-lg shadow-purple-500/15' }
+    : level === 1
+    ? { avatar: 'w-6 h-6', avatarFont: 'text-[10px]', nameFont: 'text-[10px]', idFont: 'text-[7px]', card: 'px-2 py-1.5 border-purple-500/40 bg-[#0d0b2e] shadow-md shadow-purple-500/5' }
+    : { avatar: 'w-5 h-5', avatarFont: 'text-[8px]', nameFont: 'text-[9px]', idFont: 'text-[7px]', card: 'px-1.5 py-1 border-purple-500/25 bg-[#0d0b2e]/80 shadow-sm shadow-purple-500/5' };
 
   return (
     <div className="relative">
-      <div className={`flex items-center gap-2.5 rounded-lg border whitespace-nowrap ${cardCls} ${drillCls}`}>
-        {/* Avatar */}
+      <div data-node-card className={`flex items-center gap-2 rounded-lg border whitespace-nowrap transition-all duration-200 max-w-[120px]
+        ${sizes.card} ${isExpanded ? 'ring-1 ring-purple-500/50' : ''} cursor-pointer hover:border-purple-400`}>
+        {/* Click to expand/collapse */}
         <button
           type="button"
-          onClick={canDrill ? onClick : undefined}
-          className="flex items-center gap-2.5 bg-transparent border-none p-0 cursor-inherit"
-          title={canDrill ? `View ${node.name}'s network` : undefined}
+          onClick={onToggle}
+          className="flex items-center gap-2 bg-transparent border-none p-0 cursor-pointer min-w-0 overflow-hidden"
         >
-          <div className={`${getAvatarSize(isParent, isSmall)} rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0`}>
-            <span className={`${getAvatarFont(isParent, isSmall)} font-bold text-white`}>
+          <div className={`${sizes.avatar} rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center flex-shrink-0`}>
+            <span className={`${sizes.avatarFont} font-bold text-white`}>
               {node.name ? node.name.charAt(0).toUpperCase() : 'N'}
             </span>
           </div>
-          <div className="min-w-0">
-            <p className={`${getNameFont(isParent, isSmall)} font-semibold text-white truncate uppercase`}>{node.name}</p>
-            <p className={`${idFontCls} text-gray-400 font-mono truncate`}>{node.userId}</p>
+          <div className="min-w-0 overflow-hidden">
+            <p className={`${sizes.nameFont} font-semibold text-white truncate uppercase`}>{node.name}</p>
+            <p className={`${sizes.idFont} text-gray-400 font-mono truncate`}>{node.userId}</p>
           </div>
         </button>
 
-        {/* Eye button */}
+        {/* Eye icon for tooltip */}
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); setShowTooltip((v) => !v); }}
-          className={`flex-shrink-0 ${isSmall ? 'w-4 h-4' : 'w-5 h-5'} flex items-center justify-center text-gray-500 hover:text-purple-400 transition-colors bg-transparent border-none cursor-pointer`}
+          className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-gray-500 hover:text-purple-400 transition-colors bg-transparent border-none cursor-pointer"
           aria-label="View stats"
         >
-          <svg width={isSmall ? 12 : 14} height={isSmall ? 12 : 14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
             <circle cx="12" cy="12" r="3" />
           </svg>
         </button>
 
-        {/* Drill chevron */}
-        {canDrill && (
-          <button
-            type="button"
-            onClick={onClick}
-            className="flex-shrink-0 bg-transparent border-none cursor-pointer p-0"
-          >
-            <svg className={`${chevronCls} text-purple-400`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        )}
+        {/* Expand/collapse chevron */}
+        <svg className={`w-3 h-3 text-purple-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
       </div>
 
-      {/* Tooltip */}
       {showTooltip && node.userId && (
         <NodeTooltip userId={node.userId} onClose={() => setShowTooltip(false)} />
       )}
@@ -275,217 +192,176 @@ function NodeCard({ node, onClick, isParent = false, size = 'normal' }) {
   );
 }
 
-NodeCard.propTypes = {
-  node: PropTypes.shape({
-    empty: PropTypes.bool,
-    name: PropTypes.string,
-    userId: PropTypes.string,
-    children: PropTypes.array,
-  }),
-  onClick: PropTypes.func,
-  isParent: PropTypes.bool,
-  size: PropTypes.oneOf(['normal', 'small']),
-}
-NodeCard.defaultProps = {
-  node: null,
-  onClick: undefined,
-  isParent: false,
-  size: 'normal',
-}
-
-/** Scroll chevron button */
-function ScrollBtn({ direction, onClick }) {
-  const isLeft = direction === 'left';
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`absolute ${isLeft ? 'left-0' : 'right-0'} top-1/2 -translate-y-1/2 z-10
-                  w-9 h-9 rounded-full bg-[#1a1a3e]/90 border border-[#2a2a4a]
-                  text-gray-400 hover:text-white hover:border-purple-500/40
-                  flex items-center justify-center cursor-pointer
-                  transition-all duration-200 backdrop-blur-sm shadow-lg`}
-      aria-label={`Scroll ${direction}`}
-    >
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round"
-          d={isLeft ? 'M15.75 19.5 8.25 12l7.5-7.5' : 'm8.25 4.5 7.5 7.5-7.5 7.5'} />
-      </svg>
-    </button>
-  );
-}
-
-ScrollBtn.propTypes = {
-  direction: PropTypes.oneOf(['left', 'right']).isRequired,
-  onClick: PropTypes.func.isRequired,
-}
+NodeCard.propTypes = { node: PropTypes.object, isRoot: PropTypes.bool, level: PropTypes.number, isExpanded: PropTypes.bool, onToggle: PropTypes.func };
 
 /* ═══════════════════════════════════════════════════════════════
-   SVG CONNECTORS COMPONENT — reusable for any level
+   SVG CONNECTORS — simple vertical + horizontal lines
    ═══════════════════════════════════════════════════════════════ */
-function Connectors({ childCount, contentW, gradientId }) {
-  if (childCount === 0) return null;
+function Connectors({ containerRef, childRefs, gradientId, expanded }) {
+  const [paths, setPaths] = useState([]);
+  const svgRef = useRef(null);
+
+  useEffect(() => {
+    const update = () => {
+      if (!containerRef.current || !svgRef.current) return;
+      const svgRect = svgRef.current.getBoundingClientRect();
+      const cx = svgRect.width / 2;
+      const newPaths = [];
+      childRefs.current.forEach((el) => {
+        if (!el) return;
+        const cardEl = el.querySelector('[data-node-card]');
+        if (!cardEl) return;
+        const cardRect = cardEl.getBoundingClientRect();
+        const childX = cardRect.left + cardRect.width / 2 - svgRect.left;
+        const dx = childX - cx;
+        const absDx = Math.abs(dx);
+        let path;
+        if (absDx < 1) {
+          path = `M ${cx} 0 L ${cx} ${CONN_H - TIP_H - 1}`;
+        } else {
+          const dir = dx > 0 ? 1 : -1;
+          const r = Math.min(RADIUS, absDx / 2);
+          path = [
+            `M ${cx} 0`,
+            `L ${cx} ${TURN_Y - r}`,
+            `Q ${cx} ${TURN_Y} ${cx + dir * r} ${TURN_Y}`,
+            `L ${childX - dir * r} ${TURN_Y}`,
+            `Q ${childX} ${TURN_Y} ${childX} ${TURN_Y + r}`,
+            `L ${childX} ${CONN_H - TIP_H - 1}`,
+          ].join(' ');
+        }
+        const tipPath = `M ${childX - TIP_W} ${CONN_H - TIP_H} L ${childX} ${CONN_H} L ${childX + TIP_W} ${CONN_H - TIP_H}`;
+        newPaths.push({ path, tipPath });
+      });
+      setPaths(newPaths);
+    };
+    // Small delay to let DOM settle after expand
+    const timer = setTimeout(update, 50);
+    const observer = new ResizeObserver(update);
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => { clearTimeout(timer); observer.disconnect(); };
+  }, [containerRef, childRefs, expanded]);
+
   return (
-    <svg
-      width={contentW}
-      height={CONN_H}
-      viewBox={`0 0 ${contentW} ${CONN_H}`}
-      className="block"
-      style={{ overflow: 'visible' }}
-      aria-hidden="true"
-    >
+    <svg ref={svgRef} width="100%" height={CONN_H} className="block" style={{ overflow: 'visible' }} aria-hidden="true">
       <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2={CONN_H}
-                        gradientUnits="userSpaceOnUse">
-          <stop offset="0.2"  stopColor="#CB3CFF" />
-          <stop offset="0.7"  stopColor="#7F25FB" />
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2={CONN_H} gradientUnits="userSpaceOnUse">
+          <stop offset="0.2" stopColor="#CB3CFF" />
+          <stop offset="0.7" stopColor="#7F25FB" />
         </linearGradient>
       </defs>
-
-      {Array.from({ length: childCount }).map((_, i) => {
-        const key = `${gradientId}-path-${i}`;
-        return (
-          <g key={key}>
-            <path
-              d={buildConnPath(i, childCount)}
-              stroke={`url(#${gradientId})`}
-              strokeWidth={STROKE_W}
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d={buildArrowTip(i, )}
-              stroke={`url(#${gradientId})`}
-              strokeWidth={STROKE_W}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          </g>
-        );
-      })}
+      {paths.map((p, i) => (
+        <g key={`${gradientId}-${i}`}>
+          <path d={p.path} stroke={`url(#${gradientId})`} strokeWidth={STROKE_W} strokeLinecap="round" fill="none" />
+          <path d={p.tipPath} stroke={`url(#${gradientId})`} strokeWidth={STROKE_W} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </g>
+      ))}
     </svg>
   );
 }
 
-Connectors.propTypes = {
-  childCount: PropTypes.number.isRequired,
-  contentW: PropTypes.number.isRequired,
-  gradientId: PropTypes.string.isRequired,
-}
+Connectors.propTypes = { containerRef: PropTypes.object.isRequired, childRefs: PropTypes.object.isRequired, gradientId: PropTypes.string.isRequired, expanded: PropTypes.bool };
 
 /* ═══════════════════════════════════════════════════════════════
-   GRANDCHILDREN SUB-TREE for a single child
+   TREE NODE — Recursive, fetches children on click
    ═══════════════════════════════════════════════════════════════ */
-const GCOL_W = 140;
-const GC_CONN_H = 60;
+function TreeNode({ node, level = 0, parentKey = 'root', defaultOpen = false, autoOpenDepth = 0 }) {
+  const [expanded, setExpanded] = useState(defaultOpen);
+  const [children, setChildren] = useState(defaultOpen && node?.children ? node.children : null);
+  const [loading, setLoading] = useState(false);
+  const [childAutoOpen, setChildAutoOpen] = useState(autoOpenDepth > 0 ? autoOpenDepth - 1 : 0);
 
-function buildGcConnPath(childIdx, childCount) {
-  const contentW = childCount * GCOL_W;
-  const cx = contentW / 2;
-  const childX = childIdx * GCOL_W + GCOL_W / 2;
-  const dx = childX - cx;
-  const absDx = Math.abs(dx);
-  const turnY = 18;
-  const r = Math.min(10, absDx / 2);
+  // Auto-fetch children when defaultOpen/autoOpenDepth is set but children not yet loaded
+  useEffect(() => {
+    if ((defaultOpen || autoOpenDepth > 0) && children === null && node?.userId) {
+      setLoading(true);
+      gettree(node.userId)
+        .then((res) => {
+          if (res.success && res.data?.children) setChildren(res.data.children);
+          else setChildren([]);
+          setExpanded(true);
+        })
+        .catch(() => setChildren([]))
+        .finally(() => setLoading(false));
+    }
+  }, []);
 
-  if (absDx < 1) {
-    return `M ${cx} 0 L ${cx} ${GC_CONN_H - TIP_H - 1}`;
-  }
+  const handleToggle = useCallback(() => {
+    if (expanded) {
+      setExpanded(false);
+      return;
+    }
+    // If already fetched, just expand
+    if (children !== null) {
+      setChildAutoOpen(1);
+      setExpanded(true);
+      return;
+    }
+    // Fetch children from API
+    if (!node?.userId) return;
+    setLoading(true);
+    gettree(node.userId)
+      .then((res) => {
+        if (res.success && res.data?.children) {
+          setChildren(res.data.children);
+        } else {
+          setChildren([]);
+        }
+        setChildAutoOpen(1);
+        setExpanded(true);
+      })
+      .catch(() => setChildren([]))
+      .finally(() => setLoading(false));
+  }, [expanded, children, node?.userId]);
 
-  const dir = dx > 0 ? 1 : -1;
-  return [
-    `M ${cx} 0`,
-    `L ${cx} ${turnY - r}`,
-    `Q ${cx} ${turnY} ${cx + dir * r} ${turnY}`,
-    `L ${childX - dir * r} ${turnY}`,
-    `Q ${childX} ${turnY} ${childX} ${turnY + r}`,
-    `L ${childX} ${GC_CONN_H - TIP_H - 1}`,
-  ].join(' ');
-}
+  if (!node) return null;
 
-function buildGcArrowTip(childIdx, ) {
-  const x = childIdx * GCOL_W + GCOL_W / 2;
-  const y = GC_CONN_H;
-  return `M ${x - 5} ${y - 6} L ${x} ${y} L ${x + 5} ${y - 6}`;
-}
-
-function GrandchildrenTree({ grandchildren, onDrillGrandchild, parentId }) {
-  if (!grandchildren || grandchildren.length === 0) return null;
-
-  const gcContentW = grandchildren.length * GCOL_W;
-  const gradId = `gcGrad-${parentId}`;
+  const gradId = `grad-${parentKey}-${level}`;
+  const containerRef = useRef(null);
+  const childRefs = useRef([]);
 
   return (
-    <div className="mt-1">
-      {/* Grandchild connectors */}
-      <svg
-        width={gcContentW}
-        height={GC_CONN_H}
-        viewBox={`0 0 ${gcContentW} ${GC_CONN_H}`}
-        className="block mx-auto"
-        style={{ overflow: 'visible' }}
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2={GC_CONN_H}
-                          gradientUnits="userSpaceOnUse">
-            <stop offset="0.2"  stopColor="#CB3CFF" stopOpacity="0.6" />
-            <stop offset="0.7"  stopColor="#7F25FB" stopOpacity="0.6" />
-          </linearGradient>
-        </defs>
+    <div className="flex flex-col items-center">
+      {/* Node card */}
+      <NodeCard node={node} isRoot={level === 0} level={level} isExpanded={expanded} onToggle={handleToggle} />
 
-        {grandchildren.map((gc, i) => {
-          const key = `${nodeKey(gc, i)}-gc-conn`;
-          return (
-            <g key={key}>
-              <path
-                d={buildGcConnPath(i, grandchildren.length)}
-                stroke={`url(#${gradId})`}
-                strokeWidth={1.4}
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d={buildGcArrowTip(i)}
-                stroke={`url(#${gradId})`}
-                strokeWidth={1.4}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </g>
-          );
-        })}
-      </svg>
+      {/* Loading spinner */}
+      {loading && (
+        <div className="flex justify-center py-3">
+          <span className="w-4 h-4 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+        </div>
+      )}
 
-      {/* Grandchildren row */}
-      <div className="flex justify-center">
-        {grandchildren.map((gc, i) => (
-          <div key={nodeKey(gc, i)}
-               className="flex justify-center flex-shrink-0"
-               style={{ width: GCOL_W + 'px' }}>
-            <NodeCard node={gc} onClick={() => onDrillGrandchild(gc)} size="small" />
+      {/* Children (only when expanded) */}
+      {expanded && children && children.length > 0 && (
+        <div ref={containerRef} className="flex flex-col items-center">
+          <Connectors containerRef={containerRef} childRefs={childRefs} gradientId={gradId} expanded={expanded} />
+          <div className="flex gap-3">
+            {children.map((child, i) => {
+              const key = child?.userId || child?._id || `${parentKey}-${i}`;
+              return (
+                <div key={key} ref={(el) => { childRefs.current[i] = el; }} className="flex flex-col items-center">
+                  <TreeNode node={child} level={level + 1} parentKey={key} defaultOpen={level < 2} autoOpenDepth={childAutoOpen} />
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {/* No children message */}
+      {expanded && children && children.length === 0 && (
+        <p className="text-[9px] text-gray-500 mt-2">No downline</p>
+      )}
     </div>
   );
 }
 
-GrandchildrenTree.propTypes = {
-  grandchildren: PropTypes.array,
-  onDrillGrandchild: PropTypes.func.isRequired,
-  parentId: PropTypes.string,
-}
-GrandchildrenTree.defaultProps = {
-  grandchildren: [],
-  parentId: 'default',
-}
+TreeNode.propTypes = { node: PropTypes.object, level: PropTypes.number, parentKey: PropTypes.string, defaultOpen: PropTypes.bool, autoOpenDepth: PropTypes.number };
 
-/* ══════════════════════════════════════════════════════════════
-   LOADING / ERROR STATES — extracted to reduce main complexity
-   ══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   LOADING / ERROR
+   ═══════════════════════════════════════════════════════════════ */
 function TreeLoading() {
   return (
     <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
@@ -507,12 +383,8 @@ function TreeError({ message }) {
           </svg>
         </div>
         <p className="text-sm text-gray-400">{message}</p>
-        <button
-          type="button"
-          onClick={() => globalThis.location.reload()}
-          className="px-4 py-2 text-xs font-medium text-purple-300 border border-purple-500/30 rounded-lg
-                     hover:bg-purple-500/10 transition-all duration-200 cursor-pointer"
-        >
+        <button type="button" onClick={() => globalThis.location.reload()}
+          className="px-4 py-2 text-xs font-medium text-purple-300 border border-purple-500/30 rounded-lg hover:bg-purple-500/10 transition-all duration-200 cursor-pointer">
           Retry
         </button>
       </div>
@@ -520,223 +392,68 @@ function TreeError({ message }) {
   );
 }
 
-TreeError.propTypes = {
-  message: PropTypes.string.isRequired,
-}
+TreeError.propTypes = { message: PropTypes.string.isRequired };
 
-function TreeEmpty() {
-  return (
-    <div className="text-center py-10">
-      <div className="w-12 h-12 rounded-xl bg-[#1a1a3e] flex items-center justify-center mx-auto mb-3">
-        <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-        </svg>
-      </div>
-      <p className="text-sm text-gray-500">No referrals in this branch yet.</p>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════════════════════
-   BREADCRUMB NAV — extracted to reduce main complexity
-   ══════════════════════════════════════════════════════════════ */
-function BreadcrumbNav({ crumbs, navPath, goBack, setNavPath }) {
-  if (navPath.length === 0) return null;
-
-  return (
-    <div className="flex items-center gap-2.5 mb-5 flex-wrap">
-      <button type="button" onClick={goBack}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                   border border-[#2a2a4a] bg-[#1a1a2e] text-gray-300
-                   hover:border-purple-500/30 hover:text-white transition-all duration-200 cursor-pointer">
-        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-        Back
-      </button>
-      <nav className="flex items-center gap-1 text-xs text-gray-500  overflow-x-auto">
-        {crumbs.map((name, i) => (
-          <span key={`crumb-${name}-${navPath.slice(0, i).join('-')}`} className="flex items-center gap-1 whitespace-nowrap">
-            {i > 0 && <span className="text-gray-600">/</span>}
-            <button type="button" onClick={() => setNavPath(navPath.slice(0, i))}
-              className={`bg-transparent uppercase border-none cursor-pointer transition-colors
-                ${i === crumbs.length - 1 ? 'text-purple-400 font-medium' : 'text-gray-500 hover:text-purple-400'}`}>
-              {name}
-            </button>
-          </span>
-        ))}
-      </nav>
-    </div>
-  );
-}
-
-BreadcrumbNav.propTypes = {
-  crumbs: PropTypes.arrayOf(PropTypes.string).isRequired,
-  navPath: PropTypes.arrayOf(PropTypes.number).isRequired,
-  goBack: PropTypes.func.isRequired,
-  setNavPath: PropTypes.func.isRequired,
-}
-
-/* ══════════════════════════════════════════════════════════════
-   HOOK — fetch tree data
-   ══════════════════════════════════════════════════════════════ */
-function useTreeData(userId) {
-  const [treeData, setTreeData] = useState(null);
+/* ═══════════════════════════════════════════════════════════════
+   MAIN COMPONENT
+   ═══════════════════════════════════════════════════════════════ */
+function SponsorTree() {
+  const { user } = useAuth();
+  const [rootData, setRootData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!user?.userId) return;
     let cancelled = false;
-    if (!userId) return undefined;
-
-    async function fetchTree() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await gettree(userId);
+    setLoading(true);
+    gettree(user.userId)
+      .then((res) => {
         if (cancelled) return;
-        if (res.success && res.data) {
-          setTreeData(res.data);
-        } else {
-          setError(res.message || 'Failed to load tree data');
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err?.response?.data?.message || err.message || 'Failed to load tree data');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    fetchTree();
+        if (res.success && res.data) setRootData(res.data);
+        else setError(res.message || 'Failed to load tree data');
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err?.response?.data?.message || err.message || 'Failed to load tree data');
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [userId]);
+  }, [user?.userId]);
 
-  return { treeData, loading, error };
-}
-
-/** Walk the navPath to resolve the currently selected node */
-function resolveNode(root, navPath) {
-  let node = root;
-  for (const idx of navPath) {
-    if (!node?.children?.[idx]) break;
-    node = node.children[idx];
-  }
-  return node;
-}
-
-/** Build breadcrumb labels from the root along navPath */
-function buildCrumbs(root, navPath) {
-  const crumbs = [];
-  let tmp = root;
-  for (const idx of navPath) {
-    crumbs.push(tmp.name || '...');
-    if (tmp.children?.[idx]) tmp = tmp.children[idx];
-  }
-  crumbs.push(tmp.name || '...');
-  return crumbs;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   MAIN COMPONENT
-   ══════════════════════════════════════════════════════════════ */
-
-function SponsorTree() {
-  const { user } = useAuth();
-  const { treeData, loading, error } = useTreeData(user?.userId);
-  const [navPath, setNavPath] = useState([]);
-  const scrollRef = useRef(null);
-
-  const currentNode = treeData ? resolveNode(treeData, navPath) : null;
-  const children = currentNode?.children || [];
-  const contentW = children.length * COL_W;
-
-  /* ── Scroll to center when level changes ── */
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const sl = (el.scrollWidth - el.clientWidth) / 2;
-    el.scrollTo({ left: Math.max(0, sl) });
-  }, [navPath]);
-
-  /* ── Navigation ── */
-  const drillDown = useCallback((i) => setNavPath((p) => [...p, i]), []);
-  const goBack    = useCallback(() => setNavPath((p) => p.slice(0, -1)), []);
-
-  const drillToGrandchild = (parentIdx, grandchild) => {
-    const node = resolveNode(treeData, navPath);
-    const parent = node?.children?.[parentIdx];
-    if (!parent) return;
-    const gcIdx = parent.children?.findIndex(
-      (gc) => gc._id === grandchild._id || gc.userId === grandchild.userId
-    );
-    if (gcIdx >= 0) setNavPath((p) => [...p, parentIdx, gcIdx]);
-  };
-
-  const scroll = (dir) => scrollRef.current?.scrollBy({ left: dir * COL_W, behavior: 'smooth' });
-  const showScrollBtns = children.length > 4;
-
-  /* ── Early returns for loading / error ── */
   if (loading) return <TreeLoading />;
-  if (error || !treeData) return <TreeError message={error || 'No tree data available'} />;
-
-  const crumbs = buildCrumbs(treeData, navPath);
+  if (error || !rootData) return <TreeError message={error || 'No tree data available'} />;
 
   return (
     <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
-
-      <BreadcrumbNav crumbs={crumbs} navPath={navPath} goBack={goBack} setNavPath={setNavPath} />
-
-      {/* ── Tree area (scrollable) ── */}
-      <div className="relative">
-        {showScrollBtns && <ScrollBtn direction="left"  onClick={() => scroll(-1)} />}
-        {showScrollBtns && <ScrollBtn direction="right" onClick={() => scroll(1)} />}
-
-        <div ref={scrollRef} className="overflow-x-auto scroll-smooth pb-3"
-          style={{ scrollbarColor: '#1e1e3a #0d0b2e' }}>
-
-          <div style={{ width: contentW > 0 ? contentW + 'px' : 'auto', minWidth: '100%' }}
-               className="flex justify-center">
-            <div style={{ width: contentW > 0 ? contentW + 'px' : 'auto' }}>
-
-              {/* ── Level 1: Parent node ── */}
-              <div className="flex justify-center pb-0">
-                <NodeCard node={currentNode} isParent />
-              </div>
-
-              {/* ── Level 1→2 connectors ── */}
-              {children.length > 0 && (
-                <Connectors childCount={children.length} contentW={contentW} gradientId="treeConnGrad" />
-              )}
-
-              {/* ── Level 2: Children + Level 3: Grandchildren ── */}
-              {children.length > 0 && (
-                <div className="flex">
-                  {children.map((child, i) => (
-                    <div key={nodeKey(child, i)}
-                         className="flex flex-col items-center flex-shrink-0"
-                         style={{ width: COL_W + 'px' }}>
-                      <NodeCard node={child} onClick={() => drillDown(i)} />
-
-                      {child.children && child.children.length > 0 && (
-                        <GrandchildrenTree
-                          grandchildren={child.children}
-                          parentId={nodeKey(child, i)}
-                          onDrillGrandchild={(gc) => drillToGrandchild(i, gc)}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+      {/* Scrollable container */}
+      {/* Draggable scrollable container */}
+      <div
+        className="overflow-auto rounded-lg cursor-grab active:cursor-grabbing select-none"
+        style={{ scrollbarColor: '#1e1e3a #0d0b2e', maxHeight: '80vh' }}
+        onMouseDown={(e) => {
+          const el = e.currentTarget;
+          el.dataset.dragging = 'true';
+          el.dataset.startX = e.clientX;
+          el.dataset.startY = e.clientY;
+          el.dataset.scrollLeft = el.scrollLeft;
+          el.dataset.scrollTop = el.scrollTop;
+        }}
+        onMouseMove={(e) => {
+          const el = e.currentTarget;
+          if (el.dataset.dragging !== 'true') return;
+          e.preventDefault();
+          const dx = e.clientX - Number(el.dataset.startX);
+          const dy = e.clientY - Number(el.dataset.startY);
+          el.scrollLeft = Number(el.dataset.scrollLeft) - dx;
+          el.scrollTop = Number(el.dataset.scrollTop) - dy;
+        }}
+        onMouseUp={(e) => { e.currentTarget.dataset.dragging = 'false'; }}
+        onMouseLeave={(e) => { e.currentTarget.dataset.dragging = 'false'; }}
+      >
+        <div className="min-w-max py-6 px-4">
+          <TreeNode node={rootData} level={0} parentKey="root" defaultOpen />
         </div>
       </div>
-
-      {/* ── Empty state ── */}
-      {children.length === 0 && currentNode && !currentNode.empty && <TreeEmpty />}
     </div>
   );
 }

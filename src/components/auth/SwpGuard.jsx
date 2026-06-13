@@ -8,6 +8,9 @@ export default function SwpGuard() {
   // Wait for profile to load
   if (loading || profile === null) return null
 
+  // Debug: check what profile contains
+  console.log('SwpGuard profile:', profile)
+
   // SWP is a package — balance never decreases after purchase
   // redirect only if swpBalance is 0 or not set (never purchased)
   if (!profile.swpBalance || profile.swpBalance <= 0) {
