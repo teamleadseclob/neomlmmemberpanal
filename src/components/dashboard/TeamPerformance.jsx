@@ -4,6 +4,7 @@ import currentImg    from '../../assets/dashboard/current.png'
 import affiliatesImg from '../../assets/dashboard/afliates.png'
 import downlineImg   from '../../assets/dashboard/downline.png'
 import swpImg        from '../../assets/dashboard/swp2.png'
+import teamSwpImg    from '../../assets/dashboard/swp.png'
 import tradingImg    from '../../assets/dashboard/trading.png'
 
 function TeamPerformance({ data, totalInvested }) {
@@ -12,7 +13,7 @@ function TeamPerformance({ data, totalInvested }) {
     { img: affiliatesImg, label: 'TOTAL AFFILIATES', value: data?.totalDirectReferrals ?? 0 },
     { img: downlineImg,   label: 'TOTAL DOWNLINES',  value: data?.totalDownline ?? 0 },
     { img: swpImg,        label: 'SWP PURCHASED',    value: `$${(data?.totalSwpPurchased ?? 0).toLocaleString()}` },
-    { img: tradingImg,    label: 'TEAM SWP VOLUME',  value: `$${(data?.totalTeamSwpVolume ?? 0).toLocaleString()}` },
+    { img: teamSwpImg,   label: 'TEAM SWP VOLUME',  value: `$${(data?.totalTeamSwpVolume ?? 0).toLocaleString()}` },
     { img: tradingImg,    label: 'TRADING CAPITAL',  value: `$${(totalInvested ?? 0).toLocaleString()}` },
   ]
 
