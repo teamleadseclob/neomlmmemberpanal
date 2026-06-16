@@ -7,17 +7,19 @@ const PAGE_SIZE = 10;
 
 function ReferralHub() {
   const [directReferralEarnings, setDirectReferralEarnings] = useState(0);
+  const [totalPoolFundEarned, setTotalPoolFundEarned] = useState(0);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
-  const [totalPoolFundEarned, setTotalPoolFundEarned] = useState(0);
-  const [totalSwpPurchased, setTotalSwpPurchased] = useState(0);
 
   useEffect(() => {
     getprofile()
-      .then((res) => setDirectReferralEarnings(res?.data?.directReferralEarnings ?? 0))
+      .then((res) => {
+        setDirectReferralEarnings(res?.data?.directReferralEarnings ?? 0);
+        setTotalPoolFundEarned(res?.data?.totalPoolFundEarned ?? 0);
+      })
       .catch(() => {});
   }, []);
 
@@ -30,8 +32,6 @@ function ReferralHub() {
           setData(res.data ?? []);
           setTotal(res.pagination?.totalDocs ?? 0);
           setTotalPages(res.pagination?.totalPages ?? 1);
-          setTotalPoolFundEarned(res.pagination?.totalPoolFundEarned ?? 0);
-          setTotalSwpPurchased(res.pagination?.totalSwpPurchased ?? 0);
         }
       })
       .catch(() => { if (!cancelled) setData([]); })
@@ -80,7 +80,7 @@ function ReferralHub() {
         <div className="grid grid-cols-1 gap-4 mb-6">
           <div className="rounded-xl border border-[#1e1e3a] p-4">
             <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">Total Pool Fund Earned</p>
-            <p className="text-xl md:text-2xl font-bold text-white">${totalPoolFundEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="text-sm text-gray-400 font-normal">/{totalSwpPurchased.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
+            <p className="text-xl md:text-2xl font-bold text-white">${totalPoolFundEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </div>
         </div>
       </div>
