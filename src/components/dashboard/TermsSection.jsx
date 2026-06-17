@@ -1,12 +1,12 @@
 import React from 'react';
 const TERMS_LIST = [
-  'Users must be at least 18 years of age to participate in the NeoFi ecosystem.',
-  'The platform provides advanced market observatory tools; users are solely responsible for their financial decisions.',
-  'NeoFi is not liable for losses resulting from market volatility or unauthorized account access.',
-  'Data privacy is prioritized; all personal info is encrypted using military-grade protocols.',
+  'Users must be 18 years or older to access NeoFi services.',
+  'NeoFi provides educational resources, analytics, and technology tools only.',
+  'All financial decisions and associated risks remain the sole responsibility of the user.',
+  'NeoFi does not guarantee profits, returns, or investment outcomes.',
 ];
 
-const NEOFI_TERMS_TEXT = `"NeoFi is primarily an educational and technical observatory platform. We provide data analytics, community access, and software tools. We do not provide licensed investment advice, nor do we function as a traditional brokerage. Trading involves significant risk. Always consult with a certified financial advisor before committing capital."`;
+const NEOFI_TERMS_TEXT = `"Built for learning, analysis, and growth. NeoFi supports informed decision-making through educational resources and market insights, while users retain full responsibility for their financial choices."`;
 
 function TermsSection() {
   return (
@@ -36,7 +36,7 @@ function TermsSection() {
       {/* NeoFi Basic Terms */}
       <div>
         <h3 className="text-xs font-bold text-gray-300 tracking-[0.15em] uppercase mb-4">
-          NeoFi Basic Terms
+          NeoFi Academy Basic Terms
         </h3>
         <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-4">
           <p className="text-xs text-gray-400 leading-relaxed italic">

@@ -11,7 +11,7 @@ function WelcomeSection() {
         </h1>
         <p className="text-xs md:text-sm text-gray-400 mt-1 flex items-center gap-1.5 whitespace-nowrap">
           <span className="w-2 h-2 rounded-full bg-[#CB3CFF] inline-block" />{' '}
-          Observatory is live. Market data synchronized.
+          Track your progress. Expand your network. Unlock new opportunities.
         </p>
       </div>
       <button
