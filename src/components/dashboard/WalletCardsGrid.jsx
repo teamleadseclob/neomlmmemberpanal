@@ -18,7 +18,7 @@ function WalletCardsGrid({ data, rewardWallet }) {
 
   const WALLET_DATA = [
     { iconType: 'wallet',      label: 'Main Wallet',         amount: fmt(data?.walletBalance) },
-    { iconType: 'cashback',    label: 'Last Earned Multilevel Rewards',        amount: fmt(earnings.multiLevelRewards?.thisMonth),iconType2: 'cashback',      label2: 'Last Earned Trading profit',        amount2: fmt(earnings.roi?.thisMonth),  },
+    { iconType: 'cashback',    label: 'Last Earned Multilevel Rewards',        amount: fmt(earnings.multiLevelRewards?.thisMonth),iconType2: 'cashback',      label2: 'Last Earned Trading profit',        amount2: fmt(earnings.roi?.lastEarned?.amount),  },
     { iconType: 'profit',      label: 'Trading Profit',      amount: fmt(earnings.roi?.thisMonth) },
     { iconType: 'multilevel',  label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.net) },
     { iconType: 'reward',      label: 'Reward Wallet',       amount: fmt(rewardTotal) },
