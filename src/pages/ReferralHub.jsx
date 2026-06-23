@@ -8,7 +8,7 @@ const PAGE_SIZE = 10;
 function ReferralHub() {
   const [directReferralEarnings, setDirectReferralEarnings] = useState(0);
   const [totalPoolFundEarned, setTotalPoolFundEarned] = useState(0);
-  const [totalSwpVolume, setTotalSwpVolume] = useState(0);
+  const [swpBalance, setSwpBalance] = useState(0);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -20,7 +20,7 @@ function ReferralHub() {
       .then((res) => {
         setDirectReferralEarnings(res?.data?.directReferralEarnings ?? 0);
         setTotalPoolFundEarned(res?.data?.totalPoolFundEarned ?? 0);
-        setTotalSwpVolume(res?.data?.totalSwpVolume ?? 0);
+        setSwpBalance(res?.data?.swpBalance ?? 0);
       })
       .catch(() => {});
   }, []);
@@ -82,7 +82,7 @@ function ReferralHub() {
         <div className="grid grid-cols-1 gap-4 mb-6">
           <div className="rounded-xl border border-[#1e1e3a] p-4">
             <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-1.5">Total Pool Fund Earned</p>
-            <p className="text-xl md:text-2xl font-bold text-white">${totalPoolFundEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="text-sm text-gray-400 font-normal">/{totalSwpVolume.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
+            <p className="text-xl md:text-2xl font-bold text-white">${totalPoolFundEarned.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span className="text-sm text-gray-400 font-normal">/{swpBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
           </div>
         </div>
       </div>
