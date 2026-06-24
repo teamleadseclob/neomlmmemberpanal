@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 function AcceleratorCard() {
   return (
-    <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5 flex flex-col items-center text-center">
+    <div className="rounded-xl border border-[#1e1e3a] bg-[#181F3066] p-5 flex flex-col items-center text-center h-full">
       {/* Rocket icon */}
       <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3">
         <svg className="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="url(#rocketGrad)" strokeWidth={1.5}>
@@ -18,7 +18,7 @@ function AcceleratorCard() {
 
       <h3 className="text-base font-bold text-white mb-1.5">Accelerator Active</h3>
       <p className="text-xs text-gray-400 leading-relaxed mb-4">
-        You are currently positioned to earn an estimated 6%–12% monthly trading profit.
+        Where we can see the no.of days balance for a without activated member.
       </p>
 
       <Link

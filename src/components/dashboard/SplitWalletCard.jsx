@@ -31,19 +31,17 @@ export default function SplitWalletCard({ iconType, label, amount, iconType2, la
       <img src={bg2} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-fill pointer-events-none select-none" />
 
       {/* Left half */}
-      <div className="relative flex-1 p-4" style={{ zIndex: 1 }}>
+      <div className="relative flex-1 p-4 flex flex-col justify-end" style={{ zIndex: 1 }}>
         <div className="w-10 h-10 rounded-lg bg-[#1a1a3e] flex items-center justify-center mb-3">
           {ICON_MAP[iconType]}
         </div>
-        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">{label}</p>
+        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium whitespace-nowrap">{label}</p>
         <AnimatedAmount value={parseAmount(amount)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#36ff6f] to-[#25fb3e] bg-clip-text text-transparent" />
       </div>
 
       {/* Right half */}
-      <div className="relative flex-1 p-4 text-right" style={{ zIndex: 1 }}>
-        <div className="w-10 h-10 rounded-lg bg-[#1a1a3e00] flex items-center justify-center mb-3 ml-auto">
-        </div>
-        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium max-w-[120px] ml-auto">{label2}</p>
+      <div className="relative flex-1 p-4 text-right flex flex-col justify-end" style={{ zIndex: 1 }}>
+        <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium whitespace-nowrap ml-auto">{label2}</p>
         <AnimatedAmount value={parseAmount(amount2)} className="text-3xl font-bold mt-0.5 bg-gradient-to-r from-[#3cffa1] to-[#53fb25] bg-clip-text text-transparent ml-auto" />
       </div>
 
