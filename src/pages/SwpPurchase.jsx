@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getswpplan } from '../config/apiService'
 import {
   SwpHeader,
@@ -11,6 +12,8 @@ import {
 
 function SwpPurchase() {
   const [swpData, setSwpData] = useState(null)
+  const location = useLocation()
+  const { daysRemaining = null, expired = false } = location.state || {}
 
   const fetchSwp = useCallback(async () => {
     try {
@@ -27,6 +30,19 @@ function SwpPurchase() {
 
   return (
     <div className="max-w-screen mx-auto">
+      {daysRemaining !== null && (
+        <div className={`mb-4 p-4 rounded-lg text-center font-semibold ${
+          expired
+            ? 'bg-red-500/20 border border-red-500 text-red-400'
+            : 'bg-yellow-500/20 border border-yellow-500 text-yellow-300'
+        }`}>
+          {expired
+            ? '⚠️ Your 30-day trial period has expired. Please purchase an SWP package to activate your account.'
+            : `⏳ You have ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining to purchase an SWP package before your registration expires.`
+          }
+        </div>
+      )}
+
       <SwpHeader />
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-8">
