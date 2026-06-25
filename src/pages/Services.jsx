@@ -61,7 +61,7 @@ function Services() {
 
       <ServicesTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
-      <HeroBanner />
+      <HeroBanner activeTab={activeTab} />
 
       <SearchBar
         search={search}
