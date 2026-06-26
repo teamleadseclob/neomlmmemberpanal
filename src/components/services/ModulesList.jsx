@@ -1,86 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types'
-import axiosConfig from '../../config/axiosConfig'
+import { basicURL } from '../../config/axiosConfig'
 
-function ModuleMedia({ url, type, alt }) {
-  const ytMatch = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)
-  const isDirectUrl = url?.startsWith('http') || url?.startsWith('/')
-  const isBlobUrl = url?.startsWith('blob:')
-  const [src, setSrc] = useState(isDirectUrl ? url : null)
+function resolveUrl(path) {
+  if (!path) return null
+  if (path.startsWith('http') || path.startsWith('blob:')) return path
+  return `${basicURL}/${path.replace(/^\//, '')}`
+}
 
-  useEffect(() => {
-    if (ytMatch || isDirectUrl || isBlobUrl) return
-    let objectUrl
-    axiosConfig.get(url, { responseType: 'blob' })
-      .then(res => {
-        objectUrl = URL.createObjectURL(res.data)
-        setSrc(objectUrl)
-      })
-      .catch(() => setSrc(null))
-    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl) }
-  }, [url, isDirectUrl, isBlobUrl, ytMatch])
+function ImageWithDownload({ url, alt, index }) {
+  const src = resolveUrl(url)
+  if (!src) return null
 
-  if (ytMatch) {
-    return (
-      <iframe
-        src={`https://www.youtube.com/embed/${ytMatch[1]}`}
-        className="w-full h-full"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        title={alt}
-      />
-    )
+  const handleDownload = async () => {
+    try {
+      const res = await fetch(src)
+      const blob = await res.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = blobUrl
+      a.download = `image-${index + 1}.jpg`
+      a.click()
+      URL.revokeObjectURL(blobUrl)
+    } catch {
+      window.open(src, '_blank')
+    }
   }
 
-  if (!src) return (
-    <svg className="w-14 h-14 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 21h18M3 3h18" />
-    </svg>
+  return (
+    <div className="relative group w-24 h-24 rounded-lg overflow-hidden border border-white/10 flex-shrink-0">
+      <img src={src} alt={alt || `Image ${index + 1}`} crossOrigin="anonymous" className="w-full h-full object-cover" />
+      <button
+        onClick={handleDownload}
+        className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer border-none"
+      >
+        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+      </button>
+    </div>
   )
-
-  return type?.startsWith('video')
-    ? <video src={src} className="w-full h-full object-cover" muted />
-    : <img src={src} alt={alt} className="w-full h-full object-cover" />
-}
-
-ModuleMedia.propTypes = {
-  url: PropTypes.string.isRequired,
-  type: PropTypes.string,
-  alt: PropTypes.string,
-}
-
-function ImageThumbnail({ url, alt }) {
-  const [src, setSrc] = useState(null)
-
-  useEffect(() => {
-    if (!url) return
-    let objectUrl
-    axiosConfig.get(url, { responseType: 'blob' })
-      .then(res => {
-        objectUrl = URL.createObjectURL(res.data)
-        setSrc(objectUrl)
-      })
-      .catch(() => setSrc(null))
-    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl) }
-  }, [url])
-
-  if (!src) return (
-    <svg className="w-14 h-14 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 21h18M3 3h18" />
-    </svg>
-  )
-
-  return <img src={src} alt={alt} className="w-full h-full object-cover" />
-}
-
-ImageThumbnail.propTypes = {
-  url: PropTypes.string.isRequired,
-  alt: PropTypes.string,
 }
 
 function ModuleCard({ module }) {
   const title = module.toolName || module.packageName || module.title || 'Untitled'
   const isActive = module.status === 'active' || module.isActive
+
+  const images = module.imageUrls?.length ? module.imageUrls : (module.imageUrl ? [module.imageUrl] : [])
+  const pdfs = module.pdfUrls?.length ? module.pdfUrls : (module.pdfUrl ? [module.pdfUrl] : [])
+  const meetLink = module.googleMeetLink || module.meetLink || null
+  const mediaUrl = module.mediaUrl || null
 
   return (
     <div
@@ -93,98 +62,97 @@ function ModuleCard({ module }) {
         boxShadow: '0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)',
       }}
     >
-      <div className="flex gap-5 items-start">
-        {/* Image thumbnail */}
-        <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-[#1a1a3e] to-[#0a0920] border border-[#1e1e3a] flex items-center justify-center flex-shrink-0 overflow-hidden">
-          {module.imageUrl ? (
-            <ImageThumbnail url={module.imageUrl} alt={title} />
-          ) : (
-            <svg className="w-14 h-14 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 21h18M3 3h18" />
-            </svg>
-          )}
-        </div>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${isActive ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+          {isActive ? 'Active' : 'Inactive'}
+        </span>
+        {module.category && (
+          <span className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">
+            {module.category.replace(/_/g, ' ')}
+          </span>
+        )}
+      </div>
 
+      <h3 className="text-base font-bold text-white">{title}</h3>
+      {module.subTitle && module.subTitle !== title && (
+        <p className="text-xs text-gray-300 -mt-2">{module.subTitle}</p>
+      )}
+      {module.description && <p className="text-xs text-gray-400 leading-relaxed">{module.description}</p>}
 
+      {(module.startDate || module.duration) && (
+        <p className="text-[10px] text-gray-500">
+          {module.startDate && `${new Date(module.startDate).toLocaleDateString()} - ${new Date(module.endDate).toLocaleDateString()}`}
+          {module.duration && ` • Duration: ${module.duration} mins`}
+          {module.price != null && ` • Price: $${module.price}`}
+        </p>
+      )}
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-2">
-            <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${isActive ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
-              {isActive ? 'Active' : 'Inactive'}
-            </span>
-            {module.category && (
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">
-                {module.category.replace(/_/g, ' ')}
-              </span>
-            )}
-          </div>
-
-          <h3 className="text-base font-bold text-white mb-1">{title}</h3>
-          <p className="text-xs text-gray-400 leading-relaxed mb-3">{module.description}</p>
-
-          {module.duration && (
-            <p className="text-[10px] text-gray-500 mb-3">Duration: {module.duration} mins • Price: ${module.price}</p>
-          )}
-
+      {/* Multiple Images */}
+      {images.length > 0 && (
+        <div>
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-2">Images</p>
           <div className="flex gap-2 flex-wrap">
-            {module.mediaUrl && (
-              <button
-                type="button"
-                onClick={() => window.open(module.mediaUrl, '_blank', 'noopener,noreferrer')}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold tracking-wide
-                           bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] text-white
-                           hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                </svg>
-                View Media
-              </button>
-            )}
+            {images.map((img, i) => (
+              <ImageWithDownload key={i} url={img} alt={title} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
 
-            {module.pdfUrl && (
+      {/* Multiple PDFs */}
+      {pdfs.length > 0 && (
+        <div>
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-2">Documents</p>
+          <div className="flex gap-2 flex-wrap">
+            {pdfs.map((pdf, i) => (
               <a
-                href={module.pdfUrl}
+                key={i}
+                href={resolveUrl(pdf)}
                 download
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold tracking-wide
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-semibold
                            bg-gradient-to-r from-[#fb7f25] to-[#ff3c3c] text-white
-                           hover:opacity-90 transition-opacity duration-200 cursor-pointer border-none no-underline"
+                           hover:opacity-90 transition-opacity no-underline"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                 </svg>
-                Download PDF
+                PDF {pdfs.length > 1 ? i + 1 : ''}
               </a>
-            )}
+            ))}
           </div>
         </div>
-      </div>
+      )}
 
-
+      {/* Links */}
+      {(meetLink || mediaUrl) && (
+        <div className="flex gap-3 flex-wrap">
+          {meetLink && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.03]">
+              <svg className="w-4 h-4 text-[#26A69A] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.5 10.5V6.5a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-4l4 3V7.5l-4 3z"/>
+              </svg>
+              <a href={meetLink} target="_blank" rel="noopener noreferrer" className="text-xs text-[#26A69A] hover:underline break-all">{meetLink}</a>
+            </div>
+          )}
+          {mediaUrl && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.03]">
+              <svg className="w-4 h-4 text-purple-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+              <a href={resolveUrl(mediaUrl)} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-400 hover:underline break-all">{mediaUrl}</a>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 ModuleCard.propTypes = {
-  module: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    packageName: PropTypes.string,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    imageUrl: PropTypes.string,
-    mediaUrl: PropTypes.string,
-    mediaType: PropTypes.string,
-    pdfUrl: PropTypes.string,
-    category: PropTypes.string,
-    duration: PropTypes.string,
-    price: PropTypes.number,
-    status: PropTypes.string,
-    isActive: PropTypes.bool,
-    expiresAt: PropTypes.string,
-  }).isRequired,
+  module: PropTypes.object.isRequired,
 }
 
 function ModulesList({ modules = [], loading = false }) {

@@ -16,7 +16,7 @@ import { gettree, getdownlinestats } from '../../config/apiService';
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTS
    ═══════════════════════════════════════════════════════════════ */
-const COL_W = 150;
+const COL_W = 160;
 const CONN_H = 40;
 const TURN_Y = 14;
 const RADIUS = 12;
@@ -195,24 +195,27 @@ function NodeCard({ node, isRoot = false, level = 0, isExpanded = false, onToggl
 NodeCard.propTypes = { node: PropTypes.object, isRoot: PropTypes.bool, level: PropTypes.number, isExpanded: PropTypes.bool, onToggle: PropTypes.func };
 
 /* ═══════════════════════════════════════════════════════════════
-   SVG CONNECTORS — simple vertical + horizontal lines
+   SVG CONNECTORS
    ═══════════════════════════════════════════════════════════════ */
-function Connectors({ containerRef, childRefs, gradientId, expanded }) {
+function Connectors({ childRowRef, gradientId, expanded }) {
   const [paths, setPaths] = useState([]);
-  const svgRef = useRef(null);
+  const [svgW, setSvgW] = useState(0);
+  const tick = useState(0)[1];
 
   useEffect(() => {
     const update = () => {
-      if (!containerRef.current || !svgRef.current) return;
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const cx = svgRect.width / 2;
+      const row = childRowRef.current;
+      if (!row) return;
+      const rowChildren = Array.from(row.children);
+      if (!rowChildren.length) return;
+      const rowW = row.scrollWidth;
+      setSvgW(rowW);
+      const cx = rowW / 2;
       const newPaths = [];
-      childRefs.current.forEach((el) => {
-        if (!el) return;
-        const cardEl = el.querySelector('[data-node-card]');
-        if (!cardEl) return;
-        const cardRect = cardEl.getBoundingClientRect();
-        const childX = cardRect.left + cardRect.width / 2 - svgRect.left;
+
+      rowChildren.forEach((child) => {
+        // child.offsetLeft is relative to row since row is the offsetParent (position:relative)
+        const childX = child.offsetLeft + child.offsetWidth / 2;
         const dx = childX - cx;
         const absDx = Math.abs(dx);
         let path;
@@ -235,15 +238,16 @@ function Connectors({ containerRef, childRefs, gradientId, expanded }) {
       });
       setPaths(newPaths);
     };
-    // Small delay to let DOM settle after expand
-    const timer = setTimeout(update, 50);
-    const observer = new ResizeObserver(update);
-    if (containerRef.current) observer.observe(containerRef.current);
+    const timer = setTimeout(update, 60);
+    const observer = new ResizeObserver(() => { update(); tick((v) => v + 1); });
+    if (childRowRef.current) observer.observe(childRowRef.current);
     return () => { clearTimeout(timer); observer.disconnect(); };
-  }, [containerRef, childRefs, expanded]);
+  }, [childRowRef, expanded]);
+
+  if (!svgW) return <div style={{ height: CONN_H }} />;
 
   return (
-    <svg ref={svgRef} width="100%" height={CONN_H} className="block" style={{ overflow: 'visible' }} aria-hidden="true">
+    <svg width={svgW} height={CONN_H} className="block" style={{ overflow: 'visible' }} aria-hidden="true">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2={CONN_H} gradientUnits="userSpaceOnUse">
           <stop offset="0.2" stopColor="#CB3CFF" />
@@ -260,7 +264,7 @@ function Connectors({ containerRef, childRefs, gradientId, expanded }) {
   );
 }
 
-Connectors.propTypes = { containerRef: PropTypes.object.isRequired, childRefs: PropTypes.object.isRequired, gradientId: PropTypes.string.isRequired, expanded: PropTypes.bool };
+Connectors.propTypes = { childRowRef: PropTypes.object.isRequired, gradientId: PropTypes.string.isRequired, expanded: PropTypes.bool };
 
 /* ═══════════════════════════════════════════════════════════════
    TREE NODE — Recursive, fetches children on click
@@ -317,8 +321,7 @@ function TreeNode({ node, level = 0, parentKey = 'root', defaultOpen = false, au
   if (!node) return null;
 
   const gradId = `grad-${parentKey}-${level}`;
-  const containerRef = useRef(null);
-  const childRefs = useRef([]);
+  const childRowRef = useRef(null);
 
   return (
     <div className="flex flex-col items-center">
@@ -334,13 +337,13 @@ function TreeNode({ node, level = 0, parentKey = 'root', defaultOpen = false, au
 
       {/* Children (only when expanded) */}
       {expanded && children && children.length > 0 && (
-        <div ref={containerRef} className="flex flex-col items-center">
-          <Connectors containerRef={containerRef} childRefs={childRefs} gradientId={gradId} expanded={expanded} />
-          <div className="flex gap-3">
+        <div className="flex flex-col items-center">
+          <Connectors childRowRef={childRowRef} gradientId={gradId} expanded={expanded} />
+          <div ref={childRowRef} className="flex" style={{ position: 'relative', gap: '12px' }}>
             {children.map((child, i) => {
               const key = child?.userId || child?._id || `${parentKey}-${i}`;
               return (
-                <div key={key} ref={(el) => { childRefs.current[i] = el; }} className="flex flex-col items-center">
+                <div key={key} className="flex flex-col items-center" style={{ minWidth: COL_W }}>
                   <TreeNode node={child} level={level + 1} parentKey={key} defaultOpen={level < 2} autoOpenDepth={childAutoOpen} />
                 </div>
               );
@@ -395,6 +398,146 @@ function TreeError({ message }) {
 TreeError.propTypes = { message: PropTypes.string.isRequired };
 
 /* ═══════════════════════════════════════════════════════════════
+   PANNABLE CANVAS
+   ═══════════════════════════════════════════════════════════════ */
+function PannableCanvas({ children }) {
+  const containerRef = useRef(null);
+  const contentRef = useRef(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(1);
+  const dragging = useRef(false);
+  const start = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
+
+  // Center content on mount
+  useEffect(() => {
+    if (!containerRef.current || !contentRef.current) return;
+    const timer = setTimeout(() => {
+      const cRect = containerRef.current.getBoundingClientRect();
+      const tRect = contentRef.current.getBoundingClientRect();
+      setOffset({
+        x: (cRect.width - tRect.width) / 2,
+        y: 20,
+      });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [children]);
+
+  const handleMouseDown = (e) => {
+    if (e.target.closest('button') || e.target.closest('[role="tooltip"]')) return;
+    dragging.current = true;
+    start.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
+  };
+
+  const handleMouseMove = (e) => {
+    if (!dragging.current) return;
+    e.preventDefault();
+    setOffset({
+      x: start.current.ox + (e.clientX - start.current.x),
+      y: start.current.oy + (e.clientY - start.current.y),
+    });
+  };
+
+  const handleMouseUp = () => { dragging.current = false; };
+
+  const handleWheel = (e) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      setScale((s) => Math.min(2, Math.max(0.3, s - e.deltaY * 0.001)));
+    } else {
+      setOffset((o) => ({ x: o.x - e.deltaX, y: o.y - e.deltaY }));
+    }
+  };
+
+  // Touch support
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      dragging.current = true;
+      start.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, ox: offset.x, oy: offset.y };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragging.current || e.touches.length !== 1) return;
+    setOffset({
+      x: start.current.ox + (e.touches[0].clientX - start.current.x),
+      y: start.current.oy + (e.touches[0].clientY - start.current.y),
+    });
+  };
+
+  const handleTouchEnd = () => { dragging.current = false; };
+
+  const resetView = () => {
+    setScale(1);
+    if (containerRef.current && contentRef.current) {
+      const cRect = containerRef.current.getBoundingClientRect();
+      setOffset({ x: cRect.width / 2 - 75, y: 20 });
+    }
+  };
+
+  return (
+    <div className="relative">
+      {/* Zoom controls */}
+      <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+        <button type="button" onClick={() => setScale((s) => Math.min(2, s + 0.2))}
+          className="w-7 h-7 rounded-md bg-[#1a1a3e] border border-[#2a2a4a] text-gray-300 hover:text-white hover:border-purple-500/50 flex items-center justify-center cursor-pointer transition-colors text-sm font-bold">+</button>
+        <button type="button" onClick={() => setScale((s) => Math.max(0.3, s - 0.2))}
+          className="w-7 h-7 rounded-md bg-[#1a1a3e] border border-[#2a2a4a] text-gray-300 hover:text-white hover:border-purple-500/50 flex items-center justify-center cursor-pointer transition-colors text-sm font-bold">−</button>
+      </div>
+
+      <div
+        ref={containerRef}
+        className="overflow-hidden rounded-lg cursor-grab active:cursor-grabbing select-none"
+        style={{ height: '75vh', position: 'relative' }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          ref={contentRef}
+          style={{
+            transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+            transformOrigin: 'top left',
+            position: 'absolute',
+            willChange: 'transform',
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+PannableCanvas.propTypes = { children: PropTypes.node };
+
+/* ═══════════════════════════════════════════════════════════════
+   SINGLE USER FULL SCREEN VIEW
+   ═══════════════════════════════════════════════════════════════ */
+function SingleUserView({ node }) {
+  return (
+    <div className="flex flex-col items-center justify-center" style={{ minHeight: '60vh' }}>
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#7F25FB] to-[#D946EF] flex items-center justify-center shadow-xl shadow-purple-500/30">
+          <span className="text-2xl font-bold text-white">{node.name?.[0]?.toUpperCase() || 'U'}</span>
+        </div>
+        <div className="text-center">
+          <p className="text-lg font-semibold text-white uppercase">{node.name}</p>
+          <p className="text-xs text-gray-400 font-mono mt-1">{node.userId}</p>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">No downline members yet</p>
+      </div>
+    </div>
+  );
+}
+
+SingleUserView.propTypes = { node: PropTypes.object.isRequired };
+
+/* ═══════════════════════════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════════════════════════ */
 function SponsorTree() {
@@ -423,37 +566,23 @@ function SponsorTree() {
   if (loading) return <TreeLoading />;
   if (error || !rootData) return <TreeError message={error || 'No tree data available'} />;
 
+  // Single user with no children — show full screen centered
+  const hasChildren = rootData.children && rootData.children.length > 0;
+  if (!hasChildren) {
+    return (
+      <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
+        <SingleUserView node={rootData} />
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-xl p-5 md:p-6" style={{ background: '#181F3033', border: '1px solid #FFFFFF0D' }}>
-      {/* Scrollable container */}
-      {/* Draggable scrollable container */}
-      <div
-        className="overflow-auto rounded-lg cursor-grab active:cursor-grabbing select-none"
-        style={{ scrollbarColor: '#1e1e3a #0d0b2e', maxHeight: '80vh' }}
-        onMouseDown={(e) => {
-          const el = e.currentTarget;
-          el.dataset.dragging = 'true';
-          el.dataset.startX = e.clientX;
-          el.dataset.startY = e.clientY;
-          el.dataset.scrollLeft = el.scrollLeft;
-          el.dataset.scrollTop = el.scrollTop;
-        }}
-        onMouseMove={(e) => {
-          const el = e.currentTarget;
-          if (el.dataset.dragging !== 'true') return;
-          e.preventDefault();
-          const dx = e.clientX - Number(el.dataset.startX);
-          const dy = e.clientY - Number(el.dataset.startY);
-          el.scrollLeft = Number(el.dataset.scrollLeft) - dx;
-          el.scrollTop = Number(el.dataset.scrollTop) - dy;
-        }}
-        onMouseUp={(e) => { e.currentTarget.dataset.dragging = 'false'; }}
-        onMouseLeave={(e) => { e.currentTarget.dataset.dragging = 'false'; }}
-      >
+      <PannableCanvas>
         <div className="min-w-max py-6 px-4">
           <TreeNode node={rootData} level={0} parentKey="root" defaultOpen />
         </div>
-      </div>
+      </PannableCanvas>
     </div>
   );
 }
