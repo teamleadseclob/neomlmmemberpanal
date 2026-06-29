@@ -6,7 +6,7 @@ function CapCircle({ percentage }) {
   const offset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="relative w-40 h-40 flex-shrink-0">
+    <div className="relative w-40 h-40 shrink-0">
       <svg className="w-full h-full -rotate-90" viewBox="0 0 128 128">
         <circle cx="64" cy="64" r={radius} fill="none" stroke="#1e1e3a" strokeWidth="10" />
         <circle
@@ -75,7 +75,7 @@ function TradingCapitalStatus({ data, rewardLimit }) {
             </div>
             <div className="flex-1 p-3.5 rounded-lg bg-[#141B2C] border border-purple-500/30">
               <p className="text-[11px] text-purple-400 mb-1">Multi level reward ({mlrCap})</p>
-              <p className="text-xl font-bold bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] bg-clip-text text-transparent">
+              <p className="text-xl font-bold bg-linear-to-r from-[#7F25FB] to-[#CB3CFF] bg-clip-text text-transparent">
                 ${mlrEarned.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
             </div>
@@ -85,13 +85,13 @@ function TradingCapitalStatus({ data, rewardLimit }) {
           <div className="flex gap-4 mb-4">
             <div className="flex-1 bg-[#1a1a3e] rounded-full h-1.5">
               <div
-                className="h-1.5 rounded-full bg-gradient-to-r from-[#7F25FB] to-[#CB3CFF] transition-all duration-700"
+                className="h-1.5 rounded-full bg-linear-to-r from-[#7F25FB] to-[#CB3CFF] transition-all duration-700"
                 style={{ width: `${roiPct}%` }}
               />
             </div>
             <div className="flex-1 bg-[#1a1a3e] rounded-full h-1.5">
               <div
-                className="h-1.5 rounded-full bg-gradient-to-r from-[#CB3CFF] to-[#f472b6] transition-all duration-700"
+                className="h-1.5 rounded-full bg-linear-to-r from-[#CB3CFF] to-[#f472b6] transition-all duration-700"
                 style={{ width: `${mlrPct}%` }}
               />
             </div>
