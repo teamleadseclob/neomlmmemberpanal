@@ -7,6 +7,10 @@ function WalletCardsGrid({ data, rewardWallet }) {
   const fmt = (val) => `$${(val ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
 
   const earnings = data?.earnings?.breakdown ?? {}
+  const totalRoiEarned = data?.totalRoiEarned ?? {}
+  const totalMultiLevelEarned =data?.totalMultiLevelEarned ?? {}
+  const totalRewardWalletEarned = data?.totalRewardWalletEarned ?? {}
+  const totalEarnings = data?.totalEarnings ?? {}
   const summary  = data?.earnings?.summary ?? {}
 
   const rewardTotal = rewardWallet?.totalRewardWallet ?? (
@@ -19,10 +23,10 @@ function WalletCardsGrid({ data, rewardWallet }) {
   const WALLET_DATA = [
     { iconType: 'wallet',      label: 'Main Wallet',         amount: fmt(data?.walletBalance) },
     { iconType: 'cashback',    label: 'Last Earned Multilevel Rewards',        amount: fmt(earnings.multiLevelRewards?.lastEarned?.amount),iconType2: 'cashback',      label2: 'Last Earned Trading profit',        amount2: fmt(earnings.roi?.lastEarned?.amount),  },
-    { iconType: 'profit',      label: 'Trading Profit',      amount: fmt(earnings.roi?.thisMonth) },
-    { iconType: 'multilevel',  label: 'Multilevel Rewards',  amount: fmt(earnings.multiLevelRewards?.net) },
-    { iconType: 'reward',      label: 'Reward Wallet',       amount: fmt(rewardTotal) },
-    { iconType: 'total',       label: 'Total Income',        amount: fmt(summary?.totalNetEarnings) },
+    { iconType: 'profit',      label: 'Trading Profit',      amount: fmt(totalRoiEarned) },
+    { iconType: 'multilevel',  label: 'Multilevel Rewards',  amount: fmt(totalMultiLevelEarned) },
+    { iconType: 'reward',      label: 'Reward Wallet',       amount: fmt(totalRewardWalletEarned) },
+    { iconType: 'total',       label: 'Total Income',        amount: fmt(totalEarnings) },
   ]
 
   const ROW1 = WALLET_DATA.slice(0, 3)
