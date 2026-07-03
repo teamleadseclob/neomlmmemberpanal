@@ -2,13 +2,16 @@ import { useState,useMemo  } from 'react';
 import PropTypes from 'prop-types';
 import toast from 'react-hot-toast';
 import { MdOutlineMoneyOff, MdOutlineAccountBalanceWallet, MdWarningAmber } from 'react-icons/md';
-import { withdraw } from '../../config/apiService';
+import { withdraw, sendWithdrawalOtp } from '../../config/apiService';
 import { getSignupAddress } from '../wallet/useWeb3Payment';
 import { useAccount } from 'wagmi';
 
 export default function WithdrawFunds({ maxAmount, onSuccess }) {
   const [amount,  setAmount]  = useState('');
   const [loading, setLoading] = useState(false);
+  const [otpModal, setOtpModal] = useState(false);
+  const [otp, setOtp] = useState(Array(6).fill(''));
+  const [otpLoading, setOtpLoading] = useState(false);
   const { address, isConnected } = useAccount()
 
 
@@ -33,14 +36,47 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
 
     setLoading(true);
     try {
-      await withdraw(parsed,walletAddress||'0xA33888fC1B280CA64BCb344eF435B18bE105AEb1');
+      await sendWithdrawalOtp();
+      setOtp(Array(6).fill(''));
+      setOtpModal(true);
+    } catch (err) {
+      toast.error(err?.response?.data?.message ?? 'Failed to send OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpChange = (val, idx) => {
+    if (!/^\d*$/.test(val)) return;
+    const next = [...otp];
+    next[idx] = val.slice(-1);
+    setOtp(next);
+    if (val && idx < 5) document.getElementById(`otp-${idx + 1}`)?.focus();
+  };
+
+  const handleOtpKeyDown = (e, idx) => {
+    if (e.key === 'Backspace' && !otp[idx] && idx > 0) document.getElementById(`otp-${idx - 1}`)?.focus();
+  };
+
+  const handleConfirmOtp = async () => {
+    const otpStr = otp.join('');
+    if (otpStr.length < 6) {
+      toast.error('Please enter the complete 6-digit OTP.');
+      return;
+    }
+    const parsed = Number.parseFloat(amount);
+    setOtpLoading(true);
+    try {
+      await withdraw(parsed, walletAddress || '0xA33888fC1B280CA64BCb344eF435B18bE105AEb1', otpStr);
       toast.success('Withdrawal request submitted successfully!');
       setAmount('');
+      setOtp(Array(6).fill(''));
+      setOtpModal(false);
       onSuccess?.();
     } catch (err) {
       toast.error(err?.response?.data?.message ?? 'Withdrawal failed. Please try again.');
     } finally {
-      setLoading(false);
+      setOtpLoading(false);
     }
   };
 
@@ -123,6 +159,56 @@ export default function WithdrawFunds({ maxAmount, onSuccess }) {
           </div>
         ))}
       </div>
+
+      {/* OTP Modal */}
+      {otpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
+          <div className="rounded-2xl p-6 w-full max-w-sm mx-4" style={{ background: '#181F30', border: '1px solid #FFFFFF1A' }}>
+            <h3 className="text-white font-bold text-base mb-1">Enter OTP</h3>
+            <p className="text-gray-500 text-xs mb-4">An OTP has been sent to your registered email. It expires in 5 minutes.</p>
+            <div className="grid grid-cols-6 gap-2 mb-4">
+              {otp.map((digit, idx) => (
+                <input
+                  key={idx}
+                  id={`otp-${idx}`}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOtpChange(e.target.value, idx)}
+                  onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                  className="h-12 rounded-xl text-center text-white text-lg font-bold outline-none w-full"
+                  style={{ background: '#000000', border: `1px solid ${digit ? 'rgba(127,37,251,0.9)' : 'rgba(127,37,251,0.3)'}` }}
+                />
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setOtpModal(false)}
+                className="flex-1 py-3 rounded-xl text-xs font-bold text-gray-400 border-none cursor-pointer"
+                style={{ background: 'rgba(255,255,255,0.05)' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmOtp}
+                disabled={otpLoading}
+                className="flex-1 py-3 rounded-xl text-xs font-bold text-white border-none cursor-pointer disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, #7F25FB 0%, #CB3CFF 100%)' }}
+              >
+                {otpLoading ? (
+                  <span className="inline-flex items-center justify-center gap-2">
+                    <span className="w-3 h-3 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    Confirming…
+                  </span>
+                ) : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Submit */}
       <button

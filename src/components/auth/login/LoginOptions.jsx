@@ -7,7 +7,7 @@ const CheckIcon = () => (
   </svg>
 )
 
-export default function LoginOptions({ remember, onRememberChange }) {
+export default function LoginOptions({ remember, onRememberChange, onForgotPassword }) {
   const checkboxClass = remember
     ? 'bg-gradient-to-br from-purple-600 to-purple-500 border-transparent shadow-[0_0_10px_rgba(147,51,234,0.4)]'
     : 'bg-white/5 border-purple-400/40'
@@ -21,7 +21,7 @@ export default function LoginOptions({ remember, onRememberChange }) {
         </span>
         <span className="text-white/70 text-sm font-medium">Remember Me</span>
       </label>
-      <button type="button" className="text-purple-400 hover:text-purple-300 text-sm font-semibold transition-colors cursor-pointer bg-transparent border-none">
+      <button type="button" onClick={onForgotPassword} className="text-purple-400 hover:text-purple-300 text-sm font-semibold transition-colors cursor-pointer bg-transparent border-none">
         Forgot Password?
       </button>
     </div>
@@ -31,4 +31,5 @@ export default function LoginOptions({ remember, onRememberChange }) {
 LoginOptions.propTypes = {
   remember: PropTypes.bool.isRequired,
   onRememberChange: PropTypes.func.isRequired,
+  onForgotPassword: PropTypes.func.isRequired,
 }

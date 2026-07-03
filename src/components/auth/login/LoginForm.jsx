@@ -5,6 +5,7 @@ import { useAuth } from '../../../context/useAuth'
 import { login } from '../../../config/apiService'
 import InputField from './InputField'
 import LoginOptions from './LoginOptions'
+import ForgotPasswordModal from './ForgotPasswordModal'
 
 export default function LoginForm() {
   const [userId, setUserId] = useState('')
@@ -13,6 +14,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({ userId: '', password: '' })
 
+  const [showForgot, setShowForgot] = useState(false)
   const { login: saveToken } = useAuth()
   const navigate = useNavigate()
 
@@ -43,6 +45,8 @@ export default function LoginForm() {
   }
 
   return (
+    <>
+      {showForgot && <ForgotPasswordModal onClose={() => setShowForgot(false)} />}
     <form onSubmit={handleSubmit}>
       <InputField label="User ID" type="text" placeholder="Enter user ID"
         value={userId} onChange={(e) => { setUserId(e.target.value); setErrors((p) => ({ ...p, userId: '' })) }}
@@ -52,7 +56,7 @@ export default function LoginForm() {
         value={password} onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: '' })) }}
         error={errors.password} />
 
-      <LoginOptions remember={remember} onRememberChange={() => setRemember((r) => !r)} />
+      <LoginOptions remember={remember} onRememberChange={() => setRemember((r) => !r)} onForgotPassword={() => setShowForgot(true)} />
 
       {/* Login button */}
       <button
@@ -77,5 +81,6 @@ export default function LoginForm() {
         <a href="/privacy" className="text-white/60 font-semibold underline">Privacy Policy</a>
       </p>
     </form>
+    </>
   )
 }

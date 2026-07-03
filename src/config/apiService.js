@@ -2,6 +2,16 @@ import axiosConfig from './axiosConfig'
 
 // ─── Auth (Login / Register) ──────────────────────────────────────────────────
 
+export const forgotPassword = async (email) => {
+  const response = await axiosConfig.post('/api/auth/forgot-password', { email })
+  return response.data
+}
+
+export const resetPassword = async (email, otp, newPassword) => {
+  const response = await axiosConfig.post('/api/auth/reset-password', { email, otp, newPassword })
+  return response.data
+}
+
 export const login = async (userId, password) => {
   const response = await axiosConfig.post('/api/auth/login', { userId, password })
   return response.data
@@ -191,8 +201,13 @@ export const getrankstatus = async () => {
 
 // ─── Payout ───────────────────────────────────────────────────────────────────
 
-export const withdraw = async (amount,walletAddress) => {
-  const response = await axiosConfig.post('/api/withdrawal', { amount,walletAddress })
+export const sendWithdrawalOtp = async () => {
+  const response = await axiosConfig.post('/api/withdrawal/send-otp', {})
+  return response.data
+}
+
+export const withdraw = async (amount, walletAddress, otp) => {
+  const response = await axiosConfig.post('/api/withdrawal', { amount, walletAddress, otp })
   return response.data
 }
 
