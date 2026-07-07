@@ -34,6 +34,8 @@ export default function AccessSection() {
                 <li className="elementor-icon-list-item"><span className="elementor-icon-list-icon"><i aria-hidden="true" className="icon icon-check"></i></span><span className="elementor-icon-list-text">Smart &amp; Flexible Copy Trading Solutions</span></li>
                 <li className="elementor-icon-list-item"><span className="elementor-icon-list-icon"><i aria-hidden="true" className="icon icon-check"></i></span><span className="elementor-icon-list-text">Beginner-Friendly Learning System</span></li>
                 <li className="elementor-icon-list-item"><span className="elementor-icon-list-icon"><i aria-hidden="true" className="icon icon-check"></i></span><span className="elementor-icon-list-text">Global Community &amp; Networking</span></li>
+                <li className="elementor-icon-list-item"><span className="elementor-icon-list-icon"><i aria-hidden="true" className="icon icon-check"></i></span><span className="elementor-icon-list-text">Comprehensive Wealth-Building Ecosystem</span></li>
+
               </ul>
             </div>
           </div>
