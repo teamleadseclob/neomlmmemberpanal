@@ -63,10 +63,11 @@ export default function PartnersSection() {
         <div style={styles.grid}>
           {partners.map((p, i) => (
             <div key={i} style={styles.card}>
-              <div style={styles.cardHeader}>
+              <div style={styles.cardLogoWrap}>
                 <img src={p.logo} alt={p.name} style={styles.cardLogo} />
-                <h6 style={styles.cardName}>{p.name}</h6>
               </div>
+              <div style={styles.cardDivider} />
+              <h6 style={styles.cardName}>{p.name}</h6>
               <ul style={styles.cardList}>
                 {p.points.map((pt, j) => (
                   <li key={j} style={styles.cardListItem}>{pt}</li>
@@ -160,25 +161,34 @@ const styles = {
   card: {
     background: '#1a1a1a',
     borderRadius: '12px',
-    padding: '24px',
+    padding: '28px 24px',
     border: '1px solid #2a2a2a',
-  },
-  cardHeader: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: '12px',
+  },
+  cardLogoWrap: {
+    display: 'flex',
+    justifyContent: 'center',
     marginBottom: '16px',
   },
   cardLogo: {
-    width: '48px',
+    width: '80px',
     height: '48px',
     objectFit: 'contain',
+  },
+  cardDivider: {
+    width: '60%',
+    height: '1px',
+    background: 'linear-gradient(90deg, transparent, #7c3aed, transparent)',
+    marginBottom: '16px',
   },
   cardName: {
     color: '#fff',
     fontSize: '18px',
     fontWeight: 600,
-    margin: 0,
+    margin: '0 0 16px',
+    textAlign: 'center',
   },
   cardList: {
     listStyle: 'disc',
@@ -187,6 +197,8 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '6px',
+    alignSelf: 'flex-start',
+    width: '100%',
   },
   cardListItem: {
     color: '#ccc',

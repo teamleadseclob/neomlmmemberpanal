@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { BASE } from '../../paths';
 
 export default function ContactSection() {
@@ -82,11 +83,28 @@ function FaqItem({ question, answer, index }) {
 
 function SubscribeForm() {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Thank you for subscribing!');
-    setEmail('');
+    setLoading(true);
+    emailjs.send(
+      'service_i2x86m3',
+      'template_recqviq',
+      {
+        name: email,
+        title: 'New Subscription',
+        message: email,
+        email: email,
+        time: new Date().toLocaleString(),
+      },
+      'aMGW7SoHIo5mHLQw3'
+    ).then(() => {
+      alert('Thank you for subscribing!');
+      setEmail('');
+    }).catch(() => {
+      alert('Failed to subscribe. Please try again.');
+    }).finally(() => setLoading(false));
   };
 
   return (
@@ -108,9 +126,9 @@ function SubscribeForm() {
             />
           </div>
           <div className="elementor-field-group elementor-column elementor-field-type-submit elementor-col-100 e-form__buttons">
-            <button className="elementor-button elementor-size-sm" type="submit">
+            <button className="elementor-button elementor-size-sm" type="submit" disabled={loading}>
               <span className="elementor-button-content-wrapper">
-                <span className="elementor-button-text">Subscribe Now</span>
+                <span className="elementor-button-text">{loading ? 'Sending...' : 'Subscribe Now'}</span>
               </span>
             </button>
           </div>
