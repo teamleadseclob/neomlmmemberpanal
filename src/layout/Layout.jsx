@@ -30,16 +30,16 @@ import logo from '../assets/logo.svg';
 import liveselected from '../assets/icons/marketelected.png';
 import live from '../assets/icons/market.png';
 const NAV_ITEMS = [
-  { icon: dashboardIcon, iconSelected: dashboardSelected, label: 'Dashboard',       path: '/' },
-  { icon: referalIcon,   iconSelected: referalSelected,   label: 'Referral Hub',    path: '/referral-links' },
-  { icon: communityIcon, iconSelected: communitySelected, label: 'Community',       path: '/community' },
-  { icon: purchaseIcon,  iconSelected: purchaseSelected,  label: 'SWP Purchase',    path: '/swp-purchase' },
-  { icon: capitalIcon,   iconSelected: capitalSelected,   label: 'Trading Capital', path: '/trading-capital' },
-  { icon: rankIcon,      iconSelected: rankSelected,      label: 'Rank Report',     path: '/rank-report' },
-  { icon: payoutIcon,    iconSelected: payoutSelected,    label: 'Payout',          path: '/payout' },
-  { icon: serviceIcon,   iconSelected: serviceSelected,   label: 'Services',        path: '/services' },
-  { icon: supportIcon,   iconSelected: supportSelected,   label: 'Support',         path: '/support' },
-  { icon: live,          iconSelected: liveselected,      label: 'Trading Partner',            path: '/markets' },
+  { icon: dashboardIcon, iconSelected: dashboardSelected, label: 'Dashboard',       path: '/dashboard' },
+  { icon: referalIcon,   iconSelected: referalSelected,   label: 'Referral Hub',    path: '/dashboard/referral-links' },
+  { icon: communityIcon, iconSelected: communitySelected, label: 'Community',       path: '/dashboard/community' },
+  { icon: purchaseIcon,  iconSelected: purchaseSelected,  label: 'SWP Purchase',    path: '/dashboard/swp-purchase' },
+  { icon: capitalIcon,   iconSelected: capitalSelected,   label: 'Trading Capital', path: '/dashboard/trading-capital' },
+  { icon: rankIcon,      iconSelected: rankSelected,      label: 'Rank Report',     path: '/dashboard/rank-report' },
+  { icon: payoutIcon,    iconSelected: payoutSelected,    label: 'Payout',          path: '/dashboard/payout' },
+  { icon: serviceIcon,   iconSelected: serviceSelected,   label: 'Services',        path: '/dashboard/services' },
+  { icon: supportIcon,   iconSelected: supportSelected,   label: 'Support',         path: '/dashboard/support' },
+  { icon: live,          iconSelected: liveselected,      label: 'Trading Partner',            path: '/dashboard/markets' },
 ];
 
 SidebarNavItem.propTypes = {
@@ -57,7 +57,7 @@ function SidebarNavItem({ item, sidebarOpen, onNavigate }) {
   return (
     <NavLink
       to={item.path}
-      end={item.path === '/'}
+      end={item.path === '/dashboard'}
       onClick={onNavigate}
       title={item.label}
       className={({ isActive }) =>
@@ -130,7 +130,7 @@ function HeaderActions({ unreadCount, onCountChange }) {
           <p className="text-sm font-semibold leading-tight capitalize text-white">{user?.name || 'Hello'}</p>
           <p className="text-[10px] text-purple-400 tracking-widest">Verified</p>
         </div>
-        <Link to="/profile">
+        <Link to="/dashboard/profile">
           {profileImage ? (
             <img src={profileImage} alt="Profile" crossOrigin="anonymous" className="w-8 h-8 md:w-9 md:h-9 rounded-lg object-cover  flex-shrink-0 hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer" />
           ) : (

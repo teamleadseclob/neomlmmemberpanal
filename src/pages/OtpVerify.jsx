@@ -86,7 +86,7 @@ export default function OtpVerify() {
       saveToken(res?.data?.token, res?.data?.user)
       localStorage.removeItem('otp_sent_at')
       toast.success(res?.data?.message)
-      navigate('/', { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       setError(err?.response?.data?.message || 'Invalid OTP. Please try again.')
     } finally {

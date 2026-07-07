@@ -1,10 +1,13 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
+import { useAuth } from './context/useAuth';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import SwpGuard from './components/auth/SwpGuard';
 import Layout from './layout/Layout';
+import LandingPage from './pages/landing/LandingPage';
+import Login from './pages/Login';
 
 const Dashboard      = lazy(() => import('./pages/Dashboard'))
 const ReferralHub    = lazy(() => import('./pages/ReferralHub'))
@@ -19,13 +22,16 @@ const Payout         = lazy(() => import('./pages/Payout'))
 const Support        = lazy(() => import('./pages/Support'))
 const Services       = lazy(() => import('./pages/Services'))
 const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage'))
-const Login          = lazy(() => import('./pages/Login'))
+
 const Register            = lazy(() => import('./pages/Register'))
 const OtpVerify           = lazy(() => import('./pages/OtpVerify'))
 const NotFound            = lazy(() => import('./pages/NotFound'))
 const TermsAndConditions  = lazy(() => import('./pages/TermsAndConditions'))
 const Profile             = lazy(() => import('./pages/Profile'))
 const Markets             = lazy(() => import('./pages/Markets'))
+
+const PrivacyPolicy       = lazy(() => import('./pages/landing/PrivacyPolicy'))
+const TermsConditionsLanding = lazy(() => import('./pages/landing/TermsConditionsLanding'))
 
 function PageLoader() {
   return (
@@ -35,6 +41,12 @@ function PageLoader() {
   )
 }
 
+function HomeRoute() {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <LandingPage />;
+  return <Navigate to="/dashboard" replace />;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -42,13 +54,16 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={<PageLoader />}>
           <Routes>
+            <Route path="/" element={<HomeRoute />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditionsLanding />} />
             <Route path="/login"    element={<Login />} />
             <Route path="/register"    element={<Register />} />
             <Route path="/verify-otp"  element={<OtpVerify />} />
             <Route path="/terms"       element={<TermsAndConditions />} />
 
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Layout />

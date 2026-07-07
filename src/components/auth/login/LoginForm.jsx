@@ -36,7 +36,7 @@ export default function LoginForm() {
       }
       saveToken(res?.data?.token, res?.data?.user)
       toast.success(`Welcome back, ${res?.data?.user?.name}!`)
-      navigate('/', { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       toast.error(err?.response?.data?.message || 'server error, please try again later')
     } finally {
