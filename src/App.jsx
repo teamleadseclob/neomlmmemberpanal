@@ -42,9 +42,13 @@ function PageLoader() {
 }
 
 function HomeRoute() {
+  return <LandingPage />;
+}
+
+function LoginRoute() {
   const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) return <LandingPage />;
-  return <Navigate to="/dashboard" replace />;
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  return <Login />;
 }
 
 function App() {
@@ -57,7 +61,7 @@ function App() {
             <Route path="/" element={<HomeRoute />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-conditions" element={<TermsConditionsLanding />} />
-            <Route path="/login"    element={<Login />} />
+            <Route path="/login"    element={<LoginRoute />} />
             <Route path="/register"    element={<Register />} />
             <Route path="/verify-otp"  element={<OtpVerify />} />
             <Route path="/terms"       element={<TermsAndConditions />} />

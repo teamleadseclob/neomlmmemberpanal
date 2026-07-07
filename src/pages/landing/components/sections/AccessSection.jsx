@@ -15,9 +15,6 @@ export default function AccessSection() {
 
         {/* Left column - 60% */}
         <div className="elementor-element elementor-element-19de92d7 e-con-full e-flex e-con e-child" data-id="19de92d7" data-element_type="container" data-e-type="container" data-settings='{"animation":"fadeInUp"}'>
-          <div className="elementor-element elementor-element-84ae543 elementor-widget elementor-widget-spacer" data-id="84ae543" data-element_type="widget" data-e-type="widget" data-widget_type="spacer.default">
-            <div className="elementor-spacer"><div className="elementor-spacer-inner"></div></div>
-          </div>
           <div className="elementor-element elementor-element-448c305 e-con-full e-flex e-con e-child" data-id="448c305" data-element_type="container" data-e-type="container">
             <div className="elementor-element elementor-element-4ad7a6c elementor-widget elementor-widget-heading" data-id="4ad7a6c" data-element_type="widget" data-e-type="widget" data-settings='{"_animation":"fadeInUp"}' data-widget_type="heading.default">
               <div className="elementor-heading-title elementor-size-default">Easy Access</div>

@@ -25,7 +25,7 @@ const partners = [
 
 const checkItems = [
   'Regulated global trading environments',
-  'MT4 & MT5 professional trading platforms',
+  'MT4 & MT5 and cTrader trading platforms',
   'Secure access to Forex, metals, stocks & crypto',
 ];
 
@@ -102,7 +102,7 @@ const styles = {
     gap: '60px',
     maxWidth: '1280px',
     margin: '0 auto',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     flexWrap: 'wrap',
   },
   left: {
