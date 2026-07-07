@@ -47,7 +47,7 @@ export default function LandingPage() {
   const [cssReady, setCssReady] = useState(false);
 
   useEffect(() => {
-    document.title = 'Neofi Academy – Master Forex Trading & Build Global Income';
+    document.title = 'neo_memberpanel';
 
     let loaded = 0;
     const total = cssFiles.length;
