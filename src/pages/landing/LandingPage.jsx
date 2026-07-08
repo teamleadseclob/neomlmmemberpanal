@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { getBanners } from '../../config/apiService';
+
 import HeroSection from './components/sections/HeroSection';
 import AboutSection from './components/sections/AboutSection';
 import ServicesSection from './components/sections/ServicesSection';
@@ -45,6 +47,8 @@ const cssFiles = [
 
 export default function LandingPage() {
   const [cssReady, setCssReady] = useState(false);
+  const [banner, setBanner] = useState(null);
+  const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     document.title = 'neo_memberpanel';
@@ -109,6 +113,16 @@ export default function LandingPage() {
     };
   }, []);
 
+  useEffect(() => {
+    getBanners().then(res => {
+      const banner = res?.data;
+      if (banner && banner.isActive) {
+        setBanner(banner);
+        setShowBanner(true);
+      }
+    }).catch(() => {});
+  }, []);
+
   useScrollAnimations();
 
   if (!cssReady) {
@@ -122,6 +136,14 @@ export default function LandingPage() {
 
   return (
     <>
+      {showBanner && banner && (
+        <div onClick={() => setShowBanner(false)} style={{position:'fixed',inset:0,zIndex:9999,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <div onClick={e => e.stopPropagation()} style={{position:'relative',maxWidth:'90vw',maxHeight:'90vh'}}>
+            <button onClick={() => setShowBanner(false)} style={{position:'absolute',top:8,right:8,background:'rgba(0,0,0,0.6)',color:'#fff',border:'none',borderRadius:'50%',width:32,height:32,cursor:'pointer',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 2px 8px rgba(0,0,0,0.3)'}}>✕</button>
+            <img crossOrigin="anonymous" src={banner.imageUrl} alt="Banner" style={{maxWidth:'80vw',maxHeight:'80vh',borderRadius:8,objectFit:'contain'}} />
+          </div>
+        </div>
+      )}
       <Header />
       <main id="content" className="site-main post-81 page type-page status-publish hentry" style={{paddingTop:'80px'}}>
         <div className="page-content">

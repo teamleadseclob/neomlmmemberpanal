@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { getswpplan } from '../config/apiService'
-import { useContext } from 'react'
 import AuthContext from '../context/AuthContext'
+import { useProfile } from '../context/ProfileContext'
 import {
   SwpHeader,
   ActivePortfolio,
@@ -12,12 +11,22 @@ import {
   SwpHistory,
 } from '../components/swp'
 
+function getDaysRemaining(createdAt) {
+  if (!createdAt) return 0
+  const created = new Date(createdAt)
+  const deadline = new Date(created.getTime() + 30 * 24 * 60 * 60 * 1000)
+  const now = new Date()
+  const diff = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24))
+  return diff > 0 ? diff : 0
+}
+
 function SwpPurchase() {
   const [swpData, setSwpData] = useState(null)
   const [copied, setCopied] = useState(false)
-  const location = useLocation()
-  const { daysRemaining = null, expired = false } = location.state || {}
   const { user } = useContext(AuthContext)
+  const { profile } = useProfile()
+  const daysRemaining = getDaysRemaining(user?.createdAt)
+  const expired = daysRemaining === 0
 
   const handleCopy = () => {
     navigator.clipboard.writeText(user?.userId || '')
@@ -40,8 +49,7 @@ function SwpPurchase() {
 
   return (
     <div className="max-w-screen mx-auto">
-      {daysRemaining !== null && (
-        <div className={`mb-4 p-4 rounded-lg font-semibold ${
+      {profile && (!profile.swpBalance || profile.swpBalance <= 0) && <div className={`mb-4 p-4 rounded-lg font-semibold ${
           expired
             ? 'bg-red-500/20 border border-red-500 text-red-400'
             : 'bg-yellow-500/20 border border-yellow-500 text-yellow-300'
@@ -64,8 +72,7 @@ function SwpPurchase() {
               </button>
             </div>
           )}
-        </div>
-      )}
+        </div>}
 
       <SwpHeader />
 

@@ -1,5 +1,12 @@
 import axiosConfig from './axiosConfig'
 
+// ─── Public ───────────────────────────────────────────────────────────────────
+
+export const getBanners = async () => {
+  const response = await axiosConfig.get('/api/banner')
+  return response.data
+}
+
 // ─── Auth (Login / Register) ──────────────────────────────────────────────────
 
 export const forgotPassword = async (email) => {
