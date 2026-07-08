@@ -51,7 +51,7 @@ export default function LandingPage() {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    document.title = 'neo_memberpanel';
+    document.title = 'Neofi_Academy';
 
     let loaded = 0;
     const total = cssFiles.length;
