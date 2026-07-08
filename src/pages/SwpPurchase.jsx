@@ -25,7 +25,7 @@ function SwpPurchase() {
   const [copied, setCopied] = useState(false)
   const { user } = useContext(AuthContext)
   const { profile } = useProfile()
-  const daysRemaining = getDaysRemaining(user?.createdAt)
+  const daysRemaining = getDaysRemaining(profile?.createdAt)
   const expired = daysRemaining === 0
 
   const handleCopy = () => {
