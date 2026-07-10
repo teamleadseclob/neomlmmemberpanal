@@ -23,7 +23,7 @@ function WelcomeSection() {
                    whitespace-nowrap text-center align-middle"
         style={{fontWeight: 700, fontSize: '13px', lineHeight: '24px', letterSpacing: '0px' }}
       >
-        <Link to="/trading-capital" className="flex items-center gap-2">
+        <Link to="/dashboard/trading-capital" className="flex items-center gap-2">
         Quick Deposit
         </Link>
       </button>
