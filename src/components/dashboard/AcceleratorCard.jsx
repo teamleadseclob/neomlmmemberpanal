@@ -22,7 +22,7 @@ function AcceleratorCard() {
       </p>
 
       <Link
-        to="/swp-purchase"
+        to="/dashboard/swp-purchase"
         className="px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer
                    border border-purple-500 text-purple-400
                    hover:bg-purple-500/10 transition-colors duration-200"

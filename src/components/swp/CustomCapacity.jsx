@@ -17,7 +17,7 @@ function CustomCapacity() {
                    border border-[#2a2a4a] bg-[#ffffff] text-black
                    hover:border-purple-500/30 hover:text-gray-800 transition-all duration-200 cursor-pointer"
       >
-        <Link to="/support" className="block w-full h-full">
+        <Link to="/dashboard/support" className="block w-full h-full">
           Contact Support
         </Link>
       </button>

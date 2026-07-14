@@ -31,7 +31,7 @@ function buildWallets(data) {
       label:          'Reward Wallet Total',
       amount:         rewardwallet?.lastEarned?.amount ?? 0,
       hasViewHistory: true,
-      historyRoute:   '/trading-capital/reward-history',
+      historyRoute:   '/dashboard/trading-capital/reward-history',
       icon:           <img src={rewardImg} alt="reward" className="w-5 h-5 object-contain" />,
     },
     {
@@ -39,7 +39,7 @@ function buildWallets(data) {
       label:          'Trading Profit',
       amount:         breakdown?.roi?.lastEarned?.amount ?? 0,
       hasViewHistory: true,
-      historyRoute:   '/trading-capital/trading-history',
+      historyRoute:   '/dashboard/trading-capital/trading-history',
       icon:           <img src={profitImg} alt="profit" className="w-5 h-5 object-contain" />,
     },
     {
@@ -47,7 +47,7 @@ function buildWallets(data) {
       label:          'Multilevel Rewards',
       amount:         breakdown?.multiLevelRewards?.lastEarned?.amount ?? 0,
       hasViewHistory: true,
-      historyRoute:   '/trading-capital/multilevel-history',
+      historyRoute:   '/dashboard/trading-capital/multilevel-history',
       icon:           <img src={multiImg} alt="multilevel" className="w-5 h-5 object-contain" />,
     },
   ];

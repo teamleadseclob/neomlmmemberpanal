@@ -60,7 +60,7 @@ function TradingHistory() {
     <div className="max-w-screen mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-start gap-3">
-          <button type="button" onClick={() => navigate('/trading-capital')}
+          <button type="button" onClick={() => navigate('/dashboard/trading-capital')}
             className="mt-4 w-9 h-9 rounded-lg border border-[#1e1e3a] flex items-center justify-center flex-shrink-0 text-gray-400 hover:text-white hover:border-purple-500/30 transition-colors duration-200 cursor-pointer">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
